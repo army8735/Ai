@@ -39,7 +39,9 @@
 			removeObject(node);
 			createHtml(attrs, params, newDiv);
 		}
-		createHtml(attrs, params, node);
+		else {
+			createHtml(attrs, params, node);
+		}
 	}
 	function createHtml(attrs, params, node) {
 		if($.browser.msie) {
