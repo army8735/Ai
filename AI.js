@@ -7,3 +7,4 @@
 //@import D:\www\AI\base\util.js
 //@import D:\www\AI\base\net.js
 //@import D:\www\AI\base\module.js
+//@import D:\www\AI\base\action.js

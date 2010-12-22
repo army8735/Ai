@@ -24,7 +24,7 @@
 						removes.push(k);
 					}
 				},
-				iframe = '<iframe src="' + url + '" style="position:absolute;left:-9999px;"></iframe>';
+				iframe = '<iframe src="' + url + '" style="position:absolute;left:-9999px;visibility:hidden;"></iframe>';
 			iframe = $(iframe).load(function() {
 				//加载成功后执行缓存操作，再惰性覆盖原接口
 				cache = init(this.contentWindow);

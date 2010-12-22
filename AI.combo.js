@@ -7237,7 +7237,14 @@ jQuery.each([ "Height", "Width" ], function( i, name ) {
 		return typeof o === 'object';
 	}
 
+	var proxy = {
+		'focus': 'focusin',
+		'blur': 'focusout'
+	};
 	function eventProxy(node, event, op) {
+		//focus和blur无法冒泡要转换
+		event = proxy[event] ? proxy[event] : event;
+		//未定义op为取消事件代理
 		if($.isUndefined(op)) {
 			$(node).unbind(event);
 		}
@@ -7621,6 +7628,14 @@ $$.mix({
 			return xmlchar[$1];
 		});
 	},
+	
+	/**
+	 * @public 取字符串的字节长度
+	 * @param {string} 字符串
+	 */
+	byteLen: function(str) {
+		return str.replace(/([^\x00-\xff])/g, '$1 ').length;
+	},
 
 	/**
 	 * @public 按字节长度截取字符串
@@ -7793,7 +7808,6 @@ $$.mix({
 (function() {
 	
 	var	module = {}, //模块库，用以类似YUI.use异步加载模块或模块集
-		action = {}, //管理action，用以多个页面共享一个js时执行里面的独立任务
 		head = document.getElementsByTagName('head')[0],
 		LOADING = 1,
 		LOADED = 2,
@@ -8024,7 +8038,15 @@ $$.mix({
 					cb();
 				}
 			}
-		},
+		}
+	});
+
+})();
+(function() {
+
+	var action = {}; //管理action，用以多个页面共享一个js时执行里面的独立任务
+
+	$$.mix({
 
 		/**
 		 * @public 定义/执行action，和do无先后顺序

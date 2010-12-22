@@ -18,7 +18,14 @@
 		return typeof o === 'object';
 	}
 
+	var proxy = {
+		'focus': 'focusin',
+		'blur': 'focusout'
+	};
 	function eventProxy(node, event, op) {
+		//focus和blur无法冒泡要转换
+		event = proxy[event] ? proxy[event] : event;
+		//未定义op为取消事件代理
 		if($.isUndefined(op)) {
 			$(node).unbind(event);
 		}

@@ -63,6 +63,14 @@ $$.mix({
 			return xmlchar[$1];
 		});
 	},
+	
+	/**
+	 * @public 取字符串的字节长度
+	 * @param {string} 字符串
+	 */
+	byteLen: function(str) {
+		return str.replace(/([^\x00-\xff])/g, '$1 ').length;
+	},
 
 	/**
 	 * @public 按字节长度截取字符串
