@@ -5,10 +5,10 @@
 
 	$$.mix({
 		/**
-		 * @public µ±¹ö¶¯ÌõÍÏ¶¯µ½¶ÔÓ¦½ÚµãÏÔÏÖÊ±²Å½øĞĞ¼ÓÔØ
-		 * @param {string/node} ÑÓ³Ù¼ÓÔØµÄ½Úµã»òid
-		 * @param {function} cb¼ÓÔØµÄ»Øµ÷º¯Êı
-		 * @param {int} ÁÙ½çÖµ£¬ÀëÁÙ½çµãÉĞÓĞ¶àÔ¶Ê±ÌáÇ°Ö´ĞĞ»Øµ÷£¬¿ÉÑ¡Ä¬ÈÏÎª0
+		 * @public å½“æ»šåŠ¨æ¡æ‹–åŠ¨åˆ°å¯¹åº”èŠ‚ç‚¹æ˜¾ç°æ—¶æ‰è¿›è¡ŒåŠ è½½
+		 * @param {string/node} å»¶è¿ŸåŠ è½½çš„èŠ‚ç‚¹æˆ–id
+		 * @param {function} cbåŠ è½½çš„å›è°ƒå‡½æ•°
+		 * @param {int} ä¸´ç•Œå€¼ï¼Œç¦»ä¸´ç•Œç‚¹å°šæœ‰å¤šè¿œæ—¶æå‰æ‰§è¡Œå›è°ƒï¼Œå¯é€‰é»˜è®¤ä¸º0
 		 */
 		scrollLoad: function(node, cb, threshold) {
 			if($.isString(node)) {
@@ -38,22 +38,22 @@
 		},
 
 		/**
-		 * @public µ±¹ö¶¯ÌõÍÏ¶¯µ½¶à¸ßÊ±²Å½øĞĞµÄÍ¼Æ¬ÑÓ³Ù¼ÓÔØ
-		 * @param {jq} ĞèÒªÑÓ³Ù¼ÓÔØµÄÍ¼Æ¬£¨jq¶ÔÏó£©
-		 * @param {string} Í¼Æ¬µÄÕæÊµsrcÂ·¾¶Ğ´ÔÚ±¾ÉíµÄÊ²Ã´ÊôĞÔÉÏÃæ
-		 * @param {int} ÁÙ½çÖµ£¬ÀëÁÙ½çµãÉĞÓĞ¶àÔ¶Ê±ÌáÇ°Ö´ĞĞ»Øµ÷£¬¿ÉÑ¡Ä¬ÈÏÎª0
-		 * @param {dom} °üº¬ÑÓ³ÙÍ¼Æ¬µÄÈİÆ÷,jq¶ÔÏó£¬Ä¬ÈÏÎªdocument.body
+		 * @public å½“æ»šåŠ¨æ¡æ‹–åŠ¨åˆ°å¤šé«˜æ—¶æ‰è¿›è¡Œçš„å›¾ç‰‡å»¶è¿ŸåŠ è½½
+		 * @param {jq} éœ€è¦å»¶è¿ŸåŠ è½½çš„å›¾ç‰‡ï¼ˆjqå¯¹è±¡ï¼‰
+		 * @param {string} å›¾ç‰‡çš„çœŸå®srcè·¯å¾„å†™åœ¨æœ¬èº«çš„ä»€ä¹ˆå±æ€§ä¸Šé¢
+		 * @param {int} ä¸´ç•Œå€¼ï¼Œç¦»ä¸´ç•Œç‚¹å°šæœ‰å¤šè¿œæ—¶æå‰æ‰§è¡Œå›è°ƒï¼Œå¯é€‰é»˜è®¤ä¸º0
+		 * @param {dom} åŒ…å«å»¶è¿Ÿå›¾ç‰‡çš„å®¹å™¨,jqå¯¹è±¡ï¼Œé»˜è®¤ä¸ºdocument.body
 		 */
 		imgLoad: function(img, attr, threshold, container) {
 			threshold = threshold || 0;
 			container = container || $(document.body);
-			//È¡µÃËùÓĞ·ûºÏclassÃüÃû¹æÔòµÄimg
+			//å–å¾—æ‰€æœ‰ç¬¦åˆclasså‘½åè§„åˆ™çš„img
 			var imgLib = {},
 				imgList = [],
 				key,
 				top;
-			//±éÀúËüÃÇ£¬½«¾ßÓĞÏàÍ¬scrollTopÖµµÄÍ¼Æ¬´æÔÚÒ»×é×÷Îªvalue£¬keyÎªscrollTopÖµ£¬ÔÙ·ÅÈëlib
-			//ÔÙ½«ËùÓĞ³öÏÖµÄscrollTopÖµ´æÈëÒ»¸ölist£¬ÒÔ¿Õ¼ä»»Ê±¼ä
+			//éå†å®ƒä»¬ï¼Œå°†å…·æœ‰ç›¸åŒscrollTopå€¼çš„å›¾ç‰‡å­˜åœ¨ä¸€ç»„ä½œä¸ºvalueï¼Œkeyä¸ºscrollTopå€¼ï¼Œå†æ”¾å…¥lib
+			//å†å°†æ‰€æœ‰å‡ºç°çš„scrollTopå€¼å­˜å…¥ä¸€ä¸ªlistï¼Œä»¥ç©ºé—´æ¢æ—¶é—´
 			img.each(function(index, item) {
 				item = $(item);
 				key = item.attr(attr);
@@ -68,7 +68,7 @@
 					}
 				}
 			});
-			//½«list´ÓĞ¡µ½´óÅÅĞò
+			//å°†listä»å°åˆ°å¤§æ’åº
 			imgList.sort(function(a, b) {
 				return a - b;
 			});
@@ -84,14 +84,14 @@
 								item = $(item);
 								item.attr('src', item.attr(attr));
 							});
-							//¼ÓÔØÍêºóÇå³ılib
+							//åŠ è½½å®Œåæ¸…é™¤lib
 							delete imgLib[imgList[i]];
 						}
 						else {
 							break;
 						}
 					}
-					//Íê³ÉºóÇå³ıÏàÓ¦¼ÇÂ¼µÄlist
+					//å®Œæˆåæ¸…é™¤ç›¸åº”è®°å½•çš„list
 					imgList.splice(0, i);
 				}
 				else {

@@ -19,33 +19,33 @@
 		var rules = node.attr('valid'),
 			value = node.val(),
 			errMes;
-		//¹æÔòÖĞ¶¨ÒåÁËtrimËµÃ÷Ğ£ÑéÊ±Ğè¶ÔvalueÏÈtrim
+		//è§„åˆ™ä¸­å®šä¹‰äº†trimè¯´æ˜æ ¡éªŒæ—¶éœ€å¯¹valueå…ˆtrim
 		if(rules.indexOf('trim') > -1) {
 			value = $.trim(value);
 		}
-		//ÒÔ¿Õ¸ñ·Ö¸ô¹æÔò£¬±éÀúĞ£ÑéÃ¿¸ö¹æÔò
+		//ä»¥ç©ºæ ¼åˆ†éš”è§„åˆ™ï¼Œéå†æ ¡éªŒæ¯ä¸ªè§„åˆ™
 		rules.split(' ').forEach(function(item) {
-			//Ò»¸ö¹æÔò²»Í¨¹ıÆäËü¹æÔòÊ¡ÂÔ
+			//ä¸€ä¸ªè§„åˆ™ä¸é€šè¿‡å…¶å®ƒè§„åˆ™çœç•¥
 			if(!errMes) {
-				item = item.split(':'); //:ºóÃæÊÇ´íÎóÌáÊ¾ĞÅÏ¢hashµÄkey
+				item = item.split(':'); //:åé¢æ˜¯é”™è¯¯æç¤ºä¿¡æ¯hashçš„key
 				var rule = item[0].toLowerCase(),
 					info = mes[item[1]] || 'error';
-				//¹æÔò¿ÉÒÔÊÇ×Ô¶¨ÒåÕıÔò£¬ÒÔ/¿ªÍ·
+				//è§„åˆ™å¯ä»¥æ˜¯è‡ªå®šä¹‰æ­£åˆ™ï¼Œä»¥/å¼€å¤´
 				if(rule.charAt(0) == '/') {
 					if(!rule.test(value)) {
 						errMes = info;
 					}
 				}
-				//ÆäËüÇé¿öÊÇÄÚÖÃµÄĞ£Ñé
+				//å…¶å®ƒæƒ…å†µæ˜¯å†…ç½®çš„æ ¡éªŒ
 				else if(rule != 'trim') {
 					var r = /^(.+?)(\{(.+)\})?$/.exec(rule),
 						k = match[r[1]] || /.*/,
 						len = r[3];
-					//Ã»Í¨¹ıÄÚÖÃÕıÔòÖ±½Ó´íÎó
+					//æ²¡é€šè¿‡å†…ç½®æ­£åˆ™ç›´æ¥é”™è¯¯
 					if(!k.test(value)) {
 						errMes = info;
 					}
-					//Í¨¹ıºó¼ì²éÊÇ·ñÓĞ³¤¶È¶¨Òå£¨ºÍÕıÔòÓï·¨ÏàÍ¬{min,max}£©
+					//é€šè¿‡åæ£€æŸ¥æ˜¯å¦æœ‰é•¿åº¦å®šä¹‰ï¼ˆå’Œæ­£åˆ™è¯­æ³•ç›¸åŒ{min,max}ï¼‰
 					else if(len) {
 						len = len.split(',');
 						var length = value == 'byte' ? $$.byteLen(value) : value.length;
@@ -75,10 +75,10 @@
 
 	$$.mix({
 		/**
-		 * @public ±íµ¥Ğ£Ñé£¬·µ»ØÒ»¸ö°üº¬valid()·½·¨µÄ¶ÔÏó£¬Ìá¹©Ğ£Ñé¹¦ÄÜ
-		 * @param {string/node} ±íµ¥µÄid»òÕß±íµ¥¶ÔÏó
-		 * @param {object} ´íÎóÌáÊ¾ĞÅÏ¢hash
-		 * @return {array/false} ·µ»ØfalseËµÃ÷Ğ£Ñé³É¹¦£¬arrayÔòÊÇÎ´Í¨¹ıĞ£ÑéµÄÔªËØÁĞ±í
+		 * @public è¡¨å•æ ¡éªŒï¼Œè¿”å›ä¸€ä¸ªåŒ…å«valid()æ–¹æ³•çš„å¯¹è±¡ï¼Œæä¾›æ ¡éªŒåŠŸèƒ½
+		 * @param {string/node} è¡¨å•çš„idæˆ–è€…è¡¨å•å¯¹è±¡
+		 * @param {object} é”™è¯¯æç¤ºä¿¡æ¯hash
+		 * @return {array/false} è¿”å›falseè¯´æ˜æ ¡éªŒæˆåŠŸï¼Œarrayåˆ™æ˜¯æœªé€šè¿‡æ ¡éªŒçš„å…ƒç´ åˆ—è¡¨
 		 */
 		formValid: function(form, mes) {
 			form = ($.isString(form) && form.charAt(0) != '#') ? $('#' + form) : $(form);
@@ -89,7 +89,7 @@
 					var res = [];
 					list.each(function() {
 						var item = $(this);
-						//½öÔÚ´ËÔªËØ¿ÉÓÃÊ±²Å½øĞĞĞ£Ñé
+						//ä»…åœ¨æ­¤å…ƒç´ å¯ç”¨æ—¶æ‰è¿›è¡Œæ ¡éªŒ
 						if(!item.attr('disabled')) {
 							valid(item, mes, res);
 						}

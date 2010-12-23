@@ -1,53 +1,53 @@
 (function() {
 
-	var _cache, //ËùÓĞµã»÷ÇëÇó¶¼»º´æÖÁ´Ë¶ÓÁĞ
-		_url, //ÇëÇóµÄurl
-		_interval = 0, //Í¬Ò»½ÚµãÁ¬Ğøµã»÷¶àÉÙmsÄÚºöÂÔ
-		_delay = 0, //ÇëÇó»º´æ¶à¾ÃÔÙ·¢ËÍ£¬ÒÔ±ãºÏ²¢ÏàÁÚµÄÁ½¸öÇëÇó
-		_max = 0, //ºÏ²¢ÉÏÏŞs
-		_lastNode, //ÉÏ´Îµã»÷µÄ½Úµã
-		_lastDate, //ÉÏ´Îµã»÷µÄÊ±¼ä
-		_timeout, //»º´æ·¢ËÍ¼ÆÊ±Æ÷
+	var _cache, //æ‰€æœ‰ç‚¹å‡»è¯·æ±‚éƒ½ç¼“å­˜è‡³æ­¤é˜Ÿåˆ—
+		_url, //è¯·æ±‚çš„url
+		_interval = 0, //åŒä¸€èŠ‚ç‚¹è¿ç»­ç‚¹å‡»å¤šå°‘mså†…å¿½ç•¥
+		_delay = 0, //è¯·æ±‚ç¼“å­˜å¤šä¹…å†å‘é€ï¼Œä»¥ä¾¿åˆå¹¶ç›¸é‚»çš„ä¸¤ä¸ªè¯·æ±‚
+		_max = 0, //åˆå¹¶ä¸Šé™s
+		_lastNode, //ä¸Šæ¬¡ç‚¹å‡»çš„èŠ‚ç‚¹
+		_lastDate, //ä¸Šæ¬¡ç‚¹å‡»çš„æ—¶é—´
+		_timeout, //ç¼“å­˜å‘é€è®¡æ—¶å™¨
 		COOKIE = 'g_click_count';
 	function init(url, interval, delay, max) {
 		_cache = [];
 		reset(url, interval, delay, max, false);
-		//Ö»ÎªÒ³Ãæ¿Éµã»÷ÔªËØaºÍinput×öÍ³¼Æ
+		//åªä¸ºé¡µé¢å¯ç‚¹å‡»å…ƒç´ aå’Œinputåšç»Ÿè®¡
 		$(document.body).bind('click', function(event) {
 			var p = event.target,
 				res = [],
 				cookie = false;
-			//·ÀÖ¹Á¬Ğø¿ìËÙµã»÷Í¬Ò»ÔªËØ
+			//é˜²æ­¢è¿ç»­å¿«é€Ÿç‚¹å‡»åŒä¸€å…ƒç´ 
 			if(check(p)) {
 				return;
 			}
-			//¼ÇÂ¼±¾´Î½ÚµãÓëÊ±¼ä
+			//è®°å½•æœ¬æ¬¡èŠ‚ç‚¹ä¸æ—¶é—´
 			_lastNode = p;
 			_lastDate = +new Date();
-			//Í¼Æ¬µã»÷²é¿´¸¸ÔªËØÊÇ·ñÊÇa±êÇ©£¬²Å¼ÆËãÍ³¼Æ
+			//å›¾ç‰‡ç‚¹å‡»æŸ¥çœ‹çˆ¶å…ƒç´ æ˜¯å¦æ˜¯aæ ‡ç­¾ï¼Œæ‰è®¡ç®—ç»Ÿè®¡
 			if(p.nodeName == 'IMG') {
 				p = p.parentNode;
 			}
 			if(p.nodeName == 'A') {
 				var href = $(p).attr('href'),
 					target = $(p).attr('target');
-				//ÕæÕıµÄurlÁ´½Ó²¢ÇÒÊÇ±¾´°¿Ú´ò¿ªÊ±£¬½«¼ÆËãºó±£´æĞÅÏ¢ÔÚcookieÖĞ£¬ĞÂÒ³Ãæ¶ÁÈ¡cookie·¢ËÍÇëÇó
+				//çœŸæ­£çš„urlé“¾æ¥å¹¶ä¸”æ˜¯æœ¬çª—å£æ‰“å¼€æ—¶ï¼Œå°†è®¡ç®—åä¿å­˜ä¿¡æ¯åœ¨cookieä¸­ï¼Œæ–°é¡µé¢è¯»å–cookieå‘é€è¯·æ±‚
 				if(href.charAt(0) != '#' && (target == '' || target == '_self')) {
 					cookie = true;
 				}
 			}
-			//Ö»ÓĞaºÍinput±êÇ©²ÅÍ³¼Æ
+			//åªæœ‰aå’Œinputæ ‡ç­¾æ‰ç»Ÿè®¡
 			if(['A', 'INPUT'].indexOf(p.nodeName) > -1) {
 				var temp;
 				while(p && p != this) {
-					//µ±ÓĞidÊôĞÔÊ±¿ÉÖ±½Ó·µ»Ø
+					//å½“æœ‰idå±æ€§æ—¶å¯ç›´æ¥è¿”å›
 					temp = p.id;
 					if(temp) {
 						res.push('#' + temp);
 						break;
 					}
 					temp = getIndex(p);
-					//¾ø´ó¶àÊıÇé¿öÏÂÎ»ÖÃË÷Òı¶¼²»»á³¬¹ı32£¬Òò´Ë¼ÇÂ¼32½øÖÆ1Î»Êı×ã¹»£¬³¬¹ıµÄ»°Á½±ß²¹_
+					//ç»å¤§å¤šæ•°æƒ…å†µä¸‹ä½ç½®ç´¢å¼•éƒ½ä¸ä¼šè¶…è¿‡32ï¼Œå› æ­¤è®°å½•32è¿›åˆ¶1ä½æ•°è¶³å¤Ÿï¼Œè¶…è¿‡çš„è¯ä¸¤è¾¹è¡¥_
 					if(temp.length > 1) {
 						res.push('_' + temp + '_');
 					}
@@ -62,11 +62,11 @@
 						$.cookie(COOKIE, _cache.join('|'));
 					}
 					else {
-						//µ±»º´æ¹ı³¤Ê±Á¢¿Ì·¢ËÍ
+						//å½“ç¼“å­˜è¿‡é•¿æ—¶ç«‹åˆ»å‘é€
 						if(_cache.length > _max) {
 							request();
 						}
-						//·ñÔò¿ªÊ¼¼ÆÊ±
+						//å¦åˆ™å¼€å§‹è®¡æ—¶
 						else {
 							start();
 						}
@@ -74,7 +74,7 @@
 				}
 			}
 		});
-		//¶ÁÈ¡Ò³Ãæcookie£¬Èç¹ûÓĞÁ´½ÓÌø×ªµÄcookieÔò¿ªÊ¼¼ÆÊ±·¢ËÍ
+		//è¯»å–é¡µé¢cookieï¼Œå¦‚æœæœ‰é“¾æ¥è·³è½¬çš„cookieåˆ™å¼€å§‹è®¡æ—¶å‘é€
 		var c = $.cookie(COOKIE);
 		if(c) {
 			_cache.push(c);
@@ -91,7 +91,7 @@
 	function getIndex(node) {
 		var index = -1;
 		while(node) {
-			//Ö»¼ÆËãnode_element½Úµã£¬²¢ÇÒºöÂÔµôÒ»Ğ©ÎŞĞè¼ÆËãµÄ
+			//åªè®¡ç®—node_elementèŠ‚ç‚¹ï¼Œå¹¶ä¸”å¿½ç•¥æ‰ä¸€äº›æ— éœ€è®¡ç®—çš„
 			if(node.nodeType == 1 && ['SCRIPT', 'STYLE', 'OBJECT', 'EMBED'].indexOf(node.nodeName) == -1) {
 				index++;
 			}
@@ -104,20 +104,20 @@
 		_interval = interval;
 		_delay = delay;
 		_max = max;
-		//ÖØÉè¹ıºóÒªÖØĞÂ¼ÆÊ±
+		//é‡è®¾è¿‡åè¦é‡æ–°è®¡æ—¶
 		if(request) {
 			start();
 		}
 	};
 	function start() {
-		//ÏÈÇå³ıÔ­ÏÈµÄ¼ÆÊ±
+		//å…ˆæ¸…é™¤åŸå…ˆçš„è®¡æ—¶
 		if(_timeout) {
 			clearTimeout(_timeout);
 		}
 		_timeout = setTimeout(request, _delay);
 	};
 	function request() {
-		//ÓĞÊı¾İÊ±²Å»á·¢ËÍ
+		//æœ‰æ•°æ®æ—¶æ‰ä¼šå‘é€
 		if(_cache.length) {
 			$$.getRequest(_url, 'c=' + _cache.join('|'));
 			_cache = [];
@@ -125,11 +125,11 @@
 	};
 	$$.mix({
 		/**
-		 * @public Ò³ÃæÇøÓòµã»÷Í³¼Æ
-		 * @{string} Í³¼ÆÇëÇóurl
-		 * @{int} Í¬Ò»µã»÷¶àÉÙmsÄÚ½«ºöÂÔ
-		 * @{int} Í³¼Æ½«ÑÓ³Ù¶à¾Ã·¢ËÍ£¬ÒÔ±ã¶à¸öÁ¬ĞøÍ³¼ÆºÏ²¢
-		 * @{int} ºÏ²¢ÉÏÏŞ£¬µ½´ïºó½«Ö±½Ó·¢ËÍ
+		 * @public é¡µé¢åŒºåŸŸç‚¹å‡»ç»Ÿè®¡
+		 * @{string} ç»Ÿè®¡è¯·æ±‚url
+		 * @{int} åŒä¸€ç‚¹å‡»å¤šå°‘mså†…å°†å¿½ç•¥
+		 * @{int} ç»Ÿè®¡å°†å»¶è¿Ÿå¤šä¹…å‘é€ï¼Œä»¥ä¾¿å¤šä¸ªè¿ç»­ç»Ÿè®¡åˆå¹¶
+		 * @{int} åˆå¹¶ä¸Šé™ï¼Œåˆ°è¾¾åå°†ç›´æ¥å‘é€
 		 */
 		nodeClick: function(url, interval, delay, max) {
 			if(_cache) {

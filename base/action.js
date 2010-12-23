@@ -1,27 +1,27 @@
 (function() {
 
-	var action = {}; //¹ÜÀíaction£¬ÓÃÒÔ¶à¸öÒ³Ãæ¹²ÏíÒ»¸öjsÊ±Ö´ĞĞÀïÃæµÄ¶ÀÁ¢ÈÎÎñ
+	var action = {}; //ç®¡ç†actionï¼Œç”¨ä»¥å¤šä¸ªé¡µé¢å…±äº«ä¸€ä¸ªjsæ—¶æ‰§è¡Œé‡Œé¢çš„ç‹¬ç«‹ä»»åŠ¡
 
 	$$.mix({
 
 		/**
-		 * @public ¶¨Òå/Ö´ĞĞaction£¬ºÍdoÎŞÏÈºóË³Ğò
+		 * @public å®šä¹‰/æ‰§è¡Œactionï¼Œå’Œdoæ— å…ˆåé¡ºåº
 		 * @param {string} key
 		 * @param {func} func
-		 * @param {boolean} ÊÇ·ñ¸²¸ÇµôÒÑÓĞµÄaction£¬»¹ÊÇ×éºÏÆğÀ´£¬Ä¬ÈÏfalse
+		 * @param {boolean} æ˜¯å¦è¦†ç›–æ‰å·²æœ‰çš„actionï¼Œè¿˜æ˜¯ç»„åˆèµ·æ¥ï¼Œé»˜è®¤false
 		 */
 		action: function(key, func, overwrite) {
-			//Î´¶¨Òåaction»òÇ¿ÖÆ¸²¸ÇÊ±£¬´æÈë¶ÓÁĞÖĞµÈ´ıdoµÄµ÷ÓÃ
+			//æœªå®šä¹‰actionæˆ–å¼ºåˆ¶è¦†ç›–æ—¶ï¼Œå­˜å…¥é˜Ÿåˆ—ä¸­ç­‰å¾…doçš„è°ƒç”¨
 			if($.isUndefined(action[key]) || overwrite) {
 				action[key] = {
-					did: 0, //0±êÊ¶ÉĞÎ´µ÷ÓÃdo£¬1ÊÇdo¹ı
+					did: 0, //0æ ‡è¯†å°šæœªè°ƒç”¨doï¼Œ1æ˜¯doè¿‡
 					list: [func]
 				};
 			}
 			else {
-				//ÒÑ¶¨ÒåÔò·ÅÈë´Ëaction¶ÓÁĞ
+				//å·²å®šä¹‰åˆ™æ”¾å…¥æ­¤actioné˜Ÿåˆ—
 				action[key].list.push(func);
-				//ÌÈÈôÒÑ¾­do¹ı£¬Ö±½ÓÖ´ĞĞ
+				//å€˜è‹¥å·²ç»doè¿‡ï¼Œç›´æ¥æ‰§è¡Œ
 				if(action[key].did) {
 					func();
 				}
@@ -29,9 +29,9 @@
 		},
 		
 		/**
-		 * @public ¶¨Òå/Ö´ĞĞaction£¬ºÍactionÎŞÏÈºóË³Ğò
-		 * @param {string/array/hash} ĞèÒªdoµÄkey£¬Èç¹ûÊÇarrayÔòÊÇÒ»×ékey£¬hashÔòÊÇobjectµÄkey
-		 * @param {boolean} Èç¹ûÒÑ¾­do¹ı£¬ÔÙ´ÎdoÊÇ·ñÖØ¸´´ËactionÁĞ±í£¬Ä¬ÈÏfalse
+		 * @public å®šä¹‰/æ‰§è¡Œactionï¼Œå’Œactionæ— å…ˆåé¡ºåº
+		 * @param {string/array/hash} éœ€è¦doçš„keyï¼Œå¦‚æœæ˜¯arrayåˆ™æ˜¯ä¸€ç»„keyï¼Œhashåˆ™æ˜¯objectçš„key
+		 * @param {boolean} å¦‚æœå·²ç»doè¿‡ï¼Œå†æ¬¡doæ˜¯å¦é‡å¤æ­¤actionåˆ—è¡¨ï¼Œé»˜è®¤false
 		 */
 		does: function(key, repeat) {
 			if($.isArray(key)) {
@@ -41,7 +41,7 @@
 			}
 			else if($.isPlainObject(key)) {
 				this.keys(key).forEach(function(item) {
-					//hashÅäÖÃµÄÖµ±ØĞëÎªtrueÊ±²Å»áÖ´ĞĞ
+					//hashé…ç½®çš„å€¼å¿…é¡»ä¸ºtrueæ—¶æ‰ä¼šæ‰§è¡Œ
 					if(key[item]) {
 						$$.does(item, repeat);
 					}
@@ -49,17 +49,17 @@
 			}
 			else {
 				var act = action[key];
-				//cancelµôÁËÉèÎªnull£¬ÓµÓĞ×î¸ßÓÅÏÈ¼¶
+				//cancelæ‰äº†è®¾ä¸ºnullï¼Œæ‹¥æœ‰æœ€é«˜ä¼˜å…ˆçº§
 				if(act === null) {
 				}
-				//µ÷ÓÃÊ±²»´æÔÚ¶ÓÁĞËµÃ÷»¹Î´ÉùÃ÷action£¬½«´Ëaction³õÊ¼»¯²¢ÇÒdidÉèÎª1£¬ÈÃaction×Ô¶¯µ÷ÓÃ
+				//è°ƒç”¨æ—¶ä¸å­˜åœ¨é˜Ÿåˆ—è¯´æ˜è¿˜æœªå£°æ˜actionï¼Œå°†æ­¤actionåˆå§‹åŒ–å¹¶ä¸”didè®¾ä¸º1ï¼Œè®©actionè‡ªåŠ¨è°ƒç”¨
 				else if($.isUndefined(act)) {
 					action[key] = {
 						did: 1,
 						list: []
 					};
 				}
-				//ÒÑ¶¨Òåaction»òÕßÇ¿ÖÆÖ´ĞĞÊ±£¬±éÀúlist
+				//å·²å®šä¹‰actionæˆ–è€…å¼ºåˆ¶æ‰§è¡Œæ—¶ï¼Œéå†list
 				else if(!act.did || repeat) {
 					action[key].did = 1;
 					act.list.forEach(function(fn) {
@@ -70,8 +70,8 @@
 		},
 		
 		/**
-		 * @publicÈ¡ÏûÖ´ĞĞÒÑ¶¨ÒåµÄaction£¬±ØĞëÔÚ¶¨ÒåµÄ¶¯×÷ÕæÕıÖ´ĞĞÇ°Ö´ĞĞ£¬ÓµÓĞ×î¸ßÓÅÏÈ¼¶£¬È¡Ïûºó´Ë¶¯×÷ÓÀ²»Ö´ĞĞ
-		 * @param {string/array/hash} ĞèÒªcancelµÄkey£¬Èç¹ûÊÇarrayÔòÊÇÒ»×ékey£¬hashÔòÊÇobjectµÄkey
+		 * @publicå–æ¶ˆæ‰§è¡Œå·²å®šä¹‰çš„actionï¼Œå¿…é¡»åœ¨å®šä¹‰çš„åŠ¨ä½œçœŸæ­£æ‰§è¡Œå‰æ‰§è¡Œï¼Œæ‹¥æœ‰æœ€é«˜ä¼˜å…ˆçº§ï¼Œå–æ¶ˆåæ­¤åŠ¨ä½œæ°¸ä¸æ‰§è¡Œ
+		 * @param {string/array/hash} éœ€è¦cancelçš„keyï¼Œå¦‚æœæ˜¯arrayåˆ™æ˜¯ä¸€ç»„keyï¼Œhashåˆ™æ˜¯objectçš„key
 		 */
 		cancel: function(key) {
 			var list = [];
@@ -86,7 +86,7 @@
 			else {
 				list.push(key);
 			}
-			//ÉèÎªnullÊ¹µÃºóĞøÖĞÎŞÂÛdoes»¹ÊÇaction¶¼²»ÔÙÖ´ĞĞ
+			//è®¾ä¸ºnullä½¿å¾—åç»­ä¸­æ— è®ºdoesè¿˜æ˜¯actionéƒ½ä¸å†æ‰§è¡Œ
 			list.forEach(function(item) {
 				action[item] = null;
 			});

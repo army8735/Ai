@@ -1,9 +1,9 @@
 $$.mix({
 	/**
-	 * @public Éú³ÉËæ»úÕûÊı
-	 * @note ×îĞ¡Îª0
-	 * @param {number} min,maxÊÇËæ»úÊıµÄ·¶Î§£¬µ±Ö»ÓĞÒ»¸ö²ÎÊıÊ±£¬minÄ¬ÈÏÎª0¡£µ±Ã»ÓĞ²ÎÊıÊ±£¬Ä¬ÈÏMath.random()µÄÕûÊı
-	 * @return {int} ·µ»Ø´óÓÚ»òµÈÓÚ0£¬Ğ¡ÓÚ·¶Î§µÄÕûÊı
+	 * @public ç”Ÿæˆéšæœºæ•´æ•°
+	 * @note æœ€å°ä¸º0
+	 * @param {number} min,maxæ˜¯éšæœºæ•°çš„èŒƒå›´ï¼Œå½“åªæœ‰ä¸€ä¸ªå‚æ•°æ—¶ï¼Œminé»˜è®¤ä¸º0ã€‚å½“æ²¡æœ‰å‚æ•°æ—¶ï¼Œé»˜è®¤Math.random()çš„æ•´æ•°
+	 * @return {int} è¿”å›å¤§äºæˆ–ç­‰äº0ï¼Œå°äºèŒƒå›´çš„æ•´æ•°
 	 */
 	rand: function(min, max) {
 		if($.isUndefined(min)) {
@@ -17,8 +17,8 @@ $$.mix({
 	},
 
 	/**
-	 * @public È¡×î´óÖµ
-	 * @note ½öÏŞÊı×Ö
+	 * @public å–æœ€å¤§å€¼
+	 * @note ä»…é™æ•°å­—
 	 */
 	max: function() {
 		var args = arguments,
@@ -31,8 +31,8 @@ $$.mix({
 	},
 
 	/**
-	 * @public È¡×îĞ¡Öµ
-	 * @note ½öÏŞÊı×Ö
+	 * @public å–æœ€å°å€¼
+	 * @note ä»…é™æ•°å­—
 	 */
 	min: function() {
 		var args = arguments,
@@ -45,8 +45,8 @@ $$.mix({
 	},
 	
 	/**
-	 * @public html×ªÒå
-	 * @param {string} ĞèÒª×ªÒåµÄ×Ö·û´®
+	 * @public htmlè½¬ä¹‰
+	 * @param {string} éœ€è¦è½¬ä¹‰çš„å­—ç¬¦ä¸²
 	 */
 	escape: function(str){
 		var xmlchar = {
@@ -65,18 +65,18 @@ $$.mix({
 	},
 	
 	/**
-	 * @public È¡×Ö·û´®µÄ×Ö½Ú³¤¶È
-	 * @param {string} ×Ö·û´®
+	 * @public å–å­—ç¬¦ä¸²çš„å­—èŠ‚é•¿åº¦
+	 * @param {string} å­—ç¬¦ä¸²
 	 */
 	byteLen: function(str) {
 		return str.replace(/([^\x00-\xff])/g, '$1 ').length;
 	},
 
 	/**
-	 * @public °´×Ö½Ú³¤¶È½ØÈ¡×Ö·û´®
-	 * @param {string} strÊÇ°üº¬ÖĞÓ¢ÎÄµÄ×Ö·û´®
-	 * @param {int} limitÊÇ³¤¶ÈÏŞÖÆ£¨°´Ó¢ÎÄ×Ö·ûµÄ³¤¶È¼ÆËã£©
-	 * @return {string} ·µ»Ø½ØÈ¡ºóµÄ×Ö·û´®,Ä¬ÈÏÄ©Î²´øÓĞ'...'
+	 * @public æŒ‰å­—èŠ‚é•¿åº¦æˆªå–å­—ç¬¦ä¸²
+	 * @param {string} stræ˜¯åŒ…å«ä¸­è‹±æ–‡çš„å­—ç¬¦ä¸²
+	 * @param {int} limitæ˜¯é•¿åº¦é™åˆ¶ï¼ˆæŒ‰è‹±æ–‡å­—ç¬¦çš„é•¿åº¦è®¡ç®—ï¼‰
+	 * @return {string} è¿”å›æˆªå–åçš„å­—ç¬¦ä¸²,é»˜è®¤æœ«å°¾å¸¦æœ‰'...'
 	 */
 	substr: function(str, limit){
 		var sub = str.substr(0, limit).replace(/([^\x00-\xff])/g, '$1 ').substr(0, limit).replace(/([^\x00-\xff])\s/g, '$1');
@@ -84,20 +84,20 @@ $$.mix({
 	},
 
 	/**
-	 * @public ×Ö·û´®ÊÇ·ñÒÔÖ¸¶¨sub½áÎ²
-	 * @param {string} strĞèÒªÈ·¶¨µÄ×Ö·û´®
-	 * @return {string} ½áÎ²
+	 * @public å­—ç¬¦ä¸²æ˜¯å¦ä»¥æŒ‡å®šsubç»“å°¾
+	 * @param {string} stréœ€è¦ç¡®å®šçš„å­—ç¬¦ä¸²
+	 * @return {string} ç»“å°¾
 	 */
 	endWith: function(str, sub){
 		return str.lastIndexOf(sub) == str.length - sub.length;
 	},
 
 	/**
-	 * @public °ÑJSÄ£°å×ª»»³É×îÖÕµÄhtml
-	 * @note Ä£°åÖĞµÄ±äÁ¿¸ñÊ½£º<%=xxx%>
-	 * @param {string} tplÊÇÄ£°åÎÄ±¾
-	 * @param {object} opÊÇÄ£°åÖĞµÄ±äÁ¿
-	 * @return {string} ·µ»Ø¿ÉÊ¹ÓÃµÄhtml
+	 * @public æŠŠJSæ¨¡æ¿è½¬æ¢æˆæœ€ç»ˆçš„html
+	 * @note æ¨¡æ¿ä¸­çš„å˜é‡æ ¼å¼ï¼š<%=xxx%>
+	 * @param {string} tplæ˜¯æ¨¡æ¿æ–‡æœ¬
+	 * @param {object} opæ˜¯æ¨¡æ¿ä¸­çš„å˜é‡
+	 * @return {string} è¿”å›å¯ä½¿ç”¨çš„html
 	 */
 	render: function(tpl, op){
 		op = op || {};
@@ -107,10 +107,10 @@ $$.mix({
 	},
 	
 	/**
-	 * @public °ÑÎÄ±¾¸´ÖÆµ½¼ôÌù°å
-	 * @note Ä¿Ç°Ö»Ö§³Öie
-	 * @param {string} urlÊÇÎÄ±¾ÄÚÈİ
-	 * @param {func} succÊÇ»Øµ÷º¯Êı£¬²ÎÊıÊÇÊÇ·ñ³É¹¦
+	 * @public æŠŠæ–‡æœ¬å¤åˆ¶åˆ°å‰ªè´´æ¿
+	 * @note ç›®å‰åªæ”¯æŒie
+	 * @param {string} urlæ˜¯æ–‡æœ¬å†…å®¹
+	 * @param {func} succæ˜¯å›è°ƒå‡½æ•°ï¼Œå‚æ•°æ˜¯æ˜¯å¦æˆåŠŸ
 	 */
 	copyToClip : function(url, cb){
 		cb = cb || function(){};

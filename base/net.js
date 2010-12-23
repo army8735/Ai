@@ -4,9 +4,9 @@
 	
 	$$.mix({
 		/**
-		 * @public Òì²½¼ÓÔØjsÎÄ¼ş·½·¨
-		 * @param {string} jsµÄurl
-		 * @param {object} Ñ¡Ïî´«ÈëcharsetºÍcallback
+		 * @public å¼‚æ­¥åŠ è½½jsæ–‡ä»¶æ–¹æ³•
+		 * @param {string} jsçš„url
+		 * @param {object} é€‰é¡¹ä¼ å…¥charsetå’Œcallback
 		 */
 		getScript: function(url, op) {
 			var s = document.createElement('script'),
@@ -30,7 +30,7 @@
 			s.onload = s.onreadystatechange = function(){
 				if (!done && (!this.readyState || ['loaded', 'complete'].indexOf(this.readyState) > -1)) {
 					done = true;
-					//·ÀÖ¹ieÄÚ´æĞ¹Â©
+					//é˜²æ­¢ieå†…å­˜æ³„æ¼
 					s.onload = s.onreadystatechange = null;
 					head.removeChild(s);
 					if(op.callback) {
@@ -42,8 +42,8 @@
 		},
 
 		/**
-		 * @public Òì²½¼ÓÔØcssÎÄ¼ş·½·¨
-		 * @param {string} cssµÄurl
+		 * @public å¼‚æ­¥åŠ è½½cssæ–‡ä»¶æ–¹æ³•
+		 * @param {string} cssçš„url
 		 * @param {func} callback
 		 */
 		getCss: function(url, cb) {
@@ -53,7 +53,7 @@
 				success: function(data) {
 					var s = document.createElement('style');
 					s.type = 'text/css';
-					//ieºÍÆäËüÒª·Ö¿ª¶Ô´ı
+					//ieå’Œå…¶å®ƒè¦åˆ†å¼€å¯¹å¾…
 					if(s.styleSheet) {
 						s.styleSheet.cssText = data;
 					}
@@ -69,29 +69,29 @@
 		},
 		
 		/**
-		 * @public ¶ÔÈÎÒâÒ»¸öurl·¢ËÍGETÇëÇó£¬ºöÂÔ·µ»ØµÄÄÚÈİ
-		 * @note Ö÷ÒªÓÃÓÚ·¢ËÍÍ³¼ÆÇëÇó
-		 * @param {string} urlÊÇÇëÇóµÄµØÖ·
-		 * @param {string} ¿ÉÑ¡paramÊÇurlÀïµÄquery²ÎÊı£¬¿ÉÒÔĞ´³É¶ÔÏóµÄĞÎÊ½£¬Ò²¿ÉÒÔÓÃ&Á¬³É×Ö·û´®
+		 * @public å¯¹ä»»æ„ä¸€ä¸ªurlå‘é€GETè¯·æ±‚ï¼Œå¿½ç•¥è¿”å›çš„å†…å®¹
+		 * @note ä¸»è¦ç”¨äºå‘é€ç»Ÿè®¡è¯·æ±‚
+		 * @param {string} urlæ˜¯è¯·æ±‚çš„åœ°å€
+		 * @param {string} å¯é€‰paramæ˜¯urlé‡Œçš„queryå‚æ•°ï¼Œå¯ä»¥å†™æˆå¯¹è±¡çš„å½¢å¼ï¼Œä¹Ÿå¯ä»¥ç”¨&è¿æˆå­—ç¬¦ä¸²
 		 */
 		getRequest: function(url, params){
 			var img = new Image();
-			//×èÖ¹IEÏÂµÄ×Ô¶¯À¬»ø»ØÊÕÒıÆğµÄÇëÇóÎ´·¢³ö×´¿ö
+			//é˜»æ­¢IEä¸‹çš„è‡ªåŠ¨åƒåœ¾å›æ”¶å¼•èµ·çš„è¯·æ±‚æœªå‘å‡ºçŠ¶å†µ
 			img.onload = function(){};
 			img.src = !params ? url : [url, /\?/.test(url) ? '&' : '?', $.isString(params) ? params : $.param(params)].join('');
 		},
 		
 		/**
-		 * @public ´ò¿ªurl
-		 * @param {string} ´ò¿ªµÄµØÖ·
-		 * @param {string} ĞÂ¿ª»òÕßÖ¸¶¨´°¿Ú¶ÔÏóÃû³Æ
+		 * @public æ‰“å¼€url
+		 * @param {string} æ‰“å¼€çš„åœ°å€
+		 * @param {string} æ–°å¼€æˆ–è€…æŒ‡å®šçª—å£å¯¹è±¡åç§°
 		 */
 		openURL: function(url, target) {
-			//×Ô¶¯Ôö¼Óhttp://¿ªÍ·
+			//è‡ªåŠ¨å¢åŠ http://å¼€å¤´
 			if(url.indexOf('http') != 0) {
 				url = 'http://' + url
 			}
-			//ieºÍÆäËüä¯ÀÀÆ÷µÄÇø±ğ
+			//ieå’Œå…¶å®ƒæµè§ˆå™¨çš„åŒºåˆ«
 			if (!$.browser.msie) {
 				if ('_blank' == target)
 					window.open(url);

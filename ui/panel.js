@@ -2,7 +2,7 @@
 	var panel;
 	$$.mix({
 		panel: function(s) {
-			//已生成过panel，并且未调用remove方法将其彻底移除，则显示原先隐藏起来的panel
+			//宸茬敓鎴愯繃panel锛屽苟涓旀湭璋冪敤remove鏂规硶灏嗗叾褰诲簳绉婚櫎锛屽垯鏄剧ず鍘熷厛闅愯棌璧锋潵鐨刾anel
 			if(panel) {
 				panel.open();
 				return panel;

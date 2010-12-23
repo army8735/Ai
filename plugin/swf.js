@@ -32,7 +32,7 @@
 		return ver;
 	}
 	function createSwf(attrs, params, node) {
-		//ieÏÂĞè¿¼ÂÇÔ­ÓĞ½Úµã¾ÍÊÇ¸öobject£¨flash£©µÄÇé¿ö£¬Ç¿ĞĞ¸²¸Ç»áÖÂÊ¹flashÎŞ·¨Õı³£²¥·Å¡£ÒÆ³ıÔ­objectÔÙ²åÈëĞÂdiv½Úµã£¬ÔÙ¶¯Ì¬²åÈëflashµ½ĞÂdiv½ÚµãÖĞ¡£Ò²¿É·ÀÖ¹ÄÚ´æĞ¹Â©
+		//ieä¸‹éœ€è€ƒè™‘åŸæœ‰èŠ‚ç‚¹å°±æ˜¯ä¸ªobjectï¼ˆflashï¼‰çš„æƒ…å†µï¼Œå¼ºè¡Œè¦†ç›–ä¼šè‡´ä½¿flashæ— æ³•æ­£å¸¸æ’­æ”¾ã€‚ç§»é™¤åŸobjectå†æ’å…¥æ–°divèŠ‚ç‚¹ï¼Œå†åŠ¨æ€æ’å…¥flashåˆ°æ–°divèŠ‚ç‚¹ä¸­ã€‚ä¹Ÿå¯é˜²æ­¢å†…å­˜æ³„æ¼
 		if(node.nodeName == 'OBJECT') {
 			var newDiv = document.createElement('div');
 			node.parentNode.insertBefore(newDiv, node);
@@ -56,7 +56,7 @@
 		var att = '',
 			par = '';
 		for(var i in attrs) {
-			if(attrs[i] != Object.prototype[i]) { //Ğè¹ıÂËµôÒ»Ğ©Ç±ÔÚÒòËØÎªprototypeÌí¼ÓÊôĞÔ
+			if(attrs[i] != Object.prototype[i]) { //éœ€è¿‡æ»¤æ‰ä¸€äº›æ½œåœ¨å› ç´ ä¸ºprototypeæ·»åŠ å±æ€§
 				if(i.toLowerCase() == 'data') {
 					params.movie = attrs[i];
 				}
@@ -69,7 +69,7 @@
 			}
 		}
 		for(var j in params) {
-			if(params[j] != Object.prototype[j]) { //Í¬ÉÏ
+			if(params[j] != Object.prototype[j]) { //åŒä¸Š
 				par += '<param name="' + j + '" value="' + params[j] + '"/>';
 			}
 		}
@@ -79,17 +79,17 @@
 		var o = document.createElement('object');
 		o.setAttribute('type', FLASH_MIME_TYPE);
 		for(var m in attrs) {
-			if(attrs[m] != Object.prototype[m]) { //Í¬ÉÏ
+			if(attrs[m] != Object.prototype[m]) { //åŒä¸Š
 				if(m.toLowerCase() == 'class') {
 					o.setAttribute('class', attrs[m]);
 				}
-				else if(m.toLowerCase() != "classid") { //¹ıÂËµôIEÌØÓĞÊôĞÔ
+				else if(m.toLowerCase() != "classid") { //è¿‡æ»¤æ‰IEç‰¹æœ‰å±æ€§
 					o.setAttribute(m, attrs[m]);
 				}
 			}
 		}
 		for(var n in params) {
-			if(params[n] != Object.prototype[n] && n.toLowerCase() != 'movie') { //Í¬ÉÏ
+			if(params[n] != Object.prototype[n] && n.toLowerCase() != 'movie') { //åŒä¸Š
 				createObjParam(o, n, params[n]);
 			}
 		}
@@ -103,7 +103,7 @@
 	}
 
 	function removeObject(obj, cb) {
-		//ieÏÂĞèÒÆ³ıobjectÉÏµÄfunction£¬ÒÔÃâÄÚ´æĞ¹Â©¡£ÒÆ³ıĞèÒªÔÚreadyStateÎª4ºó½øĞĞ£¬ÎŞ·¨ÕìÌı£¬Ö»ÄÜÓÃ¶¨Ê±Æ÷
+		//ieä¸‹éœ€ç§»é™¤objectä¸Šçš„functionï¼Œä»¥å…å†…å­˜æ³„æ¼ã€‚ç§»é™¤éœ€è¦åœ¨readyStateä¸º4åè¿›è¡Œï¼Œæ— æ³•ä¾¦å¬ï¼Œåªèƒ½ç”¨å®šæ—¶å™¨
 		if($.browser.msie) {
 			removeObject = removeObjectInIe;
 		}
@@ -138,35 +138,35 @@
 
 	$$.mix({
 		/**
-		 * @public »ñÈ¡flash¶ÔÏó
-		 * @param {string} ¶ÔÏóid
+		 * @public è·å–flashå¯¹è±¡
+		 * @param {string} å¯¹è±¡id
 		 */
 		getItem: function(id){
 			return $.browser.msie ? window[id] : document[id];
 		},
 		
 		/**
-		 * @public ¸ÄĞ´swfobjectÉèÖÃflash¶ÔÏó
-		 * @param {string} swf¶ÔÏóµÄurl
-		 * @param {string} ¶¯Ì¬Ğ´ÈëµÄnodeµÄid
+		 * @public æ”¹å†™swfobjectè®¾ç½®flashå¯¹è±¡
+		 * @param {string} swfå¯¹è±¡çš„url
+		 * @param {string} åŠ¨æ€å†™å…¥çš„nodeçš„id
 		 * @param {int} width
 		 * @param {int} height
 		 * @param {object} flashvars
-		 * @param {object} param±êÇ©²ÎÊı
-		 * @param {object} object±êÇ©²ÎÊı
+		 * @param {object} paramæ ‡ç­¾å‚æ•°
+		 * @param {object} objectæ ‡ç­¾å‚æ•°
 		 */
 		setItem: function(url, id, width, height, flashvars, params, attrs) {
 			var node = document.getElementById(id),
 				p = {},
 				a = {};
 			if(node) {
-				//½«url¡¢width¡¢height»ìÈëattrsÖĞ£¬·ÀÖ¹Ô­ÅäÖÃ²ÎÊı±»ĞŞ¸Ä£ºÕâÊÇ¸öºÜÒş±ÎµÄÒıÓÃĞŞ¸Äbug
+				//å°†urlã€widthã€heightæ··å…¥attrsä¸­ï¼Œé˜²æ­¢åŸé…ç½®å‚æ•°è¢«ä¿®æ”¹ï¼šè¿™æ˜¯ä¸ªå¾ˆéšè”½çš„å¼•ç”¨ä¿®æ”¹bug
 				$.extend(true, a, attrs, {
 					data: url,
 					width: width + '',
 					height: height + ''
 				});
-				//Ã»ÓĞÉèÖÃidÔò¼Ì³ĞÔ­ÓĞdomÔªËØµÄid
+				//æ²¡æœ‰è®¾ç½®idåˆ™ç»§æ‰¿åŸæœ‰domå…ƒç´ çš„id
 				if(!a.id) {
 					a.id = id;
 				}
@@ -178,9 +178,9 @@
 		},
 		
 		/**
-		 * @public ÒÆ³ıflash¶ÔÏó
-		 * @param {string/object} ¶ÔÏóid»ò¶ÔÏó±¾Éí
-		 * @param {func} ÒÆ³ıºóµÄ»Øµ÷º¯Êı
+		 * @public ç§»é™¤flashå¯¹è±¡
+		 * @param {string/object} å¯¹è±¡idæˆ–å¯¹è±¡æœ¬èº«
+		 * @param {func} ç§»é™¤åçš„å›è°ƒå‡½æ•°
 		 */
 		removeItem: function(id, cb) {
 			var obj = $.isString(id) ? document.getElementById(id) : id;
@@ -190,8 +190,8 @@
 		},
 
 		/**
-		 * @public »ñÈ¡flash°æ±¾£¬µ¥Àı±Õ°ü
-		 * @return {array} 3Î»³¤¶ÈµÄ°æ±¾ºÅ
+		 * @public è·å–flashç‰ˆæœ¬ï¼Œå•ä¾‹é—­åŒ…
+		 * @return {array} 3ä½é•¿åº¦çš„ç‰ˆæœ¬å·
 		 */
 		version: function() {
 			var version = getVersion();

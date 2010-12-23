@@ -2,32 +2,32 @@ $$.mix({
 	charset: document.charset || document['characterSet'] || 'gb2312',
 
 	/**
-	 * @public ÊÇ·ñÊÇ±ÕºÏ±êÇ©
+	 * @public æ˜¯å¦æ˜¯é—­åˆæ ‡ç­¾
 	 */
 	isCloseTag: function(tagName){
 		return !!({area:1,base:1,col:1,hr:1,img:1,br:1,input:1,link:1,meta:1,param:1})[tagName.toLowerCase()];
 	},
 
 	/**
-	 * @public ¼Ì³ĞjqµÄbrowser·½·¨£¬²¢Ôö¼Ó¼¸¸öÌØĞÔ
+	 * @public ç»§æ‰¿jqçš„browseræ–¹æ³•ï¼Œå¹¶å¢åŠ å‡ ä¸ªç‰¹æ€§
 	 */
 	browser: (function() {
 		var userAgent = navigator.userAgent;
 		return $.extend({
-			// ÊÇ·ñÎªmobile safariä¯ÀÀÆ÷£¨iphone, ipod touch, ipad£©
+			// æ˜¯å¦ä¸ºmobile safariæµè§ˆå™¨ï¼ˆiphone, ipod touch, ipadï¼‰
 			mobileSafari: $.browser.safari && / Mobile\//.test(userAgent),
 			html5: function(){
 				var input = document.createElement('input'),
 					video = document.createElement('video'),
 					history = window.history;
 				return {
-					// Ö§³Övideo±êÇ©£¬Ö§³Öh264
+					// æ”¯æŒvideoæ ‡ç­¾ï¼Œæ”¯æŒh264
 					'h264': !!(video.canPlayType && video.canPlayType('video/mp4; codecs="avc1.42E01E, mp4a.40.2"').replace(/no/, '')),
 					'history': !!(history && history.pushState && history.popState),
 					'placeholder': 'placeholder' in input
 				};
 			},
-			//ÓïÑÔÌØĞÔ
+			//è¯­è¨€ç‰¹æ€§
 			lang: (navigator.language || navigator.systemLanguage).toLowerCase(),
 			iOS: (this.mobileSafari ? (userAgent.match(/(ipad|iphone|ipod)/) || [])[0] : false),
 			se360: /360SE/.test(userAgent),
@@ -39,7 +39,7 @@ $$.mix({
 	})(),
 	
 	/**
-	 * @public ²Ù×÷ÏµÍ³
+	 * @public æ“ä½œç³»ç»Ÿ
 	 */
 	system: (function() {
 		var p = navigator.platform.toLowerCase();

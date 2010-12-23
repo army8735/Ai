@@ -1,6 +1,6 @@
 (function() {
 
-	//²¹³äjqueryÖĞÒ»Ğ©ÒÅÂ©µÄ·½·¨
+	//è¡¥å……jqueryä¸­ä¸€äº›é—æ¼çš„æ–¹æ³•
 	var toString = Object.prototype.toString;
 	$.isUndefined = function(o) {
 		return o === undefined;
@@ -23,21 +23,21 @@
 		'blur': 'focusout'
 	};
 	function eventProxy(node, event, op) {
-		//focusºÍblurÎŞ·¨Ã°ÅİÒª×ª»»
+		//focuså’Œbluræ— æ³•å†’æ³¡è¦è½¬æ¢
 		event = proxy[event] ? proxy[event] : event;
-		//Î´¶¨ÒåopÎªÈ¡ÏûÊÂ¼ş´úÀí
+		//æœªå®šä¹‰opä¸ºå–æ¶ˆäº‹ä»¶ä»£ç†
 		if($.isUndefined(op)) {
 			$(node).unbind(event);
 		}
 		else {
-			//opµÄ¼ü×ªÎªarray¼Ó¿ìËÙ¶È
+			//opçš„é”®è½¬ä¸ºarrayåŠ å¿«é€Ÿåº¦
 			var match = $$.keys(op),
 				length = match.length;
 			$(node).bind(event, function(e) {
 				var target = e.target,
 					proxyResult = false;
 				for(var i = 0; i < length; i++) {
-					//ÓĞÃüÖĞÔòÖĞ¶Ï£¬²»Ö§³Ö¶àÃüÖĞ£¬»áÒıÆğÆçÒå
+					//æœ‰å‘½ä¸­åˆ™ä¸­æ–­ï¼Œä¸æ”¯æŒå¤šå‘½ä¸­ï¼Œä¼šå¼•èµ·æ­§ä¹‰
 					if(handler(match[i], function() { proxyResult = !!op[match[i]](); }, target, node)) {
 						break;
 					}
@@ -47,21 +47,21 @@
 		}
 	}
 	function handler(selector, cb, target, top) {
-		//ÒÔidÀ´Çı¶¯ÊÂ¼ş´úÀí£¬Ö±½ÓÅĞ¶Ïid¼´¿É
+		//ä»¥idæ¥é©±åŠ¨äº‹ä»¶ä»£ç†ï¼Œç›´æ¥åˆ¤æ–­idå³å¯
 		if(selector.charAt(0) == '#') {
 			if(selector == target.id) {
 				cb();
 				return true;
 			}
 		}
-		//½öÒÔ±êÇ©ÃûÀ´Çı¶¯ÊÂ¼ş´úÀí£¬Ö±½ÓÅĞ¶ÏtagName¼´¿É
+		//ä»…ä»¥æ ‡ç­¾åæ¥é©±åŠ¨äº‹ä»¶ä»£ç†ï¼Œç›´æ¥åˆ¤æ–­tagNameå³å¯
 		else if(/^[a-z]+$/i.test(selector)) {
 			if(selector.toUpperCase() == target.nodeName) {
 				cb();
 				return true;
 			}
 		}
-		//½öÒÔÑùÊ½ÃûÀ´Çı¶¯ÊÂ¼ş´úÀí£¨¿ªÍ·¿ÉÎªtagName£©£¬Ö±½ÓÅĞ¶ÏclassName¼´¿É
+		//ä»…ä»¥æ ·å¼åæ¥é©±åŠ¨äº‹ä»¶ä»£ç†ï¼ˆå¼€å¤´å¯ä¸ºtagNameï¼‰ï¼Œç›´æ¥åˆ¤æ–­classNameå³å¯
 		else if(/^[a-z.]{2,}$/i.test(selector)) {
 			var cn = selector.split('.'),
 				fit = true;
@@ -72,7 +72,7 @@
 				}
 			}
 			target = $(target);
-			//ËùÓĞµÄclassNameÈ«²¿·ûºÏ²Å¿É
+			//æ‰€æœ‰çš„classNameå…¨éƒ¨ç¬¦åˆæ‰å¯
 			cn.forEach(function(item) {
 				if(!target.hasClass(item)) {
 					fit = false;
@@ -84,7 +84,7 @@
 				return true;
 			}
 		}
-		//¸ü¸´ÔÓµÄÇé¿öÊ¹ÓÃÑ¡ÔñÆ÷£¬°üÀ¨²ã¼¶¹ØÏµÈ«²¿Ö§³Ö£¬Ê¹ÓÃÖĞÒª¾¡Á¿±ÜÃâÕâÖÖ×´¿ö
+		//æ›´å¤æ‚çš„æƒ…å†µä½¿ç”¨é€‰æ‹©å™¨ï¼ŒåŒ…æ‹¬å±‚çº§å…³ç³»å…¨éƒ¨æ”¯æŒï¼Œä½¿ç”¨ä¸­è¦å°½é‡é¿å…è¿™ç§çŠ¶å†µ
 		else {
 			var container,
 				res = false;
@@ -108,9 +108,9 @@
 
 	$.fn.extend({
 		/**
-		 * @public ÊÂ¼ş´úÀí
-		 * @param {string/array} ĞèÒª´úÀíµÄÊÂ¼şÀàĞÍ£¬Êı×éÔòÊÇ¶à¸ö
-		 * @param {object} ÒÔkey/valueĞÎÊ½ÉèÖÃ´úÀíµÄÕìÌıºÍcallback
+		 * @public äº‹ä»¶ä»£ç†
+		 * @param {string/array} éœ€è¦ä»£ç†çš„äº‹ä»¶ç±»å‹ï¼Œæ•°ç»„åˆ™æ˜¯å¤šä¸ª
+		 * @param {object} ä»¥key/valueå½¢å¼è®¾ç½®ä»£ç†çš„ä¾¦å¬å’Œcallback
 		 */
 		'eventProxy': function(event, op) {
 			var self = this;
@@ -127,19 +127,19 @@
 		},
 		
 		/**
-		 * @public ×éºÏ¼ü
-		 * @param {array} ĞèÕìÌıµÄ×éºÏ¼ücode
+		 * @public ç»„åˆé”®
+		 * @param {array} éœ€ä¾¦å¬çš„ç»„åˆé”®code
 		 * @param {func} callback
 		 */
 		'comboKey': function(keyCodes, cb) {
 			var length = keyCodes.length,
 				count = 0,
 				keyHash = {};
-			//×ª»»hashÅĞ¶ÏÔö¿ìËÙ¶È
+			//è½¬æ¢hashåˆ¤æ–­å¢å¿«é€Ÿåº¦
 			keyCodes.forEach(function(item) {
 				keyHash[item] = 1;
 			});
-			//ÓĞcallbackÎªÕìÌı£¬·ñÔòÎªÒÆ³ı
+			//æœ‰callbackä¸ºä¾¦å¬ï¼Œå¦åˆ™ä¸ºç§»é™¤
 			if(cb) {
 				this.bind('keydown', keyDown);
 				this.bind('keyUp', keyUp);
@@ -211,10 +211,10 @@
 
 var $$ = {
 	/**
-	 * @public ÎªparentÖ¸¶¨µÄÃüÃû¿Õ¼ä
-	 * @param {string} ÃüÃû¿Õ¼ä£¬Èçcom.x.y.z
-	 * @param {object} Ö¸¶¨µÄ±»À©Õ¹ÃüÃû¿Õ¼ä¸¸²ã
-	 * @return {object} ·µ»Ø±»À©Õ¹µÄÃüÃû¿Õ¼ä¶ÔÏó£¬Ê§°ÜÎªfalse
+	 * @public ä¸ºparentæŒ‡å®šçš„å‘½åç©ºé—´
+	 * @param {string} å‘½åç©ºé—´ï¼Œå¦‚com.x.y.z
+	 * @param {object} æŒ‡å®šçš„è¢«æ‰©å±•å‘½åç©ºé—´çˆ¶å±‚
+	 * @return {object} è¿”å›è¢«æ‰©å±•çš„å‘½åç©ºé—´å¯¹è±¡ï¼Œå¤±è´¥ä¸ºfalse
 	 */
 	ns: function(namespace, parent){
 		var i,
@@ -225,7 +225,7 @@ var $$ = {
 				p[i] = {};
 			}
 			else if(!$.isPlainObject(p[i])) {
-				return false; //nsÊ§°ÜÊ±·µ»Øfalse£¬Ê¹ÓÃÊ±×îºÃifÅĞ¶ÏÏÂÀ´½øĞĞ¼ì²â
+				return false; //nså¤±è´¥æ—¶è¿”å›falseï¼Œä½¿ç”¨æ—¶æœ€å¥½ifåˆ¤æ–­ä¸‹æ¥è¿›è¡Œæ£€æµ‹
 			}
 			p = p[i];
 		}
@@ -233,9 +233,9 @@ var $$ = {
 	},
 
 	/**
-	 * @public ½«²ÎÊıÖĞµÄ¶ÔÏóÀ©Õ¹µ½±¾ÉíÉÏ£¬$.extendµÄ¼òĞ´·â×°
-	 * @param {object} ĞèÀ©Õ¹µÄ¶ÔÏó
-	 * @param {string} ĞèÒªÀ©Õ¹µ½±¾ÉíµÄÃüÃû¿Õ¼ä£¬ºöÂÔÎª±¾Éí
+	 * @public å°†å‚æ•°ä¸­çš„å¯¹è±¡æ‰©å±•åˆ°æœ¬èº«ä¸Šï¼Œ$.extendçš„ç®€å†™å°è£…
+	 * @param {object} éœ€æ‰©å±•çš„å¯¹è±¡
+	 * @param {string} éœ€è¦æ‰©å±•åˆ°æœ¬èº«çš„å‘½åç©ºé—´ï¼Œå¿½ç•¥ä¸ºæœ¬èº«
 	 */
 	mix: function(object, ns) {
 		var p = (ns ? this.ns(ns, this) : this);
@@ -243,7 +243,7 @@ var $$ = {
 	},
 
 	/**
-	 * @public È¡³öÒ»¸ö¶ÔÏóÖĞµÄËùÓĞkey
+	 * @public å–å‡ºä¸€ä¸ªå¯¹è±¡ä¸­çš„æ‰€æœ‰key
 	 */
 	keys: function(obj) {
 		var keys = [];
@@ -257,8 +257,8 @@ var $$ = {
 	},
 
 	/**
-	 * @public È¥µôÊı×éÀïÖØ¸´³ÉÔ±
-	 * @note Ö§³ÖËùÓĞ³ÉÔ±ÀàĞÍ£¬°üÀ¨dom£¬¶ÔÏó£¬Êı×é£¬²¼¶û£¬nullµÈ£¬¸´ºÏÀàĞÍ±È½ÏÒıÓÃ
+	 * @public å»æ‰æ•°ç»„é‡Œé‡å¤æˆå‘˜
+	 * @note æ”¯æŒæ‰€æœ‰æˆå‘˜ç±»å‹ï¼ŒåŒ…æ‹¬domï¼Œå¯¹è±¡ï¼Œæ•°ç»„ï¼Œå¸ƒå°”ï¼Œnullç­‰ï¼Œå¤åˆç±»å‹æ¯”è¾ƒå¼•ç”¨
 	 */
 	unique: function(array) {
 		var res = [], complex = [], record = {}, it, tmp, id = 0,
@@ -277,7 +277,7 @@ var $$ = {
 				record[tmp] = true;
 			}
 		});
-		//´æÔÚ¸´ºÏ¶ÔÏó£¬Ê¹ÓÃindexOf±È½ÏÒıÓÃ
+		//å­˜åœ¨å¤åˆå¯¹è±¡ï¼Œä½¿ç”¨indexOfæ¯”è¾ƒå¼•ç”¨
 		if(complex.length) {
 			var i = 0;
 			while(i < complex.length) {

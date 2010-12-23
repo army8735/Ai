@@ -1,38 +1,38 @@
 (function() {
 	
-	var	module = {}, //Ä£¿é¿â£¬ÓÃÒÔÀàËÆYUI.useÒì²½¼ÓÔØÄ£¿é»òÄ£¿é¼¯
+	var	module = {}, //æ¨¡å—åº“ï¼Œç”¨ä»¥ç±»ä¼¼YUI.useå¼‚æ­¥åŠ è½½æ¨¡å—æˆ–æ¨¡å—é›†
 		head = document.getElementsByTagName('head')[0],
 		LOADING = 1,
 		LOADED = 2,
-		ORDER = !($.browser.opera || $.browser.mozilla); //²»Ö§³Öscript/cacheµ«ÊÇ×Ô¶¯ÒÔscript±êÇ©²åÈëË³Ğò´®ĞĞÒì²½Ö´ĞĞ´úÂëµÄä¯ÀÀÆ÷ÓĞoperaºÍfirefox
+		ORDER = !($.browser.opera || $.browser.mozilla); //ä¸æ”¯æŒscript/cacheä½†æ˜¯è‡ªåŠ¨ä»¥scriptæ ‡ç­¾æ’å…¥é¡ºåºä¸²è¡Œå¼‚æ­¥æ‰§è¡Œä»£ç çš„æµè§ˆå™¨æœ‰operaå’Œfirefox
 
-	//µİ¹é±éÀúÄ£¿éÒÀÀµµÄÄ£¿éÁĞ±í£¬²¢·µ»Ø
+	//é€’å½’éå†æ¨¡å—ä¾èµ–çš„æ¨¡å—åˆ—è¡¨ï¼Œå¹¶è¿”å›
 	function scanModule(mod, list){
 		list = list || [];
-		//ÀúÊ·¼ÇÂ¼È·±£listÖĞ³öÏÖµÄÒÀÀµÄ£¿éÖ»³öÏÖÒ»´Î
+		//å†å²è®°å½•ç¡®ä¿listä¸­å‡ºç°çš„ä¾èµ–æ¨¡å—åªå‡ºç°ä¸€æ¬¡
 		var history = list.history;
 		if(!history) {
 			history = list.history = {};
 		}
 		var deps;
-		//Ö±½Ó´«ÈëarrayËµÃ÷ÊÇÄ£¿é¼¯ÁĞ±í
+		//ç›´æ¥ä¼ å…¥arrayè¯´æ˜æ˜¯æ¨¡å—é›†åˆ—è¡¨
 		if($.isArray(mod)) {
 			deps = mod;
 		}
-		//´«ÈëstringËµÃ÷ÊÇÄ£¿éÃû
+		//ä¼ å…¥stringè¯´æ˜æ˜¯æ¨¡å—å
 		else if($.isString(mod)) {
 			mod = module[mod];
-			//²»´æÔÚÅ×Òì³£
+			//ä¸å­˜åœ¨æŠ›å¼‚å¸¸
 			if(!mod) {
 				throw new Error(mod.name + ' is Undefined');
 			}
 			deps = mod.deps;
 		}
-		//objectÔòÊÇÄ£¿é¶ÔÏó
+		//objectåˆ™æ˜¯æ¨¡å—å¯¹è±¡
 		else if($.isObject(mod)) {
 			deps = mod.deps;
 		}
-		//±éÀú²¢µİ¹éÒÀÀµ¼¯£¬¼ÇÂ¼ÔÚÎ¨Ò»µÄlistÒıÓÃÉÏ¡£css²»Ö§³ÖÒÀÀµ
+		//éå†å¹¶é€’å½’ä¾èµ–é›†ï¼Œè®°å½•åœ¨å”¯ä¸€çš„listå¼•ç”¨ä¸Šã€‚cssä¸æ”¯æŒä¾èµ–
 		if(!mod.css && deps) {
 			deps.forEach(function(dep) {
 				dep = module[dep];
@@ -42,7 +42,7 @@
 				}
 			});
 		}
-		//½«ÉĞÎ´¼ÓÔØµÄÄ£¿éµÄurl´æÈëlist£¬²¢ÖÃÀúÊ·¼ÇÂ¼·ÀÖ¹ÖØ¸´
+		//å°†å°šæœªåŠ è½½çš„æ¨¡å—çš„urlå­˜å…¥listï¼Œå¹¶ç½®å†å²è®°å½•é˜²æ­¢é‡å¤
 		if(mod.url && mod.load != LOADED) {
 			list.push(mod);
 		}
@@ -69,11 +69,11 @@
 			});
 		}
 	}
-	//½ö½öÊÇ¼ÓÔØÍê³É
+	//ä»…ä»…æ˜¯åŠ è½½å®Œæˆ
 	function loadComplete() {
 		var self = this;
 			remote = 0;
-		//¼ì²é×Ô¼ºÒÀÀµµÄÄ£¿éÊÇ·ñÒÑ¾­×°ÔØÍê³É£¬Ã»ÓĞµÄ»°ÉĞ²»ÄÜÖ´ĞĞ£¬¼ÓÈëcallbackµ½Ã»×°ÔØÍê³ÉµÄÄ£¿éÖĞÈ¥£¬Ä£ÄâĞİÃß
+		//æ£€æŸ¥è‡ªå·±ä¾èµ–çš„æ¨¡å—æ˜¯å¦å·²ç»è£…è½½å®Œæˆï¼Œæ²¡æœ‰çš„è¯å°šä¸èƒ½æ‰§è¡Œï¼ŒåŠ å…¥callbackåˆ°æ²¡è£…è½½å®Œæˆçš„æ¨¡å—ä¸­å»ï¼Œæ¨¡æ‹Ÿä¼‘çœ 
 		if(self.deps) {
 			self.deps.forEach(function(dep) {
 				dep = module[dep];
@@ -87,15 +87,15 @@
 				}
 			});
 		}
-		//ËùÒÀÀµµÄÈ«²¿¼ÓÔØÖ´ĞĞ³É¹¦ºó¿ÉÒÔÖ±½Óµ÷ÓÃ
+		//æ‰€ä¾èµ–çš„å…¨éƒ¨åŠ è½½æ‰§è¡ŒæˆåŠŸåå¯ä»¥ç›´æ¥è°ƒç”¨
 		if(!remote) {
 			loadFinish.call(self);
 		}
 	}
-	//¼ÓÔØÍê³É²¢ÇÒÒÀÀµÒ²¼ÓÔØÖ´ĞĞÍê³É
+	//åŠ è½½å®Œæˆå¹¶ä¸”ä¾èµ–ä¹ŸåŠ è½½æ‰§è¡Œå®Œæˆ
 	function loadFinish() {
 		var mod = this;
-		//Õë¶ÔÖ§³ÖtypeÎªscript/cacheµÄä¯ÀÀÆ÷£¬ÖØĞÂ²åÈë»º´æµÄscript±êÇ©Ê¹ÆäÉúĞ§
+		//é’ˆå¯¹æ”¯æŒtypeä¸ºscript/cacheçš„æµè§ˆå™¨ï¼Œé‡æ–°æ’å…¥ç¼“å­˜çš„scriptæ ‡ç­¾ä½¿å…¶ç”Ÿæ•ˆ
 		if(mod.cache) {
 			mod.cache = 0;
 			$$.getScript(mod.url, {
@@ -112,11 +112,11 @@
 			});
 		}
 	}
-	//¼ì²âÊÇ·ñÓĞÑ­»·ÒÀÀµ
+	//æ£€æµ‹æ˜¯å¦æœ‰å¾ªç¯ä¾èµ–
 	function checkRecursion(list) {
 		var history = {},
 			stack;
-		//±éÀúĞèÒªÒì²½¼ÓÔØµÄÄ£¿éÁĞ±í£¬Ã¿¸öÄ£¿éÉî¶È±éÀú¼ì²â×Ô¼ºµÄÒÀÀµ£¬³öÏÖ¹ıµÄËµÃ÷´Ë»ØÂ·ÒÑ¼ì²â¹ıÎŞĞèÖØ¸´£¬¼ÇÂ¼ÔÚhistoryÖĞ
+		//éå†éœ€è¦å¼‚æ­¥åŠ è½½çš„æ¨¡å—åˆ—è¡¨ï¼Œæ¯ä¸ªæ¨¡å—æ·±åº¦éå†æ£€æµ‹è‡ªå·±çš„ä¾èµ–ï¼Œå‡ºç°è¿‡çš„è¯´æ˜æ­¤å›è·¯å·²æ£€æµ‹è¿‡æ— éœ€é‡å¤ï¼Œè®°å½•åœ¨historyä¸­
 		list.forEach(function(mod) {
 			if(!history[mod.name]) {
 				stack = [];
@@ -124,7 +124,7 @@
 				scanRecursion(mod, {});
 			}
 		});
-		//Ã¿¸öÄ£¿éÉî¶È±éÀú¹ı³ÌÖĞ£¬±ß¼ÇÂ¼±ß±éÀú£¬·¢ÏÖÖØ¸´µÄËµÃ÷³öÏÖÑ­»·»ØÂ·£¬±¨Òì³£
+		//æ¯ä¸ªæ¨¡å—æ·±åº¦éå†è¿‡ç¨‹ä¸­ï¼Œè¾¹è®°å½•è¾¹éå†ï¼Œå‘ç°é‡å¤çš„è¯´æ˜å‡ºç°å¾ªç¯å›è·¯ï¼ŒæŠ¥å¼‚å¸¸
 		function scanRecursion(mod, has) {
 			if(mod && mod.deps) {
 				stack.push(mod.name);
@@ -136,7 +136,7 @@
 					history[dep] = 1;
 					scanRecursion(module[dep], has);
 				});
-				//×ÔÉíÍê³ÉºóĞèÇå³ı
+				//è‡ªèº«å®Œæˆåéœ€æ¸…é™¤
 				has[mod.name] = 0;
 				stack.pop();
 			}
@@ -145,11 +145,11 @@
 
 	$$.mix({
 		/**
-		 * @public ×¢²áÄ£¿éÎÄ¼ş·½·¨£¬Ä£¿é¿ÉÒÔÊÇµ¥¶ÀÎÄ¼şÄ£¿é£¬Òà¿ÉÒÔÊÇÒÀÀµÓÚÆäËüÄ£¿éµÄÄ£¿é¼¯
-		 * @param {string/object} Ä£¿éÃû£¬ÈôÎªobjectÔòÊÇÒÔhash·½Ê½¶¨Òå£¬keyÎªÄ£¿éÃû£¬ºóÃæ3¸öÊı¶¨ÒåÎªÒ»¸öÊı×é
-		 * @param {string/null} Ä£¿éµÄurl£¬ÈôÎŞÔòÉèÎªnull
-		 * @param {array/string/boolean} ÒÀÀµµÄÄ£¿éÃû£¬¿ÉÒÔÒÀÀµ¶à¸ö¡£ÈôÎªtrueÔòÎª¶¨ÒåcssÄ£¿é
-		 * @param {stirng} Ä£¿écharset£¬¿ÉÑ¡
+		 * @public æ³¨å†Œæ¨¡å—æ–‡ä»¶æ–¹æ³•ï¼Œæ¨¡å—å¯ä»¥æ˜¯å•ç‹¬æ–‡ä»¶æ¨¡å—ï¼Œäº¦å¯ä»¥æ˜¯ä¾èµ–äºå…¶å®ƒæ¨¡å—çš„æ¨¡å—é›†
+		 * @param {string/object} æ¨¡å—åï¼Œè‹¥ä¸ºobjectåˆ™æ˜¯ä»¥hashæ–¹å¼å®šä¹‰ï¼Œkeyä¸ºæ¨¡å—åï¼Œåé¢3ä¸ªæ•°å®šä¹‰ä¸ºä¸€ä¸ªæ•°ç»„
+		 * @param {string/null} æ¨¡å—çš„urlï¼Œè‹¥æ— åˆ™è®¾ä¸ºnull
+		 * @param {array/string/boolean} ä¾èµ–çš„æ¨¡å—åï¼Œå¯ä»¥ä¾èµ–å¤šä¸ªã€‚è‹¥ä¸ºtrueåˆ™ä¸ºå®šä¹‰cssæ¨¡å—
+		 * @param {stirng} æ¨¡å—charsetï¼Œå¯é€‰
 		 */
 		def: function(name, url, deps, charset) {
 			if($.isPlainObject(name)) {
@@ -159,12 +159,12 @@
 				}
 				return;
 			}
-			//²»ÄÜ¸²¸ÇÒÑÓĞÄ£¿é
+			//ä¸èƒ½è¦†ç›–å·²æœ‰æ¨¡å—
 			if(module[name]) {
 				throw new Error(name + ' has been defined');
 			}
 			var css;
-			//µ¥ÒÀÀµ×ª³ÉÊı×é
+			//å•ä¾èµ–è½¬æˆæ•°ç»„
 			if($.isString(deps) && deps.length) {
 				deps = [deps];
 			}
@@ -182,22 +182,22 @@
 		},
 
 		/**
-		 * @public Òì²½Ê¹ÓÃÄ£¿é»òÄ£¿é¼¯µÄ·½·¨
-		 * @param {string/array} Ä£¿é£¨¼¯£©µÄÃû³Æ
-		 * @param {func} ¼ÓÔØ³É¹¦ºóµÄµ÷ÓÃº¯Êı
+		 * @public å¼‚æ­¥ä½¿ç”¨æ¨¡å—æˆ–æ¨¡å—é›†çš„æ–¹æ³•
+		 * @param {string/array} æ¨¡å—ï¼ˆé›†ï¼‰çš„åç§°
+		 * @param {func} åŠ è½½æˆåŠŸåçš„è°ƒç”¨å‡½æ•°
 		 */
 		use: function(name, cb) {
 			var list = scanModule(name),
 				len = list.length,
 				remote;
-			//·ÀÖ¹Ñ­»·ÒÀÀµÔì³ÉËÀ»ØÂ·
+			//é˜²æ­¢å¾ªç¯ä¾èµ–é€ æˆæ­»å›è·¯
 			checkRecursion(list);
 			cb = cb || function(){};
-			//ÒÀÀµÏÈÇ°ÒÑ¾­¼ÓÔØÍêÁËÖ±½ÓÖ´ĞĞ
+			//ä¾èµ–å…ˆå‰å·²ç»åŠ è½½å®Œäº†ç›´æ¥æ‰§è¡Œ
 			if(len == 0) {
 				cb();
 			}
-			//Ö»ÒÀÀµÒ»¸öÄ£¿é£¬¼ÓÔØcallbak
+			//åªä¾èµ–ä¸€ä¸ªæ¨¡å—ï¼ŒåŠ è½½callbak
 			else if(len == 1) {
 				remote = list[0];
 				remote.cb.push(cb);
@@ -209,7 +209,7 @@
 					cb();
 				}
 			}
-			//ÒÀÀµ¶à¸öÄ£¿éÊ±£¬Ã¿¸öÀïÃæ½¨Á¢callback£¬²¢¸ù¾İremoteÊıÁ¿±êÊ¶È«²¿¼ÓÔØ³É¹¦
+			//ä¾èµ–å¤šä¸ªæ¨¡å—æ—¶ï¼Œæ¯ä¸ªé‡Œé¢å»ºç«‹callbackï¼Œå¹¶æ ¹æ®remoteæ•°é‡æ ‡è¯†å…¨éƒ¨åŠ è½½æˆåŠŸ
 			else {
 				remote = list.length;
 				list.forEach(function(mod) {

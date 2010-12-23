@@ -1,6 +1,6 @@
 (function() {
 
-	//²¹³äECMAScript5ÀïµÄ·½·¨, ³ýieÍâ¶¼ÓÐnativeÊµÏÖ
+	//è¡¥å……ECMAScript5é‡Œçš„æ–¹æ³•, é™¤ieå¤–éƒ½æœ‰nativeå®žçŽ°
 	var arrayMethod = Array.prototype;
 	if(!arrayMethod.filter) {
 		arrayMethod.filter = function(fn, sc){
@@ -55,7 +55,7 @@
 			return -1;
 		};
 	}
-	//flashÔÚieÏÂ»á¸ü¸ÄtitleµÄbug
+	//flashåœ¨ieä¸‹ä¼šæ›´æ”¹titleçš„bug
 	if($.browser.msie) {
 		$(document).ready(function(){
 			var title = document.title;
@@ -64,7 +64,7 @@
 			});
 		});
 	}
-	//ie6»º´æ±³¾°Í¼
+	//ie6ç¼“å­˜èƒŒæ™¯å›¾
 	if($.browser.msie && $.browser.version == '6.0') {
 		document.execCommand('BackgroundImageCache', false, true);
 	}

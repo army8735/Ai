@@ -1,9 +1,9 @@
 (function() {
 
 	function initStorage(url) {
-		//¿çÓò£¬Ğè¼ÓÔØiframe£¬Í¬Ê±¿¼ÂÇiframe¼ÓÔØÍê³ÉÇ°¶à´Îµ÷ÓÃµÄÉèÖÃ»º´æÎÊÌâ
+		//è·¨åŸŸï¼Œéœ€åŠ è½½iframeï¼ŒåŒæ—¶è€ƒè™‘iframeåŠ è½½å®Œæˆå‰å¤šæ¬¡è°ƒç”¨çš„è®¾ç½®ç¼“å­˜é—®é¢˜
 		if($.isString(url)) {
-			//µÚÒ»´Î³õÊ¼»¯ÏÈ»º´æÏÂÀ´ËùÓĞ²Ù×÷£¬´ıiframe¼ÓÔØ³É¹¦ÔÙ¼ì²é»º´æÖ´ĞĞ
+			//ç¬¬ä¸€æ¬¡åˆå§‹åŒ–å…ˆç¼“å­˜ä¸‹æ¥æ‰€æœ‰æ“ä½œï¼Œå¾…iframeåŠ è½½æˆåŠŸå†æ£€æŸ¥ç¼“å­˜æ‰§è¡Œ
 			var sets = [],
 				gets = [],
 				removes = [],
@@ -26,7 +26,7 @@
 				},
 				iframe = '<iframe src="' + url + '" style="position:absolute;left:-9999px;visibility:hidden;"></iframe>';
 			iframe = $(iframe).load(function() {
-				//¼ÓÔØ³É¹¦ºóÖ´ĞĞ»º´æ²Ù×÷£¬ÔÙ¶èĞÔ¸²¸ÇÔ­½Ó¿Ú
+				//åŠ è½½æˆåŠŸåæ‰§è¡Œç¼“å­˜æ“ä½œï¼Œå†æƒ°æ€§è¦†ç›–åŸæ¥å£
 				cache = init(this.contentWindow);
 				sets.forEach(function(item) {
 					cache.setItem(item.k, item.v);
@@ -43,21 +43,21 @@
 			});
 			return cache;
 		}
-		//±¾Óò´æ´¢£¬Ö±½Ó´«Èëwindow¶ÔÏó
+		//æœ¬åŸŸå­˜å‚¨ï¼Œç›´æ¥ä¼ å…¥windowå¯¹è±¡
 		else {
 			return init(url);
 		}
 	}
 	function init(win) {
-		//html5´æ´¢Ö§³Ö£¬ff3.5+¡¢chrome¡¢safari4+¡¢ie8+Ö§³Ö
+		//html5å­˜å‚¨æ”¯æŒï¼Œff3.5+ã€chromeã€safari4+ã€ie8+æ”¯æŒ
 		if(win.localStorage) {
 			init = initInHtml5;
 		}
-		//ff2×Ô¼ºÊµÏÖµÄÒ»Ì×·½°¸
+		//ff2è‡ªå·±å®ç°çš„ä¸€å¥—æ–¹æ¡ˆ
 		else if(win.globalStorage) {
 			init = initInFF2;
 		}
-		//ie5+Ö§³ÖµÄË½ÓĞ·½°¸£¬´æ´¢¿Õ¼äÖ»ÓĞ1M
+		//ie5+æ”¯æŒçš„ç§æœ‰æ–¹æ¡ˆï¼Œå­˜å‚¨ç©ºé—´åªæœ‰1M
 		else if(win.ActiveXObject) {
 			init = initInLowIe;
 		}
@@ -115,19 +115,19 @@
 
 	$$.mix({
 		/**
-		 * @public ÀëÏß´æ´¢
-		 * @param {string} ´æ´¢µÄkey£¬Ö§³Ö¿çÓò´æ´¢£¨keyºóÔö¼Ó@ºÍurl£©£¬ĞèÒıÈë×ÓÓòµÄiframe£¬²¢Ö¸¶¨document.domainÎªÒ³ÃæµÄÓò
-		 * @param {null/string/func} ´æ´¢µÄÖµ£¬ÖØÔØ£ºÉèÎªnullÎªÉ¾³ı£¬stringÎªÉè¶¨£¬·½·¨Îª¶ÁÈ¡¡£ÆäÖĞÉèÎª»Øµ÷º¯ÊıµÄÄ¿µÄÊÇÎªÁË¼æÈİ¿çÓòÊ±µÄ»Øµ÷£¨¼ÓÔØiframeÓĞÑÓÊ±´æÔÚ£©£¬Î¨Ò»²ÎÊıÎªÖµ£¬±£³Ö¿çÓòÓë·ñ½Ó¿ÚÒ²Ò»ÖÂ
+		 * @public ç¦»çº¿å­˜å‚¨
+		 * @param {string} å­˜å‚¨çš„keyï¼Œæ”¯æŒè·¨åŸŸå­˜å‚¨ï¼ˆkeyåå¢åŠ @å’Œurlï¼‰ï¼Œéœ€å¼•å…¥å­åŸŸçš„iframeï¼Œå¹¶æŒ‡å®šdocument.domainä¸ºé¡µé¢çš„åŸŸ
+		 * @param {null/string/func} å­˜å‚¨çš„å€¼ï¼Œé‡è½½ï¼šè®¾ä¸ºnullä¸ºåˆ é™¤ï¼Œstringä¸ºè®¾å®šï¼Œæ–¹æ³•ä¸ºè¯»å–ã€‚å…¶ä¸­è®¾ä¸ºå›è°ƒå‡½æ•°çš„ç›®çš„æ˜¯ä¸ºäº†å…¼å®¹è·¨åŸŸæ—¶çš„å›è°ƒï¼ˆåŠ è½½iframeæœ‰å»¶æ—¶å­˜åœ¨ï¼‰ï¼Œå”¯ä¸€å‚æ•°ä¸ºå€¼ï¼Œä¿æŒè·¨åŸŸä¸å¦æ¥å£ä¹Ÿä¸€è‡´
 		 */
 		storage: (function() {
-			//Îª²»Í¬Óò³õÊ¼»¯²»Í¬µÄÎ¨Ò»´æ´¢ÊµÀı£¬Ä¬ÈÏ·Ç¿çÓòÎªdefault
+			//ä¸ºä¸åŒåŸŸåˆå§‹åŒ–ä¸åŒçš„å”¯ä¸€å­˜å‚¨å®ä¾‹ï¼Œé»˜è®¤éè·¨åŸŸä¸ºdefault
 			var hash = {};
 			return function(k, v) {
 				var stg,
 					key = k.split('@'),
 					url = key[1];
 				k = key[0];
-				//ÉèÖÃÁËurlÔòÎª¿ç×ÓÓò´æ´¢
+				//è®¾ç½®äº†urlåˆ™ä¸ºè·¨å­åŸŸå­˜å‚¨
 				if(url) {
 					url = url.indexOf('http') == 0 ? url : 'http://' + url;
 					if(!hash[url]) {

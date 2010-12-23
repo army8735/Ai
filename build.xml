@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<project name="Javascritp_build" default="run" basedir=".">
+	<description>Javascritp build for Ant</description>
+
+	<property name="base" location="base"/>
+	<property name="build" location="."/>
+	<property name="temp" location="temp"/>
+	<property name="target" value="."/>
+	<property name="compiler" value="../compiler"/>
+	<property name="charset" value="utf-8"/>
+	
+	<!-- - - - - - - - - - - - - - - - - - 
+	这个 ant 配置文件要经过4个流程：
+	1、target init 进行初始化处理，创建一个目录build，用于暂存文件；
+	2、target concat 合并两个 js 文件，放到 build 目录下；
+	3、target compress 调用 Yui Compressor 对合并后的 js 进行压缩
+	4、target clean 进行清理动作，删除生成的 build 目录
+
+	ANT标签和属性解释：
+	project 的 default 对应某个 target 的 name 值，表示默认执行哪个步骤；
+	target 的 depends 对应其他某些 target 的 name 属性，表示依赖性；
+	${name} 可以引用 property 中定义的值。
+	mkdir 标签创建一个目录
+	replaceregexp, 正则表达式替换，将DEBUG标识替换为空，在正式环境不处理DEBUG信息
+	注意设置文件的 encoding 属性，否则可能有乱码情况
+
+	关于ANT的详细文档，请看官方手册：http://ant.apache.org/manual/        
+         - - - - - - - - - - - - - - - - - -->
+    <target name="init">
+    </target>
+	
+	<target name="concat" depends="init">
+		<concat destfile="${build}/AI.js" encoding="${charset}" outputencoding="${charset}">
+			<path path="${base}/jquery-1.4.4.js" />
+			<path path="${base}/fix.js" />
+			<path path="${base}/lang.js" />
+			<path path="${base}/dom.js" />
+			<path path="${base}/util.js" />
+			<path path="${base}/net.js" />
+			<path path="${base}/module.js" />
+			<path path="${base}/action.js" />
+		</concat>
+	</target>
+	
+	<target name="compress" depends="concat">
+		<java jar="${compiler}/compiler.jar" fork="true" failonerror="false">
+			<arg line="--js=${target}/AI.js --js_output_file=${target}/AI.min.js" />
+		</java>
+	</target>
+		
+	<target name="run" depends="compress">
+	</target>
+	
+</project>
