@@ -7297,8 +7297,13 @@ jQuery.each([ "Height", "Width" ], function( i, name ) {
 		}
 	}
 	function handler(selector, cb, target, top) {
+		//全匹配
+		if(selector == '*') {
+			cb();
+			return true;
+		}
 		//以id来驱动事件代理，直接判断id即可
-		if(selector.charAt(0) == '#') {
+		else if(selector.charAt(0) == '#') {
 			if(selector == target.id) {
 				cb();
 				return true;
