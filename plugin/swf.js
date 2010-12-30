@@ -1,4 +1,20 @@
 (function() {
+
+	//覆盖flash默认通信方法，提高性能
+	window.__flash__escapeXML = function(s) {
+		var keywords = {
+			"\"" : "&quot;",
+			"<" : "&lg;",
+			">" : "&gt;",
+			"\"" : "&apos;"
+		};
+		return s.replace(new RegExp("([\'\"\<\>])", "g"),
+			function(a, b) {
+				var c = keywords[b];
+				return c ? c : a;
+			}
+		);
+	};
 	
 	var SHOCKWAVE_FLASH = 'Shockwave Flash',
 		FLASH_MIME_TYPE = 'application/x-shockwave-flash',
