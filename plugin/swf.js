@@ -4,16 +4,14 @@
 	window.__flash__escapeXML = function(s) {
 		var keywords = {
 			"\"" : "&quot;",
-			"<" : "&lg;",
+			"<" : "&lt;",
 			">" : "&gt;",
 			"\"" : "&apos;"
 		};
-		return s.replace(new RegExp("([\'\"\<\>])", "g"),
-			function(a, b) {
-				var c = keywords[b];
-				return c ? c : a;
-			}
-		);
+		return s.replace(/&/g, "&amp;").replace(/(['"<>])/g, function(a, b) {
+			var c = keywords[b];
+			return c ? c : a;
+		});
 	};
 	
 	var SHOCKWAVE_FLASH = 'Shockwave Flash',
