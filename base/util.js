@@ -125,7 +125,7 @@ $$.mix({
 		else {
 			cb(false);
 		}
-	}，
+	},
 
         render : function(){}
 });
