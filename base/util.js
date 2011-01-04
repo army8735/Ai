@@ -127,5 +127,5 @@ $$.mix({
 		}
 	},
 
-        render : function(){}
+        simpleTpl : function(){}
 });
