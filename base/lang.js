@@ -38,7 +38,7 @@
 					proxyResult = false;
 				for(var i = 0; i < length; i++) {
 					//有命中则中断，不支持多命中，会引起歧义
-					if(handler(match[i], function() { proxyResult = !!op[match[i]](); }, target, node)) {
+					if(handler(match[i], function() { proxyResult = !!op[match[i]].call(target); }, target, node)) {
 						break;
 					}
 				}
