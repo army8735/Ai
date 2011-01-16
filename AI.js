@@ -8114,7 +8114,7 @@ var $$ = {
 
 })();(function() {
 
-	var action = {}; //管理action，用以多个页面共享一个js时执行里面的独立任务
+	var action = {}; //管理action，用以事件驱动
 
 	$$.mix({
 
@@ -8137,27 +8137,29 @@ var $$ = {
 				action[key].list.push(func);
 				//倘若已经do过，直接执行
 				if(action[key].did) {
-					func();
+					func.apply(null, action[key].args || []);
 				}
 			}
+			return this;
 		},
 		
 		/**
 		 * @public 定义/执行action，和action无先后顺序
 		 * @param {string/array/hash} 需要do的key，如果是array则是一组key，hash则是object的key
-		 * @param {boolean} 如果已经do过，再次do是否重复此action列表，默认false
+		 * @param * 每个事件驱动执行的参数
 		 */
-		does: function(key, repeat) {
+		does: function(key, args) {
+			args = $.makeArray(args) || Array.prototype.slice.call(arguments, 1);
 			if($.isArray(key)) {
 				key.forEach(function(item) {
-					$$.does(item, repeat);
+					$$.does(item, args);
 				});
 			}
 			else if($.isPlainObject(key)) {
 				this.keys(key).forEach(function(item) {
 					//hash配置的值必须为true时才会执行
 					if(key[item]) {
-						$$.does(item, repeat);
+						$$.does(item, args);
 					}
 				});
 			}
@@ -8170,17 +8172,19 @@ var $$ = {
 				else if($.isUndefined(act)) {
 					action[key] = {
 						did: 1,
-						list: []
+						list: [],
+						args: args
 					};
 				}
-				//已定义action或者强制执行时，遍历list
-				else if(!act.did || repeat) {
+				//已定义action，遍历list
+				else {
 					action[key].did = 1;
 					act.list.forEach(function(fn) {
-						fn();
+						fn.apply(null, args);
 					});
 				}
 			}
+			return this;
 		},
 		
 		/**
@@ -8204,6 +8208,7 @@ var $$ = {
 			list.forEach(function(item) {
 				action[item] = null;
 			});
+			return this;
 		}
 	});
 

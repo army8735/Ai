@@ -35,7 +35,7 @@
 		 * @param * 每个事件驱动执行的参数
 		 */
 		does: function(key, args) {
-			args = args || Array.prototype.slice.call(arguments, 1);
+			args = $.makeArray(args) || Array.prototype.slice.call(arguments, 1);
 			if($.isArray(key)) {
 				key.forEach(function(item) {
 					$$.does(item, args);
