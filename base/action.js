@@ -35,7 +35,7 @@
 		 * @param * 每个事件驱动执行的参数
 		 */
 		does: function(key, args) {
-			args = $.makeArray(args) || Array.prototype.slice.call(arguments, 1);
+			args = $.makeArray(args || Array.prototype.slice.call(arguments, 1));
 			if($.isArray(key)) {
 				key.forEach(function(item) {
 					$$.does(item, args);
@@ -43,9 +43,9 @@
 			}
 			else if($.isPlainObject(key)) {
 				this.keys(key).forEach(function(item) {
-					//hash配置的值必须为true时才会执行
+					//hash配置的值伪真即可执行，参数即为key对应的值，自动转换array进行apply
 					if(key[item]) {
-						$$.does(item, args);
+						$$.does(item, $.makeArray(key[item]));
 					}
 				});
 			}
