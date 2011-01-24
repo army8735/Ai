@@ -13,6 +13,23 @@
 			return c ? c : a;
 		});
 	};
+	window.__flash__arrayToXML = function(obj) {
+		var s = ['<array>'],
+			len = obj.length;
+		for(var i = 0; i < len; ++i) {
+			if($.isUndefined(obj[i])) {
+				s.push([
+					'<property id="',
+					i,
+					'">',
+					__flash__toXML(obj[i]),
+					'</property>'
+				].join(''));
+			}
+		}
+		s.push('</array>');
+		return s.join('');
+	};
 	
 	var SHOCKWAVE_FLASH = 'Shockwave Flash',
 		FLASH_MIME_TYPE = 'application/x-shockwave-flash',
