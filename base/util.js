@@ -94,20 +94,6 @@
 		endWith: function(str, sub){
 			return str.lastIndexOf(sub) == str.length - sub.length;
 		},
-	
-		/**
-		 * @public 把JS模板转换成最终的html
-		 * @note 模板中的变量格式：<%=xxx%>
-		 * @param {string} tpl是模板文本
-		 * @param {object} op是模板中的变量
-		 * @return {string} 返回可使用的html
-		 */
-		render: function(tpl, op){
-			op = op || {};
-			return tpl.replace(/<%\=(\w+)%>/g, function(e1,e2){
-				return op[e2] != null ? op[e2] : '';
-			});		
-		},
 		
 		/**
 		 * @public 把文本复制到剪贴板
@@ -161,39 +147,42 @@
 			});
 		},
 		/**
-		 * @public 根据data生成模板
-		 * @note 可以直接支持<script type="text/html">tpl</script>
-		 * @param {Object} str 模板
-		 * @param {Object} data 数据
+		 * @public 渲染模板方法
+		 * @note 可以直接支持<elements id="id">tpl</elements>
+		 * @note 模板中的变量格式：<%=variable%>
+		 * @note <%%>中支持原生js代码，this为第2个参数对象
+		 * @url http://ejohn.org/blog/javascript-micro-templating/
+		 * @param {string/object} 模板或需要渲染的节点数据
+		 * @param {Object} 需要渲染的数据
+		 * @return {string} 渲染好的html字符串
 		 */
-		simpleTpl : function tmpl(str, data){
+		render: function tmpl(tpl, data){
 			// Figure out if we're getting a template, or if we need to
 			// load the template - and be sure to cache the result.
-			var fn = !/\W/.test(str) ?
-			  tplCache[str] = tplCache[str] ||
-			    tmpl(document.getElementById(str).innerHTML) :
+			var fn = !/\W/.test(tpl) ? tplCache[tpl] = tplCache[tpl] ||
+				tmpl(document.getElementById(tpl).innerHTML) :
 			  
-			  // Generate a reusable function that will serve as a template
-			  // generator (and which will be cached).
-			  new Function("obj",
-			    "var p=[],print=function(){p.push.apply(p,arguments);};" +
-			    
-			    // Introduce the data as local variables using with(){}
-			    "with(obj){p.push('" +
-			    
-			    // Convert the template into pure JavaScript
-			    str
-			      .replace(/[\r\t\n]/g, " ")
-			      .split("<%").join("\t")
-			      .replace(/((^|%>)[^\t]*)'/g, "$1\r")
-			      .replace(/\t=(.*?)%>/g, "',$1,'")
-			      .split("\t").join("');")
-			      .split("%>").join("p.push('")
-			      .split("\r").join("\\'")
-			  + "');}return p.join('');");
+				// Generate a reusable function that will serve as a template
+				// generator (and which will be cached).
+				new Function("obj",
+					"var p=[],print=function(){p.push.apply(p,arguments);};" +
+
+					// Introduce the data as local variables using with(){}
+					"with(obj){p.push('" +
+
+					// Convert the template into pure JavaScript
+					tpl
+					  .replace(/[\r\t\n]/g, " ")
+					  .split("<%").join("\t")
+					  .replace(/((^|%>)[^\t]*)'/g, "$1\r")
+					  .replace(/\t=(.*?)%>/g, "',$1,'")
+					  .split("\t").join("');")
+					  .split("%>").join("p.push('")
+					  .split("\r").join("\\'")
+					+ "');}return p.join('');");
 			
 			// Provide some basic currying to the user
-			return data ? fn( data ) : fn;
+			return data ? fn(data) : fn;
 		}
 	});
 })();
