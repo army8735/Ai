@@ -32,7 +32,7 @@
 	
 	<target name="concat" depends="init">
 		<concat destfile="${build}/AI.js" encoding="${charset}" outputencoding="${charset}">
-			<path path="${base}/jquery-1.4.4.js" />
+			<path path="${base}/jquery-1.5.js" />
 			<path path="${base}/fix.js" />
 			<path path="${base}/lang.js" />
 			<path path="${base}/dom.js" />

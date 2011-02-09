@@ -127,6 +127,13 @@
 				data = data || 0;
 				return format == 1 ? data : (data = String(Math.pow(10, format) + data)).substr(data.length - format);
 			}
+			if($.isUndefined(date)) {
+				date = new Date();
+			}
+			else if($.isNumber(date)) {
+				date = new Date();
+				date.setTime(date);
+			}
 			return pattern.replace(/([YMDhsm])\1*/g, function(format) {
 				switch(format.charAt()) {
 					case 'Y':
