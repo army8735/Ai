@@ -153,6 +153,7 @@
 				}
 			});
 		},
+
 		/**
 		 * @public 渲染模板方法
 		 * @note 可以直接支持<elements id="id">tpl</elements>
@@ -190,6 +191,22 @@
 			
 			// Provide some basic currying to the user
 			return data ? fn(data) : fn;
+		},
+
+		/**
+		 * @public 返回url的get变量，以hash模式
+		 * @return {object} hash的变量
+		 */
+		pageParams: function() {
+			var params = {};
+			var result = /[^\s&\?#=\/]+=[^\s&\?#=]+/g.exec(location.href || '');
+			if(result){
+				for(var i = 0, l = result.length; i < l; i++){
+					var n = result[i].split("=");
+					params[n[0]] = decodeURIComponent(n[1]);
+				}
+			}
+			return params;
 		}
 	});
 })();

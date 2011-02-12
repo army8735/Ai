@@ -8748,6 +8748,7 @@ var $$ = {
 				}
 			});
 		},
+
 		/**
 		 * @public 渲染模板方法
 		 * @note 可以直接支持<elements id="id">tpl</elements>
@@ -8785,6 +8786,22 @@ var $$ = {
 			
 			// Provide some basic currying to the user
 			return data ? fn(data) : fn;
+		},
+
+		/**
+		 * @public 返回url的get变量，以hash模式
+		 * @return {object} hash的变量
+		 */
+		pageParams: function() {
+			var params = {};
+			var result = /[^\s&\?#=\/]+=[^\s&\?#=]+/g.exec(location.href || '');
+			if(result){
+				for(var i = 0, l = result.length; i < l; i++){
+					var n = result[i].split("=");
+					params[n[0]] = decodeURIComponent(n[1]);
+				}
+			}
+			return params;
 		}
 	});
 })();
@@ -9150,9 +9167,9 @@ var $$ = {
 		constructor: $$.Action,
 		/**
 		 * @public ���¼�����
-		 * @param string �󶨵��¼���
-		 * @param object ��ʱ����ݣ���ʡ��
-		 * @param func �����ִ�з���
+		 * @param {string} �󶨵��¼���
+		 * @param {object} ��ʱ����ݣ���ʡ��
+		 * @param {func} �����ִ�з���
 		 */
 		bind: function(type, data, cb) {
 			if($.isUndefinde(cb)) {
@@ -9163,24 +9180,24 @@ var $$ = {
 		},
 		/**
 		 * @public �Ӵ����¼�����
-		 * @param string �󶨵��¼���
-		 * @param func �����ִ�з�������ʡ�ԣ�ʡ��Ϊȡ������
+		 * @param {string} �󶨵��¼���
+		 * @param {func} �����ִ�з�������ʡ�ԣ�ʡ��Ϊȡ������
 		 */
 		unbind: function(type, cb) {
 			this.__action.unbind(id + type, cb);
 		},
 		/**
 		 * @public �����¼�����һ��
-		 * @param string �������¼���
-		 * @param object ����ʱ����ݣ���ʡ��
+		 * @param {string} �������¼���
+		 * @param {object} ����ʱ����ݣ���ʡ��
 		 */
 		one: function(type, data) {
 			this.__action.one(id + type, data || {});
 		},
 		/**
 		 * @public �����¼����ɶ��
-		 * @param string �������¼���
-		 * @param object ����ʱ����ݣ���ʡ��
+		 * @param {string} �������¼���
+		 * @param {object} ����ʱ����ݣ���ʡ��
 		 */
 		trigger: function(type, data) {
 			this.__action.trigger(id + type, data || {});
