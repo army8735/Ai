@@ -1,101 +1,55 @@
 (function() {
+	var id = '-ai';
 
-	var action = {}; //ç®¡ç†actionï¼Œç”¨ä»¥äº‹ä»¶é©±åŠ¨
-
-	$$.mix({
-
+	/**
+	 * @public Éú³ÉÒ»¸öĞÂµÄÊÂ¼şÇı¶¯¶ÔÏó
+	 * @return new $$.Action();
+	 */
+	$$.Action = function() {
+		this.__action = $('<p>');
+	};
+	$$.Action.prototype = {
+		constructor: $$.Action,
 		/**
-		 * @public å®šä¹‰/æ‰§è¡Œactionï¼Œå’Œdoæ— å…ˆåé¡ºåº
-		 * @param {string} key
-		 * @param {func} func
-		 * @param {boolean} æ˜¯å¦è¦†ç›–æ‰å·²æœ‰çš„actionï¼Œè¿˜æ˜¯ç»„åˆèµ·æ¥ï¼Œé»˜è®¤false
+		 * @public °ó¶¨ÊÂ¼şÕìÌı
+		 * @param string °ó¶¨µÄÊÂ¼şÃû
+		 * @param object °ó¶¨Ê±µÄÊı¾İ£¬¿ÉÊ¡ÂÔ
+		 * @param func ÕìÌıµÄÖ´ĞĞ·½·¨
 		 */
-		action: function(key, func, overwrite) {
-			//æœªå®šä¹‰actionæˆ–å¼ºåˆ¶è¦†ç›–æ—¶ï¼Œå­˜å…¥é˜Ÿåˆ—ä¸­ç­‰å¾…doçš„è°ƒç”¨
-			if($.isUndefined(action[key]) || overwrite) {
-				action[key] = {
-					did: 0, //0æ ‡è¯†å°šæœªè°ƒç”¨doï¼Œ1æ˜¯doè¿‡
-					list: [func]
-				};
+		bind: function(type, data, cb) {
+			if($.isUndefinde(cb)) {
+				cb = data;
+				data = {};
 			}
-			else {
-				//å·²å®šä¹‰åˆ™æ”¾å…¥æ­¤actioné˜Ÿåˆ—
-				action[key].list.push(func);
-				//å€˜è‹¥å·²ç»doè¿‡ï¼Œç›´æ¥æ‰§è¡Œ
-				if(action[key].did) {
-					func.apply(null, action[key].args || []);
-				}
-			}
-			return this;
+			this.__action.bind(id + type, data, cb);
 		},
-		
 		/**
-		 * @public å®šä¹‰/æ‰§è¡Œactionï¼Œå’Œactionæ— å…ˆåé¡ºåº
-		 * @param {string/array/hash} éœ€è¦doçš„keyï¼Œå¦‚æœæ˜¯arrayåˆ™æ˜¯ä¸€ç»„keyï¼Œhashåˆ™æ˜¯objectçš„key
-		 * @param * æ¯ä¸ªäº‹ä»¶é©±åŠ¨æ‰§è¡Œçš„å‚æ•°
+		 * @public ½Ó´¥°ó¶¨ÊÂ¼şÕìÌı
+		 * @param string °ó¶¨µÄÊÂ¼şÃû
+		 * @param func ÕìÌıµÄÖ´ĞĞ·½·¨£¬¿ÉÊ¡ÂÔ£¬Ê¡ÂÔÎªÈ¡ÏûËùÓĞ
 		 */
-		does: function(key, args) {
-			args = $.makeArray(args || Array.prototype.slice.call(arguments, 1));
-			if($.isArray(key)) {
-				key.forEach(function(item) {
-					$$.does(item, args);
-				});
-			}
-			else if($.isPlainObject(key)) {
-				this.keys(key).forEach(function(item) {
-					//hashé…ç½®çš„å€¼ä¼ªçœŸå³å¯æ‰§è¡Œï¼Œå‚æ•°å³ä¸ºkeyå¯¹åº”çš„å€¼ï¼Œè‡ªåŠ¨è½¬æ¢arrayè¿›è¡Œapply
-					if(key[item]) {
-						$$.does(item, $.makeArray(key[item]));
-					}
-				});
-			}
-			else {
-				var act = action[key];
-				//cancelæ‰äº†è®¾ä¸ºnullï¼Œæ‹¥æœ‰æœ€é«˜ä¼˜å…ˆçº§
-				if(act === null) {
-				}
-				//è°ƒç”¨æ—¶ä¸å­˜åœ¨é˜Ÿåˆ—è¯´æ˜è¿˜æœªå£°æ˜actionï¼Œå°†æ­¤actionåˆå§‹åŒ–å¹¶ä¸”didè®¾ä¸º1ï¼Œè®©actionè‡ªåŠ¨è°ƒç”¨
-				else if($.isUndefined(act)) {
-					action[key] = {
-						did: 1,
-						list: [],
-						args: args
-					};
-				}
-				//å·²å®šä¹‰actionï¼Œéå†list
-				else {
-					action[key].did = 1;
-					act.list.forEach(function(fn) {
-						fn.apply(null, args);
-					});
-				}
-			}
-			return this;
+		unbind: function(type, cb) {
+			this.__action.unbind(id + type, cb);
 		},
-		
 		/**
-		 * @publicå–æ¶ˆæ‰§è¡Œå·²å®šä¹‰çš„actionï¼Œå¿…é¡»åœ¨å®šä¹‰çš„åŠ¨ä½œçœŸæ­£æ‰§è¡Œå‰æ‰§è¡Œï¼Œæ‹¥æœ‰æœ€é«˜ä¼˜å…ˆçº§ï¼Œå–æ¶ˆåæ­¤åŠ¨ä½œæ°¸ä¸æ‰§è¡Œ
-		 * @param {string/array/hash} éœ€è¦cancelçš„keyï¼Œå¦‚æœæ˜¯arrayåˆ™æ˜¯ä¸€ç»„keyï¼Œhashåˆ™æ˜¯objectçš„key
+		 * @public ´¥·¢ÊÂ¼ş£¬½öÒ»´Î
+		 * @param string ´¥·¢µÄÊÂ¼şÃû
+		 * @param object ´¥·¢Ê±µÄÊı¾İ£¬¿ÉÊ¡ÂÔ
 		 */
-		cancel: function(key) {
-			var list = [];
-			if($.isArray(key)) {
-				list = key;
-			}
-			else if($.isPlainObject(key)) {
-				this.keys(key).forEach(function(item) {
-					list.push(key);
-				});
-			}
-			else {
-				list.push(key);
-			}
-			//è®¾ä¸ºnullä½¿å¾—åç»­ä¸­æ— è®ºdoesè¿˜æ˜¯actionéƒ½ä¸å†æ‰§è¡Œ
-			list.forEach(function(item) {
-				action[item] = null;
-			});
-			return this;
+		one: function(type, data) {
+			this.__action.one(id + type, data || {});
+		},
+		/**
+		 * @public ´¥·¢ÊÂ¼ş£¬¿É¶à´Î
+		 * @param string ´¥·¢µÄÊÂ¼şÃû
+		 * @param object ´¥·¢Ê±µÄÊı¾İ£¬¿ÉÊ¡ÂÔ
+		 */
+		trigger: function(type, data) {
+			this.__action.trigger(id + type, data || {});
 		}
-	});
+	};
+
+	//Ä¬ÈÏµÄÈ«¾ÖÊÂ¼şÇı¶¯¶ÔÏó
+	$$.action = new $$.Action();
 
 })();
