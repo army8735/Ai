@@ -55,18 +55,31 @@
 			return -1;
 		};
 	}
-	//flash在ie下会更改title的bug
-	if($.browser.msie) {
-		$(document).ready(function(){
+	String.prototype.trim = function() {
+		return $.trim(this);
+	};
+	Object.prototype.keys = function() {
+		var keys = [];
+		for (var prop in this) {
+			if(this.hasOwnProperty(prop)) {
+				keys.push(prop);
+			}
+		}
+		return keys;
+	}
+
+	$(function() {
+		//flash在ie下会更改title的bug
+		if($.browser.msie) {
 			var title = document.title;
 			$('object').live('mouseup', function(){
 				document.title = title;
 			});
-		});
-	}
-	//ie6缓存背景图
-	if($.browser.msie && $.browser.version == '6.0') {
-		document.execCommand('BackgroundImageCache', false, true);
-	}
+		}
+		//ie6缓存背景图
+		if($.browser.msie && $.browser.version == '6.0') {
+			document.execCommand('BackgroundImageCache', false, true);
+		}
+	});
 
 })();

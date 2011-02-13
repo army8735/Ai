@@ -8231,19 +8231,32 @@ jQuery.each([ "Height", "Width" ], function( i, name ) {
 			return -1;
 		};
 	}
-	//flash在ie下会更改title的bug
-	if($.browser.msie) {
-		$(document).ready(function(){
+	String.prototype.trim = function() {
+		return $.trim(this);
+	};
+	Object.prototype.keys = function() {
+		var keys = [];
+		for (var prop in this) {
+			if(this.hasOwnProperty(prop)) {
+				keys.push(prop);
+			}
+		}
+		return keys;
+	}
+
+	$(function() {
+		//flash在ie下会更改title的bug
+		if($.browser.msie) {
 			var title = document.title;
 			$('object').live('mouseup', function(){
 				document.title = title;
 			});
-		});
-	}
-	//ie6缓存背景图
-	if($.browser.msie && $.browser.version == '6.0') {
-		document.execCommand('BackgroundImageCache', false, true);
-	}
+		}
+		//ie6缓存背景图
+		if($.browser.msie && $.browser.version == '6.0') {
+			document.execCommand('BackgroundImageCache', false, true);
+		}
+	});
 
 })();(function() {
 
@@ -8873,19 +8886,6 @@ var $$ = {
 					}
 				}
 			});
-		},
-		
-		/**
-		 * @public 对任意一个url发送GET请求，忽略返回的内容
-		 * @note 主要用于发送统计请求
-		 * @param {string} url是请求的地址
-		 * @param {string} 可选param是url里的query参数，可以写成对象的形式，也可以用&连成字符串
-		 */
-		getRequest: function(url, params){
-			var img = new Image();
-			//阻止IE下的自动垃圾回收引起的请求未发出状况
-			img.onload = function(){};
-			img.src = !params ? url : [url, /\?/.test(url) ? '&' : '?', $.isString(params) ? params : $.param(params)].join('');
 		},
 		
 		/**
