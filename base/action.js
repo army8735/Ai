@@ -2,7 +2,7 @@
 	var id = '-ai';
 
 	/**
-	 * @public Éú³ÉÒ»¸öĞÂµÄÊÂ¼şÇı¶¯¶ÔÏó
+	 * @public ç”Ÿæˆä¸€ä¸ªæ–°çš„äº‹ä»¶é©±åŠ¨å¯¹è±¡
 	 * @return new $$.Action();
 	 */
 	$$.Action = function() {
@@ -11,10 +11,10 @@
 	$$.Action.prototype = {
 		constructor: $$.Action,
 		/**
-		 * @public °ó¶¨ÊÂ¼şÕìÌı
-		 * @param {string} °ó¶¨µÄÊÂ¼şÃû
-		 * @param {object} °ó¶¨Ê±µÄÊı¾İ£¬¿ÉÊ¡ÂÔ
-		 * @param {func} ÕìÌıµÄÖ´ĞĞ·½·¨
+		 * @public ç»‘å®šäº‹ä»¶ä¾¦å¬
+		 * @param {string} ç»‘å®šçš„äº‹ä»¶å
+		 * @param {object} ç»‘å®šæ—¶çš„æ•°æ®ï¼Œå¯çœç•¥
+		 * @param {func} ä¾¦å¬çš„æ‰§è¡Œæ–¹æ³•
 		 */
 		bind: function(type, data, cb) {
 			if($.isUndefinde(cb)) {
@@ -24,32 +24,32 @@
 			this.__action.bind(id + type, data, cb);
 		},
 		/**
-		 * @public ½Ó´¥°ó¶¨ÊÂ¼şÕìÌı
-		 * @param {string} °ó¶¨µÄÊÂ¼şÃû
-		 * @param {func} ÕìÌıµÄÖ´ĞĞ·½·¨£¬¿ÉÊ¡ÂÔ£¬Ê¡ÂÔÎªÈ¡ÏûËùÓĞ
+		 * @public æ¥è§¦ç»‘å®šäº‹ä»¶ä¾¦å¬
+		 * @param {string} ç»‘å®šçš„äº‹ä»¶å
+		 * @param {func} ä¾¦å¬çš„æ‰§è¡Œæ–¹æ³•ï¼Œå¯çœç•¥ï¼Œçœç•¥ä¸ºå–æ¶ˆæ‰€æœ‰
 		 */
 		unbind: function(type, cb) {
 			this.__action.unbind(id + type, cb);
 		},
 		/**
-		 * @public ´¥·¢ÊÂ¼ş£¬½öÒ»´Î
-		 * @param {string} ´¥·¢µÄÊÂ¼şÃû
-		 * @param {object} ´¥·¢Ê±µÄÊı¾İ£¬¿ÉÊ¡ÂÔ
+		 * @public è§¦å‘äº‹ä»¶ï¼Œä»…ä¸€æ¬¡
+		 * @param {string} è§¦å‘çš„äº‹ä»¶å
+		 * @param {object} è§¦å‘æ—¶çš„æ•°æ®ï¼Œå¯çœç•¥
 		 */
 		one: function(type, data) {
 			this.__action.one(id + type, data || {});
 		},
 		/**
-		 * @public ´¥·¢ÊÂ¼ş£¬¿É¶à´Î
-		 * @param {string} ´¥·¢µÄÊÂ¼şÃû
-		 * @param {object} ´¥·¢Ê±µÄÊı¾İ£¬¿ÉÊ¡ÂÔ
+		 * @public è§¦å‘äº‹ä»¶ï¼Œå¯å¤šæ¬¡
+		 * @param {string} è§¦å‘çš„äº‹ä»¶å
+		 * @param {object} è§¦å‘æ—¶çš„æ•°æ®ï¼Œå¯çœç•¥
 		 */
 		trigger: function(type, data) {
 			this.__action.trigger(id + type, data || {});
 		}
 	};
 
-	//Ä¬ÈÏµÄÈ«¾ÖÊÂ¼şÇı¶¯¶ÔÏó
+	//é»˜è®¤çš„å…¨å±€äº‹ä»¶é©±åŠ¨å¯¹è±¡
 	$$.action = new $$.Action();
 
 })();

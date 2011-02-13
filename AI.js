@@ -8234,15 +8234,6 @@ jQuery.each([ "Height", "Width" ], function( i, name ) {
 	String.prototype.trim = function() {
 		return $.trim(this);
 	};
-	Object.prototype.keys = function() {
-		var keys = [];
-		for (var prop in this) {
-			if(this.hasOwnProperty(prop)) {
-				keys.push(prop);
-			}
-		}
-		return keys;
-	}
 
 	$(function() {
 		//flash在ie下会更改title的bug
@@ -8291,7 +8282,7 @@ jQuery.each([ "Height", "Width" ], function( i, name ) {
 		}
 		else {
 			//op的键转为array加快速度
-			var match = op.keys(),
+			var match = $$.keys(op),
 				length = match.length;
 			$(node).bind(event, function(e) {
 				var target = e.target,
@@ -8505,6 +8496,20 @@ var $$ = {
 	mix: function(object, ns) {
 		var p = (ns ? this.ns(ns, this) : this);
 		$.extend(p, object);
+	},
+
+	/**
+	 * @public 取出一个对象中的所有key
+	 */
+	keys: function(obj) {
+		var keys = [];
+		obj = obj || {};
+		for (var prop in obj) {
+			if(obj.hasOwnProperty(prop)) {
+				keys.push(prop);
+			}
+		}
+		return keys;
 	},
 
 	/**
@@ -9143,7 +9148,7 @@ var $$ = {
 	var id = '-ai';
 
 	/**
-	 * @public ���һ���µ��¼������
+	 * @public 生成一个新的事件驱动对象
 	 * @return new $$.Action();
 	 */
 	$$.Action = function() {
@@ -9152,10 +9157,10 @@ var $$ = {
 	$$.Action.prototype = {
 		constructor: $$.Action,
 		/**
-		 * @public ���¼�����
-		 * @param {string} �󶨵��¼���
-		 * @param {object} ��ʱ����ݣ���ʡ��
-		 * @param {func} �����ִ�з���
+		 * @public 绑定事件侦听
+		 * @param {string} 绑定的事件名
+		 * @param {object} 绑定时的数据，可省略
+		 * @param {func} 侦听的执行方法
 		 */
 		bind: function(type, data, cb) {
 			if($.isUndefinde(cb)) {
@@ -9165,32 +9170,32 @@ var $$ = {
 			this.__action.bind(id + type, data, cb);
 		},
 		/**
-		 * @public �Ӵ����¼�����
-		 * @param {string} �󶨵��¼���
-		 * @param {func} �����ִ�з�������ʡ�ԣ�ʡ��Ϊȡ������
+		 * @public 接触绑定事件侦听
+		 * @param {string} 绑定的事件名
+		 * @param {func} 侦听的执行方法，可省略，省略为取消所有
 		 */
 		unbind: function(type, cb) {
 			this.__action.unbind(id + type, cb);
 		},
 		/**
-		 * @public �����¼�����һ��
-		 * @param {string} �������¼���
-		 * @param {object} ����ʱ����ݣ���ʡ��
+		 * @public 触发事件，仅一次
+		 * @param {string} 触发的事件名
+		 * @param {object} 触发时的数据，可省略
 		 */
 		one: function(type, data) {
 			this.__action.one(id + type, data || {});
 		},
 		/**
-		 * @public �����¼����ɶ��
-		 * @param {string} �������¼���
-		 * @param {object} ����ʱ����ݣ���ʡ��
+		 * @public 触发事件，可多次
+		 * @param {string} 触发的事件名
+		 * @param {object} 触发时的数据，可省略
 		 */
 		trigger: function(type, data) {
 			this.__action.trigger(id + type, data || {});
 		}
 	};
 
-	//Ĭ�ϵ�ȫ���¼������
+	//默认的全局事件驱动对象
 	$$.action = new $$.Action();
 
 })();

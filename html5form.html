@@ -1,0 +1,45 @@
+<!DOCTYPE html><html>
+<head>
+<meta charset="utf-8"/>
+<style>
+body{background:#fff;font:12px/1.5 arial;}
+form label{display:inline-block;width:80px;}
+form input{margin:5px 0;width:150px;height:18px;background:#fff;border:1px solid #ccc;vertical-align:middle;font-family:arial;}
+form input[type="search"]{-webkit-appearance: textfield;}
+</style>
+</head>
+<body>
+	<form>
+		<label>placeholder:</label>
+		<input type="text" placeholder="army8735"/>
+		<br/>
+		<label>autofocus:</label>
+		<input type="text" autofocus/>
+		<br/>
+		<label>email:</label>
+		<input type="email"/>
+		<br/>
+		<label>url:</label>
+		<input type="url"/>
+		<br/>
+		<label>number:</label>
+		<input type="number" max="6" step="2"/>
+		<br/>
+		<label>date:</label>
+		<input type="date"/>
+		<br/>
+		<label>time:</label>
+		<input type="time"/>
+		<br/>
+		<label>search:</label>
+		<input type="search"/>
+	</form>
+<script src="Ai.js"></script>
+<script>
+$$.def('html5form', 'plugin/html5form.js');
+$$.use('html5form', function() {
+	$('form').html5form();
+});
+</script>
+</body>
+</html>

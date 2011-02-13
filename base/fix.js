@@ -58,15 +58,6 @@
 	String.prototype.trim = function() {
 		return $.trim(this);
 	};
-	Object.prototype.keys = function() {
-		var keys = [];
-		for (var prop in this) {
-			if(this.hasOwnProperty(prop)) {
-				keys.push(prop);
-			}
-		}
-		return keys;
-	}
 
 	$(function() {
 		//flash在ie下会更改title的bug

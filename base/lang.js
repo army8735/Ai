@@ -31,7 +31,7 @@
 		}
 		else {
 			//op的键转为array加快速度
-			var match = op.keys(),
+			var match = $$.keys(op),
 				length = match.length;
 			$(node).bind(event, function(e) {
 				var target = e.target,
@@ -245,6 +245,20 @@ var $$ = {
 	mix: function(object, ns) {
 		var p = (ns ? this.ns(ns, this) : this);
 		$.extend(p, object);
+	},
+
+	/**
+	 * @public 取出一个对象中的所有key
+	 */
+	keys: function(obj) {
+		var keys = [];
+		obj = obj || {};
+		for (var prop in obj) {
+			if(obj.hasOwnProperty(prop)) {
+				keys.push(prop);
+			}
+		}
+		return keys;
 	},
 
 	/**
