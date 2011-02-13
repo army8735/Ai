@@ -31,7 +31,7 @@
     </target>
 	
 	<target name="concat" depends="init">
-		<concat destfile="${build}/AI.js" encoding="${charset}" outputencoding="${charset}">
+		<concat destfile="${build}/Ai.js" encoding="${charset}" outputencoding="${charset}">
 			<path path="${base}/jquery-1.5.js" />
 			<path path="${base}/fix.js" />
 			<path path="${base}/lang.js" />
@@ -45,7 +45,7 @@
 	
 	<target name="compress" depends="concat">
 		<java jar="${compiler}/compiler.jar" fork="true" failonerror="false">
-			<arg line="--js=${target}/AI.js --js_output_file=${target}/AI.min.js" />
+			<arg line="--js=${target}/Ai.js --js_output_file=${target}/Ai.min.js" />
 		</java>
 	</target>
 		
