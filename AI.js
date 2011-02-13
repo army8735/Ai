@@ -9051,30 +9051,30 @@ var $$ = {
 	$$.mix({
 		/**
 		 * @public 注册模块文件方法，模块可以是单独文件模块，亦可以是依赖于其它模块的模块集
+		 * @param {boolean} 是否是css模块，可选，默认不是。
 		 * @param {string/object} 模块名，若为object则是以hash方式定义，key为模块名，后面3个数定义为一个数组
 		 * @param {string/null} 模块的url，若无则设为null
-		 * @param {array/string/boolean} 依赖的模块名，可以依赖多个。若为true则为定义css模块
+		 * @param {array/string} 依赖的模块名，可以依赖多个
 		 * @param {stirng} 模块charset，可选
 		 */
-		def: function(name, url, deps, charset) {
+		def: function(isCss, name, url, deps, charset) {
+			//不是css模块忽略isCss参数，所有参数前移
+			if(isCss !== true) {
+				charset = deps;
+				deps = url;
+				url = name;
+				name = isCss;
+			}
 			if($.isPlainObject(name)) {
 				for(var i in name) {
 					var args = name[i];
-					this.def(i, args[0], args[1], args[2]);
+					this.def(isCss, i, args[0], args[1], args[2]);
 				}
 				return;
 			}
-			//不能覆盖已有模块
-			if(module[name]) {
-				throw new Error(name + ' has been defined');
-			}
-			var css;
 			//单依赖转成数组
 			if($.isString(deps) && deps.length) {
 				deps = [deps];
-			}
-			else if(!$.isArray(deps) && !$.isUndefined(deps)) {
-				css = true;
 			}
 			module[name] = {
 				name: name,
@@ -9082,7 +9082,7 @@ var $$ = {
 				deps: deps && deps.length ? deps : null,
 				charset: charset,
 				cb: [],
-				css: css
+				css: isCss === true
 			};
 		},
 
