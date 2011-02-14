@@ -1,7 +1,7 @@
 (function() {
 	
 	var	module = {}, //模块库，用以类似YUI.use异步加载模块或模块集
-		head = document.getElementsByTagName('head')[0],
+		head = $('head')[0],
 		LOADING = 1,
 		LOADED = 2,
 		ORDER = !($.browser.opera || $.browser.mozilla); //不支持script/cache但是自动以script标签插入顺序串行异步执行代码的浏览器有opera和firefox

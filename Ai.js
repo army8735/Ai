@@ -7550,7 +7550,7 @@ var $$ = {
 		return res.concat(complex);
 	}
 };$$.mix({
-	charset: document.charset || document['characterSet'] || 'gb2312',
+	charset: document.charset || document['characterSet'],
 
 	/**
 	 * @public 是否是闭合标签
@@ -7814,7 +7814,7 @@ var $$ = {
 })();
 (function() {
 
-	var head = document.getElementsByTagName('head')[0];
+	var head = $('head')[0];
 	
 	$$.mix({
 		/**
@@ -7914,7 +7914,7 @@ var $$ = {
 })();(function() {
 	
 	var	module = {}, //模块库，用以类似YUI.use异步加载模块或模块集
-		head = document.getElementsByTagName('head')[0],
+		head = $('head')[0],
 		LOADING = 1,
 		LOADED = 2,
 		ORDER = !($.browser.opera || $.browser.mozilla); //不支持script/cache但是自动以script标签插入顺序串行异步执行代码的浏览器有opera和firefox

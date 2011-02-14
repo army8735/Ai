@@ -1,5 +1,5 @@
 $$.mix({
-	charset: document.charset || document['characterSet'] || 'gb2312',
+	charset: document.charset || document['characterSet'],
 
 	/**
 	 * @public 是否是闭合标签

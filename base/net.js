@@ -1,6 +1,6 @@
 (function() {
 
-	var head = document.getElementsByTagName('head')[0];
+	var head = $('head')[0];
 	
 	$$.mix({
 		/**

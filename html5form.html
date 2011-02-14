@@ -6,6 +6,7 @@ body{background:#fff;font:12px/1.5 arial;}
 form label{display:inline-block;width:80px;}
 form input{margin:5px 0;width:150px;height:18px;background:#fff;border:1px solid #ccc;vertical-align:middle;font-family:arial;}
 form input[type="search"]{-webkit-appearance: textfield;}
+form .sub{margin-left:80px;width:auto;}
 </style>
 </head>
 <body>
@@ -34,9 +35,9 @@ form input[type="search"]{-webkit-appearance: textfield;}
 		<label>search:</label>
 		<input type="search"/>
 		<br/>
-		<input type="submit"/>
+		<input type="submit" class="sub"/>
 	</form>
-<script src="Ai.js"></script>
+<script src="Ai.min.js"></script>
 <script>
 $$.def('html5form', 'plugin/html5form.js');
 $$.use('html5form', function() {
