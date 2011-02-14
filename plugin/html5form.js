@@ -3,7 +3,13 @@
 	$.fn.html5form = function(cb) {
 		$(this).each(function() {
 			var form = $(this);
-				inputs = form.find(':input:visible:not(:button, :submit, :radio, :checkbox, select)');
+				inputs = form.find(':input:visible:not(:button, :submit, :radio, :checkbox)');
+			if(!$.isUndefined(form.attr('novalidate'))) {
+				form.submit(function() {
+					inputs.each(function() {
+					});
+				});
+			}
 			inputs.each(function() {
 				var item = $(this),
 					type = item.attr('type').toLowerCase(),
