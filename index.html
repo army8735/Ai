@@ -157,7 +157,7 @@
 
 <div id="testSwf"></div>
 
-<script src="Ai.min.js" id="test"></script>
+<script src="Ai.js" id="test"></script>
 <script>
 $$.def('lazy', 'plugin/lazyLoad.js');
 $$.def('io', 'plugin/io.js');
@@ -190,10 +190,8 @@ $$.use('io', function() {
 	$$.io.storage('test3', 123);
 });
 
-$('#gTop').eventProxy('focus', {
-	'input': function() {
-		console.log(this);
-	}
+$('#gTop').delegate('input', 'focus', function() {
+	alert(this);
 });
 </script>
 </body>

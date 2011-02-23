@@ -6,7 +6,8 @@ body{background:#fff;font:12px/1.5 arial;}
 form label{display:inline-block;width:80px;}
 form input{margin:5px 0;width:150px;height:18px;background:#fff;border:1px solid #ccc;vertical-align:middle;font-family:arial;}
 form input[type="search"]{-webkit-appearance: textfield;}
-form .sub{margin-left:80px;width:auto;}
+form .sub{margin-left:83px;width:auto;height:22px;cursor:pointer;}
+.error{position:absolute;padding:5px 10px;background:#ffc;border:1px solid #f00;-moz-border-radius:5px;-webkit-border-radius:5px;-moz-box-shadow:3px 2px 5px #aaa;-webkit-box-shadow:3px 2px 5px #aaa;border-radius:5px;box-shadow:3px 2px 5px #aaa;cursor:pointer;}
 </style>
 </head>
 <body>
@@ -21,7 +22,7 @@ form .sub{margin-left:80px;width:auto;}
 		<input type="email"/>
 		<br/>
 		<label>url:</label>
-		<input type="url"/>
+		<input type="url" required/>
 		<br/>
 		<label>number:</label>
 		<input type="number" max="6" step="2"/>
@@ -35,7 +36,7 @@ form .sub{margin-left:80px;width:auto;}
 		<label>search:</label>
 		<input type="search"/>
 		<br/>
-		<input type="submit" class="sub"/>
+		<input type="submit" class="sub" value="submit"/>
 	</form>
 <script src="Ai.min.js"></script>
 <script>
