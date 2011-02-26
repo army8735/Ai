@@ -4,10 +4,16 @@
 <style>
 body{background:#fff;font:12px/1.5 arial;}
 form label{display:inline-block;width:80px;}
-form input{margin:5px 0;width:150px;height:18px;background:#fff;border:1px solid #ccc;vertical-align:middle;font-family:arial;}
-form input[type="search"]{-webkit-appearance: textfield;}
-form .sub{margin-left:83px;width:auto;height:22px;cursor:pointer;}
-.error{position:absolute;padding:5px 10px;background:#ffc;border:1px solid #f00;-moz-border-radius:5px;-webkit-border-radius:5px;-moz-box-shadow:3px 2px 5px #aaa;-webkit-box-shadow:3px 2px 5px #aaa;border-radius:5px;box-shadow:3px 2px 5px #aaa;cursor:pointer;}
+form input{margin:5px 0;padding:0;width:150px;height:18px;background:#fff;border:1px solid #ccc;vertical-align:middle;font-family:arial;}
+form input[type="search"]{-webkit-appearance:textfield;}
+form textarea{margin:0;background:#fff;border:1px solid #ccc;vertical-align:top;}
+form .sub{margin-left:83px;padding:0 5px;width:auto;height:22px;cursor:pointer;}
+
+.td_error,.td_tip{position:absolute;padding:2px 5px;background:#ffc;border:1px solid #f00;-moz-border-radius:5px;-webkit-border-radius:5px;-moz-box-shadow:3px 2px 5px #aaa;-webkit-box-shadow:3px 2px 5px #aaa;border-radius:5px;box-shadow:3px 2px 5px #aaa;cursor:pointer;}
+.td_error strong{padding:0 3px;color:#39f;}
+.td_placeholder{color:#808080;}
+.td_tip{border-color:#39f;}
+.td_tip strong{color:#f00;}
 </style>
 </head>
 <body>
@@ -34,7 +40,16 @@ form .sub{margin-left:83px;width:auto;height:22px;cursor:pointer;}
 		<input type="time"/>
 		<br/>
 		<label>search:</label>
-		<input type="search"/>
+		<input type="search" maxlength="2"/>
+		<br/>
+		<label>color:</label>
+		<input type="color"/>
+		<br/>
+		<label>pattern中文:</label>
+		<input type="text" pattern="^[\u4e00-\u9fa5]+$"/>
+		<br/>
+		<label>textarea:</label>
+		<textarea maxlength="4"></textarea>
 		<br/>
 		<input type="submit" class="sub" value="submit"/>
 	</form>
