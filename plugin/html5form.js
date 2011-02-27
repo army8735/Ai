@@ -88,7 +88,6 @@
 			});
 			offset *= -1;
 		}, 50));
-		//引用节点闪现
 	}
 	function clearShake(box) {
 		var interval = box.data('html5form_interval');
@@ -190,7 +189,10 @@
 				//required
 				if(this.getAttribute('required') != null) {
 					item.blur(function() {
-						if(!validArray[index] && $.trim(item.val()) == '') {
+						if(validArray[index]) {
+							shake(validArray[index]);
+						}
+						else if($.trim(item.val()) == '') {
 							validArray[index] = showError(item, '此项必填');
 						}
 					});
@@ -200,7 +202,10 @@
 				var typeValid = TYPE_VALID[type];
 				if(this.nodeName.toLowerCase() == 'input' && typeValid) {
 					item.blur(function() {
-						if(!validArray[index]) {
+						if(validArray[index]) {
+							shake(validArray[index]);
+						}
+						else {
 							var v = item.val().trim();
 							if(v.length && !typeValid.pattern.test(v)) {
 								validArray[index] = showError(item, typeValid.message || '格式不正确');
@@ -214,7 +219,10 @@
 						min = parseFloat(item.attr('min'));
 					if(!isNaN(max) || !isNaN(min)) {
 						item.blur(function() {
-							if(!validArray[index]) {
+							if(validArray[index]) {
+								shake(validArray[index]);
+							}
+							else {
 								var v = item.val().trim();
 								if(v.length) {
 									v = parseFloat(v);
@@ -234,7 +242,10 @@
 				if(pattern != null && pattern.length) {
 					pattern = new RegExp(pattern);
 					item.blur(function() {
-						if(!validArray[index]) {
+						if(validArray[index]) {
+							shake(validArray[index]);
+						}
+						else {
 							var v = item.val().trim();
 							if(v.length && !pattern.test(v)) {
 								validArray[index] = showError(item, '格式不正确');
