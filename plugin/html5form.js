@@ -89,7 +89,6 @@
 			offset *= -1;
 		}, 50));
 		//引用节点闪现
-		box.data('html5form_node').stop().fadeOut(100).fadeIn(100);
 	}
 	function clearShake(box) {
 		var interval = box.data('html5form_interval');
@@ -187,10 +186,6 @@
 				//autofocus自动聚焦
 				if(!autofocus && this.getAttribute('autofocus') != null) {
 					item.focus();
-					//有遗留数据时ie下需重新赋值使得光标至最后
-					if(item.val().length && $.browser.msie) {
-						item.val(item.val());
-					}
 				}
 				//required
 				if(this.getAttribute('required') != null) {
@@ -271,14 +266,20 @@
 					}
 				}
 
-				//所有的:input聚焦时都要隐藏可能存在的错误提示框
-				item.focus(function() {
+				//所有的:input输入时都要隐藏可能存在的错误提示框
+				function removeErrorInput() {
 					var error = validArray[index];
 					if(error) {
 						hideError(error);
 						validArray[index] = null;
 					}
-				});
+				}
+				if(window.addEventListener) {
+					this.addEventListener('input', removeErrorInput, false);
+				}
+				else {
+					this.attachEvent('onpropertychange', removeErrorInput);
+				}
 			});
 
 			form.submit(function() {
@@ -289,19 +290,10 @@
 					if(item) {
 						validResult = false;
 						shake(item);
+						//focus到第一个错误:input
 						if(!first) {
 							first = true;
-							//scroll到第一个错误框，暂不考虑第一个是否就是最上面的
-							var top = item.offset().top,
-								height = item.outerHeight(),
-								scrollTop = $(window).scrollTop(),
-								winHeight = $(window).height();
-							if(top < scrollTop) {
-								$(window).scrollTop(top);
-							}
-							else if(top + height> scrollTop + winHeight) {
-								$(window).scrollTop(top + height - winHeight);
-							}
+							item.data('html5form_node').focus();
 						}
 					}
 				});
