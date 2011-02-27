@@ -134,7 +134,7 @@
 	}
 
 	$.fn.html5form = function(cb) {
-		$(this).each(function() {
+		this.each(function() {
 			var form = $(this),
 				novalidate = !$.isUndefined(form.attr('novalidate')),
 				inputs = form.find(':input:visible:not(:button, :submit, :radio, :checkbox)'),
@@ -283,11 +283,22 @@
 
 			form.submit(function() {
 				inputs.blur(); //全部触发可能存在的校验
-				var validResult = true;
+				var validResult = true,
+					first;
 				validArray.forEach(function(item) {
 					if(item) {
 						validResult = false;
 						shake(item);
+						if(!first) {
+							first = true;
+							//scroll到第一个错误框，暂不考虑最后一个以及第一个是否就是最上面的
+							var v = item.offset().top,
+								scrollTop = $(window).scrollTop(),
+								height = $(window).height();
+							if(v < scrollTop) {
+								$(window).scrollTop(v);
+							}
+						}
 					}
 				});
 				//本身通过html5校验，如有传入callback，返回callback的值
@@ -297,6 +308,7 @@
 				return validResult;
 			});
 		});
+		return this;
 	}
 
 })();
