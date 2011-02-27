@@ -30,13 +30,36 @@
 				message: '颜色格式不合法'
 			}
 		},
-		tipBox;
+		tipBox,
+		tpl = [
+			'<table class="td_mesbox" cellspacing="0" cellpadding="0"><tbody>',
+				'<tr>',
+					'<td class="round left_top"></td>',
+					'<td class="line top"></td>',
+					'<td class="round right_top"></td>',
+				'</tr><tr>',
+					'<td class="left"></td>',
+					'<td class="center">',
+						'<div class="container"><%=text%></div>',
+					'</td>',
+					'<td class="right"></td>',
+				'</tr><tr>',
+					'<td class="round left_bottom"></td>',
+					'<td class="line bottom"></td>',
+					'<td class="round right_bottom"></td>',
+				'</tr>',
+			'</tbody></table>'
+		].join('');
 
 	function showError(node, message) {
-		var box = $('<div>').addClass(ERROR_CLASS).html(message).hide().appendTo(body),
+		var s = $$.render(tpl, { text: message }),
+			box = $('<div>').addClass(ERROR_CLASS).html(s).hide().appendTo(body),
 			pos = getPos(node, box);
 		//最初的坐标保存起来
-		box.data('left', pos.left).data('top', pos.top);
+		box.data('html5form_left', pos.left).data('html5form_top', pos.top);
+		//以及对:input的引用
+		box.data('html5form_node', node);
+		//设置位置
 		box.css({
 			left: pos.left + 'px',
 			top: pos.top + 'px'
@@ -55,26 +78,29 @@
 		var offset = 1,
 			count = 0;
 		//颤动动画存在自身的interval变量上
-		box.data('interval', setInterval(function() {
+		box.data('html5form_interval', setInterval(function() {
 			if(count++ > 10) {
 				clearShake(box);
 			}
 			box.css({
-				left: box.data('left') + offset + 'px',
-				top: box.data('top') + offset + 'px'
+				left: box.data('html5form_left') + offset + 'px',
+				top: box.data('html5form_top') + offset + 'px'
 			});
 			offset *= -1;
 		}, 50));
+		//引用节点闪现
+		box.data('html5form_node').stop().fadeOut(100).fadeIn(100);
 	}
 	function clearShake(box) {
-		var interval = box.data('interval');
+		var interval = box.data('html5form_interval');
 		if(interval) {
 			clearInterval(interval);
 		}
 	}
 	function showTip(node, current, maxLength) {
 		if(!tipBox) {
-			tipBox = $('<div>').addClass(TIP_CLASS);
+			var s = $$.render(tpl, { text: '' });
+			tipBox = $('<div>').addClass(TIP_CLASS).html(s);
 		}
 		//focus时显示并设置位置
 		if(node) {
@@ -87,11 +113,11 @@
 		}
 		//更新说明
 		current = current > maxLength ? '<strong>' + current + '</strong>' : current;
-		tipBox.html(current + ' / ' + maxLength);
+		tipBox.find('div.container').html(current + ' / ' + maxLength);
 	}
 	function hideTip() {
 		if(tipBox) {
-			tipBox.html('').remove();
+			tipBox.remove();
 		}
 	}
 	function getPos(node, box) {
@@ -126,8 +152,7 @@
 
 			inputs.each(function(index) {
 				var item = $(this),
-					type = item.attr('type').toLowerCase(),
-					sourceType = (this.getAttribute('type') || '').toLowerCase(),
+					type = (this.getAttribute('type') || '').toLowerCase(),
 					interval;
 				//placeholder占位符
 				if(!placeholder && this.getAttribute('placeholder') != null) {
@@ -177,8 +202,8 @@
 				}
 
 				//默认的校验
-				var typeValid = TYPE_VALID[sourceType];
-				if(typeValid) {
+				var typeValid = TYPE_VALID[type];
+				if(this.nodeName.toLowerCase() == 'input' && typeValid) {
 					item.blur(function() {
 						if(!validArray[index]) {
 							var v = item.val().trim();
@@ -189,7 +214,7 @@
 					});
 				}
 				//number类型另附验证范围
-				if(sourceType == 'number') {
+				if(type == 'number') {
 					var max = parseFloat(item.attr('max')),
 						min = parseFloat(item.attr('min'));
 					if(!isNaN(max) || !isNaN(min)) {
