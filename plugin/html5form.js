@@ -291,12 +291,16 @@
 						shake(item);
 						if(!first) {
 							first = true;
-							//scroll到第一个错误框，暂不考虑最后一个以及第一个是否就是最上面的
-							var v = item.offset().top,
+							//scroll到第一个错误框，暂不考虑第一个是否就是最上面的
+							var top = item.offset().top,
+								height = item.outerHeight(),
 								scrollTop = $(window).scrollTop(),
-								height = $(window).height();
-							if(v < scrollTop) {
-								$(window).scrollTop(v);
+								winHeight = $(window).height();
+							if(top < scrollTop) {
+								$(window).scrollTop(top);
+							}
+							else if(top + height> scrollTop + winHeight) {
+								$(window).scrollTop(top + height - winHeight);
 							}
 						}
 					}
