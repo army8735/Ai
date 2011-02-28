@@ -109,13 +109,16 @@
 				top: pos.top + 'px'
 			}).fadeIn(200);
 		}
+		else {
+			tipBox.show();
+		}
 		//更新说明
 		current = current > maxLength ? '<strong>' + current + '</strong>' : current;
 		tipBox.find('div.container').html(current + ' / ' + maxLength);
 	}
 	function hideTip() {
 		if(tipBox) {
-			tipBox.remove();
+			tipBox.hide();
 		}
 	}
 	function getPos(node, box) {
@@ -260,7 +263,9 @@
 						showTip(null, item.val().length, maxLength);
 					}
 					item.focus(function() {
-						showTip(item, item.val().length, maxLength);
+						if(!validArray[index]) {
+							showTip(item, item.val().length, maxLength);
+						}
 					}).blur(function() {
 						hideTip();
 						var v = item.val().length;
