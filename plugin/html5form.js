@@ -185,6 +185,31 @@
 						}
 					}
 				}
+				//maxlength
+				var maxLength = parseInt(this.getAttribute('maxlength'));
+				if(!isNaN(maxLength)) {
+					function input() {
+						showTip(null, item.val().length, maxLength);
+					}
+					item.focus(function() {
+						if(!validArray[index]) {
+							showTip(item, item.val().length, maxLength);
+						}
+					}).blur(function() {
+						hideTip();
+						var v = item.val().length;
+						if(!validArray[index] && v > maxLength) {
+							validArray[index] = showError(item, '最多只允许输入<strong>' + maxLength + '</strong>个字符');
+						}
+					});
+					//input事件除了ie都支持，可以用onpropertychange代替
+					if(window.addEventListener) {
+						this.addEventListener('input', input, false);
+					}
+					else if(window.attachEvent) {
+						this.attachEvent('onpropertychange', input);
+					}
+				}
 				//autofocus自动聚焦
 				if(!autofocus && this.getAttribute('autofocus') != null) {
 					item.focus();
@@ -255,31 +280,6 @@
 							}
 						}
 					});
-				}
-				//maxlength
-				var maxLength = parseInt(this.getAttribute('maxlength'));
-				if(!isNaN(maxLength)) {
-					function input() {
-						showTip(null, item.val().length, maxLength);
-					}
-					item.focus(function() {
-						if(!validArray[index]) {
-							showTip(item, item.val().length, maxLength);
-						}
-					}).blur(function() {
-						hideTip();
-						var v = item.val().length;
-						if(!validArray[index] && v > maxLength) {
-							validArray[index] = showError(item, '最多只允许输入<strong>' + maxLength + '</strong>个字符');
-						}
-					});
-					//input事件除了ie都支持，可以用onpropertychange代替
-					if(window.addEventListener) {
-						this.addEventListener('input', input, false);
-					}
-					else if(window.attachEvent) {
-						this.attachEvent('onpropertychange', input);
-					}
 				}
 
 				//所有的:input输入时都要隐藏可能存在的错误提示框
