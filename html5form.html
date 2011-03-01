@@ -73,7 +73,10 @@ form .sub{margin-left:83px;padding:0 5px;width:auto;height:22px;cursor:pointer;}
 <script>
 $$.def('html5form', 'plugin/html5form.js');
 $$.use('html5form', function() {
-	$('form').html5form();
+	$('form').html5form(function() {
+		alert(this + '：提交完成！');
+		return false;
+	});
 });
 </script>
 </body>
