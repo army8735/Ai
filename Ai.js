@@ -7455,17 +7455,6 @@ var $$ = {
 		return $.extend({
 			// 是否为mobile safari浏览器（iphone, ipod touch, ipad）
 			mobileSafari: $.browser.safari && / Mobile\//.test(userAgent),
-			html5: function(){
-				var input = document.createElement('input'),
-					video = document.createElement('video'),
-					history = window.history;
-				return {
-					// 支持video标签，支持h264
-					'h264': !!(video.canPlayType && video.canPlayType('video/mp4; codecs="avc1.42E01E, mp4a.40.2"').replace(/no/, '')),
-					'history': !!(history && history.pushState && history.popState),
-					'placeholder': 'placeholder' in input
-				};
-			},
 			//语言特性
 			lang: (navigator.language || navigator.systemLanguage).toLowerCase(),
 			iOS: (this.mobileSafari ? (userAgent.match(/(ipad|iphone|ipod)/) || [])[0] : false),
