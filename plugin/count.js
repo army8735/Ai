@@ -119,7 +119,7 @@
 	function request() {
 		//有数据时才会发送
 		if(_cache.length) {
-			$$.getRequest(_url, 'c=' + _cache.join('|'));
+			$.get(_url, 'c=' + _cache.join('|'));
 			_cache = [];
 		}
 	};

@@ -23,9 +23,6 @@
 			if(op.async) {
 				s.async = op.async;
 			}
-			if(op.type) {
-				s.type = op.type;
-			}
 			s.src = url;
 			s.onload = s.onreadystatechange = function(){
 				if (!done && (!this.readyState || ['loaded', 'complete'].indexOf(this.readyState) > -1)) {

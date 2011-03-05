@@ -157,22 +157,22 @@
 
 <div id="testSwf"></div>
 
-<script src="Ai.js" id="test"></script>
+<script src="Ai.min.js" id="test"></script>
 <script>
 $$.def('lazy', 'plugin/lazyLoad.js');
 $$.def('io', 'plugin/io.js');
 $$.def('count', 'plugin/count.js');
-$$.def('swf', 'plugin/swf.js', 'lazy');
+$$.def('swf', 'plugin/swf.js');
 
 $$.use('lazy', function() {
 	$$.lazy.imgLoad($('img.lazyImg'), 'alt');
 });
 
-/*$$.use('count', function() {
+$$.use('count', function() {
 	$$.count.nodeClick('count.php', 1000, 1000, 5);
-});*/
+});
 
-$$.use('swf', function() {
+$$.use(['lazy', 'swf'], function() {
 	var id = 'testSwf';
 	$$.lazy.scrollLoad(id, function() {
 		$$.swf.setItem('/workspace/contents/bin/content_player.swf', id, 288, 236, {
