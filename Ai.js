@@ -7366,13 +7366,15 @@ var $$ = {
 	ns: function(namespace, parent){
 		var i,
 			p = parent || window,
-			n = namespace.split('.').reverse();
+			n = namespace.split('.').reverse(),
+			temp = [];
 		while(n.length && (i = n.pop())) {
+			temp.push(i);
 			if($.isUndefined(p[i])) {
 				p[i] = {};
 			}
 			else if(!$.isPlainObject(p[i])) {
-				return false; //ns失败时返回false，使用时最好if判断下来进行检测
+				throw new Error(temp.join('.') + ': is not a namespace');
 			}
 			p = p[i];
 		}
