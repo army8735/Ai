@@ -7361,7 +7361,7 @@ var $$ = {
 	 * @public 为parent指定的命名空间
 	 * @param {string} 命名空间，如com.x.y.z
 	 * @param {object} 指定的被扩展命名空间父层
-	 * @return {object} 返回被扩展的命名空间对象，失败为false
+	 * @return {object} 返回被扩展的命名空间对象
 	 */
 	ns: function(namespace, parent){
 		var i,
