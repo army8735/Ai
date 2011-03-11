@@ -105,26 +105,38 @@
 var $$ = {
 	/**
 	 * @public 为parent指定的命名空间
-	 * @param {string} 命名空间，如com.x.y.z
-	 * @param {object} 指定的被扩展命名空间父层
-	 * @return {object} 返回被扩展的命名空间对象，失败为false
+	 * @param {string} 命名空间，如com.x.y.z，其中最后一位不包含在命名空间内，是对象名
+	 * @param {object} 可选，写入到命名空间上的对象，为空此方法重载为读取对象
+	 * @return {object} 返回被扩展的命名空间对象
 	 */
-	ns: function(namespace, parent){
+	ns: function(namespace, target){
 		var i,
-			p = parent || window,
+			p = window,
 			n = namespace.split('.').reverse(),
 			temp = [];
-		while(n.length && (i = n.pop())) {
-			temp.push(i);
-			if($.isUndefined(p[i])) {
-				p[i] = {};
+		if($.isUndefined(target)) {
+			while((i = n.pop()) && n.length) {
+				p = p[i];
+				temp.push(i);
+				if(!$.isPlainObject(p)) {
+					throw new Error('namespace: ' + namespace + ', ' + temp.join('.') + ': is not an object');
+				}
 			}
-			else if(!$.isPlainObject(p[i])) {
-				throw new Error(temp.join('.') + ': is not a namespace');
-			}
-			p = p[i];
 		}
-		return p;
+		else {
+			while((i = n.pop()) && n.length) {
+				temp.push(i);
+				if($.isUndefined(p[i])) {
+					p[i] = {};
+				}
+				else if(!$.isPlainObject(p)) {
+					throw new Error('namespace: ' + namespace + ', ' + temp.join('.') + ': is not an object');
+				}
+				p = p[i];
+			}
+			p[i] = target;
+		}
+		return p[i];
 	},
 
 	/**
@@ -133,7 +145,7 @@ var $$ = {
 	 * @param {string} 需要扩展到本身的命名空间，忽略为本身
 	 */
 	mix: function(object, ns) {
-		var p = (ns ? this.ns(ns, this) : this);
+		var p = (ns ? this.ns('$$.' + ns, {}) : this);
 		$.extend(p, object);
 	},
 
