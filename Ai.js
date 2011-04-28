@@ -7372,7 +7372,7 @@ var $$ = {
 			while((i = n.pop()) && n.length) {
 				p = p[i];
 				temp.push(i);
-				if(!$.isPlainObject(p)) {
+				if(!$.isObject(p)) {
 					throw new Error('namespace: ' + namespace + ', ' + temp.join('.') + ': is not an object');
 				}
 			}
@@ -7383,7 +7383,7 @@ var $$ = {
 				if($.isUndefined(p[i])) {
 					p[i] = {};
 				}
-				else if(!$.isPlainObject(p)) {
+				else if(!$.isObject(p)) {console.log(p);console.log($.isPlainObject(p));
 					throw new Error('namespace: ' + namespace + ', ' + temp.join('.') + ': is not an object');
 				}
 				p = p[i];
