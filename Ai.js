@@ -7383,7 +7383,7 @@ var $$ = {
 				if($.isUndefined(p[i])) {
 					p[i] = {};
 				}
-				else if(!$.isObject(p)) {console.log(p);console.log($.isPlainObject(p));
+				else if(!$.isObject(p)) {
 					throw new Error('namespace: ' + namespace + ', ' + temp.join('.') + ': is not an object');
 				}
 				p = p[i];
