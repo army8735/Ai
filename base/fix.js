@@ -55,9 +55,16 @@
 			return -1;
 		};
 	}
-	String.prototype.trim = function() {
-		return $.trim(this);
-	};
+	if(!String.prototype.trim) {
+		String.prototype.trim = function() {
+			return $.trim(this);
+		};
+	}
+	if(!Date.prototype.now) {
+		Date.prototype.now = function() {
+			return new Date();
+		};
+	}
 
 	//flash在ie下会更改title的bug
 	if($.browser.msie) {
