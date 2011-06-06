@@ -62,7 +62,7 @@
 				'}': '&#125;',
 				'@': '&#64;'
 			};
-			return str.replace(/[<>''\{\}&@]/g, function($1){
+			return str.replace(/[<>'"\{\}&@]/g, function($1){
 				return xmlchar[$1];
 			});
 		},

@@ -150,20 +150,6 @@ var $$ = {
 	},
 
 	/**
-	 * @public 取出一个对象中的所有key
-	 */
-	keys: function(obj) {
-		var keys = [];
-		obj = obj || {};
-		for (var prop in obj) {
-			if(obj.hasOwnProperty(prop)) {
-				keys.push(prop);
-			}
-		}
-		return keys;
-	},
-
-	/**
 	 * @public 去掉数组里重复成员
 	 * @note 支持所有成员类型，包括dom，对象，数组，布尔，null等，复合类型比较引用
 	 */

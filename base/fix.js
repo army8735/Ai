@@ -65,6 +65,14 @@
 			return new Date();
 		};
 	}
+	if(!Object.keys) {
+		Object.keys = function(o) {
+			if(o !== Object(o)) throw new Error('Object.keys called on non-object');
+			var ret = [], p;
+			for(p in o) if(Object.prototype.hasOwnProperty.call(o,p)) ret.push(p);
+			return ret;
+		};
+	}
 
 	//flash在ie下会更改title的bug
 	if($.browser.msie) {
