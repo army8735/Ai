@@ -30,20 +30,15 @@
 		return list;
 	}
 	function loadModule(mod) {
-		var url = mod.url;
-		if(mod.css) {
-			$$.getCss(url, function() {
+		$.ajax({
+			url: mod.url,
+			dataType: 'script',
+			cache: mod.options.cache,
+			charset: mod.options.charset,
+			success: function() {
 				loadComplete.call(mod);
-			});
-		}
-		else {
-			$$.getScript(url, {
-				charset: mod.charset,
-				callback: function() {
-					loadComplete.call(mod);
-				}
-			});
-		}
+			}
+		});
 	}
 	//仅仅是加载完成
 	function loadComplete() {
@@ -57,25 +52,21 @@
 	$$.mix({
 		/**
 		 * @public 注册模块文件方法，模块可以是单独文件模块，亦可以是依赖于其它模块的模块集
-		 * @param {boolean} 是否是css模块，可选，默认不是。
 		 * @param {string} 模块名
 		 * @param {string/null} 模块的url，若无则设为null
-		 * @param {stirng} 模块charset，可选
+		 * @param {object} 可选参数
 		 */
-		def: function(isCss, name, url, charset) {
-			//不是css模块忽略isCss参数，所有参数前移
-			if(isCss !== true) {
-				charset = url;
-				url = name;
-				name = isCss;
-			}
+		def: function(name, url, options) {
+			options = $.extend({
+				cache: true,
+				charset: 'utf-8'
+			}, options);
 			module[name] = {
 				name: name,
 				url: url && url.length ? url : null,
-				charset: charset,
+				options: options,
 				cb: [],
-				load: UNLOAD,
-				css: isCss === true
+				load: UNLOAD
 			};
 		},
 

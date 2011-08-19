@@ -53,7 +53,7 @@ form .sub{margin-left:83px;padding:0 5px;width:auto;height:22px;cursor:pointer;}
 		<input type="date"/>
 		<br/>
 		<label>time:</label>
-		<input type="time"/>
+		<input type="time" name="time"/>
 		<br/>
 		<label>search:</label>
 		<input type="search" maxlength="2"/>
@@ -70,14 +70,12 @@ form .sub{margin-left:83px;padding:0 5px;width:auto;height:22px;cursor:pointer;}
 		<input type="submit" class="sub" value="submit"/>
 	</form>
 <script src="Ai.min.js"></script>
+<script src="plugin/html5form.js"></script>
 <script>
-$$.def('html5form', 'plugin/html5form.js');
-$$.use('html5form', function() {
 	$('form').html5form(function() {
 		alert(this + '：提交完成！');
 		return false;
 	});
-});
 </script>
 </body>
 </html>

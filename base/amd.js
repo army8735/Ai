@@ -5,7 +5,8 @@
 		lastId,
 		lastDeps,
 		lastFactory,
-		anonymity,
+		lastUri,
+		lastMod,
 		UNLOAD = 0,
 		LOADING = 1,
 		LOADED = 2;
@@ -16,10 +17,6 @@
 			factory = dependencies;
 			dependencies = id;
 			id = null; //省略id时默认为加载js文件的绝对路径
-			anonymity = true;
-		}
-		else {
-			anonymity = false;
 		}
 		if(!$.isArray(dependencies)) {
 			factory = dependencies;
@@ -27,8 +24,16 @@
 		}
 		lastId = id;
 		lastDeps = dependencies;
-		lastFactory = factory;
+		lastFactory = factory;window.t = window. t || 1;console.log('d' + window.t++);
+		if(id) {
+			lastMod = module[id] = {
+				id: id,
+				deps: dependencies,
+				factory: factory
+			};
+		}
 	};
+	define.amd = {};
 	function use(ids, cb) {
 		if($.isString(ids)) ids = [ids];
 		cb = cb || function(){};
@@ -109,20 +114,31 @@
 			dataType: 'script',
 			cache: true,
 			success: function() {
-				lastId = lastId || url;
+				if(lastId) {
+					lastMod.uri = url;
+				}
+				else {
+					module[url] = {
+						id: url,
+						uri: url,
+						deps: lastDeps,
+						factory: lastFactory
+					};
+				}
+				/*lastId = lastId || url;console.log('---' + lastId);
 				module[lastId] = {
 					id: lastId,
 					uri: url,
 					deps: lastDeps,
 					factory: lastFactory
-				};
+				};*/
 				var script = urlScript[url];
 				script.state = LOADED;
 				script.id = lastId;
 				script.cb.forEach(function(cb) {
 					cb();
 				});
-				script.cb = [];
+				script.cb = [];window.t = window. t || 1;console.log('s' + window.t++);
 			}
 		});
 	};
