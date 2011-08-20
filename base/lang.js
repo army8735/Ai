@@ -107,11 +107,12 @@ var $$ = {
 	 * @public 为parent指定的命名空间
 	 * @param {string} 命名空间，如com.x.y.z，其中最后一位不包含在命名空间内，是对象名
 	 * @param {object} 可选，写入到命名空间上的对象，为空此方法重载为读取对象
+	 * @param {object} 可选，仅写入时有用，写入时的顶级对象，为空为window
 	 * @return {object} 返回被扩展的命名空间对象
 	 */
-	ns: function(namespace, target){
+	ns: function(namespace, target, parent){
 		var i,
-			p = window,
+			p = parent || window,
 			n = namespace.split('.').reverse(),
 			temp = [];
 		if($.isUndefined(target)) {
@@ -145,7 +146,7 @@ var $$ = {
 	 * @param {string} 需要扩展到本身的命名空间，忽略为本身
 	 */
 	mix: function(object, ns) {
-		var p = (ns ? this.ns('$$.' + ns, {}) : this);
+		var p = (ns ? this.ns(ns, {}, this) : this);
 		$.extend(p, object);
 	},
 
