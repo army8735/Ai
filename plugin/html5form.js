@@ -51,7 +51,7 @@
 					o.next('span.td_error').remove();
 				},
 				submit: function() {
-					return false;
+					return cb.call(form[0]) !== false;
 				}
 			});
 		});

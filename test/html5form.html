@@ -59,7 +59,10 @@ form .sub{margin-left:83px;padding:0 5px;width:auto;height:22px;cursor:pointer;}
 $$.def('html5formcore', '../plugin/html5formcore.js');
 $$.def('html5form', '../plugin/html5form.js', 'html5formcore');
 $$.use('html5form', function() {
-	$('form').html5form();
+	$('form').html5form(function() {
+		alert('校验通过，可以提交');
+		return false;
+	});
 });
 //说明
 基于html5formcore的html5form校验支持，主要是UI相关。
@@ -119,8 +122,7 @@ cb为传入的回调函数，在通过html5form的校验后提交表单时触发
 					o.next('span.td_error').remove();
 				},
 				submit: function() {
-					alert('校验通过，可以提交');
-					return false;
+					return cb.call(form[0]) !== false
 				}
 			});
 		});
