@@ -122,7 +122,7 @@ cb为传入的回调函数，在通过html5form的校验后提交表单时触发
 					o.next('span.td_error').remove();
 				},
 				submit: function() {
-					return cb.call(form[0]) !== false
+					return cb.call(form[0]) !== false;
 				}
 			});
 		});
