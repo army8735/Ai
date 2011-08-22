@@ -1,8 +1,8 @@
 <!DOCTYPE html><html>
 <head>
 <meta charset="utf-8"/>
+<link rel="stylesheet" href="style.css" type="text/css"/>
 <style>
-body{background:#fff;font:12px/1.5 arial;}
 form label{display:inline-block;width:80px;}
 form input{position:relative;margin:5px 0;padding:0 2px;width:150px;height:18px;background:#fff;border:1px solid #ccc;vertical-align:middle;font-family:arial;}
 form input[type="search"]{-webkit-appearance:textfield;}
@@ -16,52 +16,131 @@ form .sub{margin-left:83px;padding:0 5px;width:auto;height:22px;cursor:pointer;}
 </style>
 </head>
 <body>
-	<form action="#">
-		<label>placeholder:</label>
-		<input type="text" placeholder="army8735" autocomplete="off"/>
-		<br/>
-		<label>autofocus:</label>
-		<input type="text" autocomplete="off" autofocus/>
-		<br/>
-		<label>email:</label>
-		<input type="email" autocomplete="off"/>
-		<br/>
-		<label>required:</label>
-		<input autocomplete="off" required/>
-		<br/>
-		<label>url:</label>
-		<input type="url" autocomplete="off"/>
-		<br/>
-		<label>number:</label>
-		<input type="number" max="6" step="2" autocomplete="off"/>
-		<br/>
-		<label>date:</label>
-		<input type="date" autocomplete="off"/>
-		<br/>
-		<label>time:</label>
-		<input type="time" name="time" autocomplete="off"/>
-		<br/>
-		<label>search:</label>
-		<input type="search" maxlength="2" autocomplete="off"/>
-		<br/>
-		<label>color:</label>
-		<input type="color" autocomplete="off"/>
-		<br/>
-		<label>pattern中文:</label>
-		<input type="text" pattern="^[\u4e00-\u9fa5]+$" autocomplete="off"/>
-		<br/>
-		<label>textarea:</label>
-		<textarea maxlength="4" autocomplete="off"></textarea>
-		<br/>
-		<input type="submit" class="sub" value="submit"/>
-	</form>
-<script src="../Ai.js"></script>
+<form action="#">
+	<label>placeholder:</label>
+	<input type="text" placeholder="army8735" autocomplete="off"/>
+	<br/>
+	<label>autofocus:</label>
+	<input type="text" autocomplete="off" autofocus/>
+	<br/>
+	<label>email:</label>
+	<input type="email" autocomplete="off"/>
+	<br/>
+	<label>required:</label>
+	<input autocomplete="off" required/>
+	<br/>
+	<label>url:</label>
+	<input type="url" autocomplete="off"/>
+	<br/>
+	<label>number:</label>
+	<input type="number" max="6" step="2" autocomplete="off"/>
+	<br/>
+	<label>date:</label>
+	<input type="date" autocomplete="off"/>
+	<br/>
+	<label>time:</label>
+	<input type="time" name="time" autocomplete="off"/>
+	<br/>
+	<label>search:</label>
+	<input type="search" maxlength="2" autocomplete="off"/>
+	<br/>
+	<label>color:</label>
+	<input type="color" autocomplete="off"/>
+	<br/>
+	<label>pattern中文:</label>
+	<input type="text" pattern="^[\u4e00-\u9fa5]+$" autocomplete="off"/>
+	<br/>
+	<label>textarea:</label>
+	<textarea maxlength="4" autocomplete="off"></textarea>
+	<br/>
+	<input type="submit" class="sub" value="submit"/>
+</form>
+<pre class="brush:js">//html5form
+$$.def('html5formcore', '../plugin/html5formcore.js');
+$$.def('html5form', '../plugin/html5form.js', 'html5formcore');
+$$.use('html5form', function() {
+	$('form').html5form();
+});
+//说明
+基于html5formcore的html5form校验支持，主要是UI相关。
+//API
+$('form').html5form(cb);
+cb为传入的回调函数，在通过html5form的校验后提交表单时触发，返回值和jQuery.submit(cb)效果相同</pre>
+<pre class="brush:js">(function() {
+
+	var TYPE_MES = {
+			'url': 'url格式不合法',
+			'email': 'email格式不合法',
+			'number': '这不是一个数字',
+			'date': '日期格式不合法',
+			'time': '时间格式不合法',
+			'color': '颜色格式不合法',
+			'required': '此项必填'
+		};
+
+	function shake(node) {
+		var i = 10,
+			direct = true;
+		setInterval(function() {
+			if(--i &lt;= 0) {
+				clearInterval(node.data('interval'));
+				node.css('left', 0);
+				return;
+			}
+			var left = (direct ? '' : '-') + '2px';
+			direct = !direct;
+			node.css('left', left);
+		}, 50);
+	}
+
+	$.fn.html5form = function(cb) {
+		this.each(function() {
+			var form = $(this);
+			form.html5formcore({
+				placeholder: function(v) {
+					var o = $(this);
+					v ? o.addClass('td_placeholder') : o.removeClass('td_placeholder');
+				},
+				valid: function(type) {
+					var o = $(this);
+					o.addClass('td_valid');
+					o.next('span.td_error').remove();
+					if(type == 'number' && arguments.length == 3) {
+						o.after('&lt;span class="td_error">数值超过范围限制：' + (arguments[1] || '-∞') + '~' + (arguments[2] || '+∞') + '&lt;/span>');
+					}
+					else {
+						o.after('&lt;span class="td_error">' + (TYPE_MES[type] || '错误的格式') + '&lt;/span>');
+					}
+					shake(o);
+				},
+				input: function() {
+					var o = $(this);
+					o.removeClass('td_valid');
+					o.next('span.td_error').remove();
+				},
+				submit: function() {
+					alert('校验通过，可以提交');
+					return false;
+				}
+			});
+		});
+		return this;
+	}
+
+})();</pre>
+
+<script src="../Ai.min.js"></script>
 <script>
-	$$.def('html5formcore', '../plugin/html5formcore.js?' + (+new Date()));
-	$$.def('html5form', '../plugin/html5form.js?' + (+new Date()), 'html5formcore');
+	$$.def('html5formcore', '../plugin/html5formcore.js');
+	$$.def('html5form', '../plugin/html5form.js', 'html5formcore');
 	$$.use('html5form', function() {
 		$('form').html5form();
 	});
 </script>
+<object classid="clsid:d27cdb6e-ae6d-11cf-96b8-444553540000" id="jssc5" style="position:absolute;left:-9999px;">
+	<param name="movie" value="../jssc5.swf"/>
+	<param name="flashvars" value="find=brush&lang=chinese"/>
+	<embed src="../jssc5.swf" flashvars="find=brush&lang=chinese" name="jssc5" type="application/x-shockwave-flash" style="position:absolute;left:-9999px;"/>
+</object>
 </body>
 </html>

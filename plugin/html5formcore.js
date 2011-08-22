@@ -96,7 +96,7 @@
 							oR.moveToElementText(item[0]);
 							bookmark = oS.getBookmark();
 							for (i = 0; oR.compareEndPoints('StartToStart', oS) < 0 && oS.moveStart("character", -1) !== 0; i++) {
-								//ie的\n也算一个长度
+								//ie的换行是\r\n，算2个字符长度
 								if(v.charAt(i) == '\n') {
 									i++;
 								}
@@ -116,11 +116,11 @@
 					input();
 				}
 				//autofocus自动聚焦
-				if(!autofocus && item.attr('autofocus')) {
+				if(!autofocus && this.getAttribute('autofocus') != null) {
 					item.focus();
 				}
 				//required
-				if(item.attr('required')) {
+				if(this.getAttribute('required') != null) {
 					item.blur(function() {
 						validArray[index] = (item.val().trim() == '');
 						if(validArray[index] && !item.prop('disabled') && item.is(':visible')) {
