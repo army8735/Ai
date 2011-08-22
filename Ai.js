@@ -9660,11 +9660,11 @@ var $$ = {
 			});
 		}
 		else if(!history[mod]) {
-			mod = module[mod];
 			//不存在抛异常
-			if(!mod) {
-				throw new Error('module[' + mod.name + '] is Undefined');
+			if(!module[mod]) {
+				throw new Error('module[' + mod + '] is Undefined');
 			}
+			mod = module[mod];
 			//将尚未加载的模块的url存入list，并置历史记录防止重复
 			if(mod.url && mod.load != LOADED) {
 				list.push(mod);
@@ -9684,7 +9684,7 @@ var $$ = {
 			}
 		});
 	}
-	//仅仅是加载完成
+	//加载完成
 	function loadComplete() {
 		var mod = this;
 		mod.load = LOADED;
@@ -9692,22 +9692,44 @@ var $$ = {
 			cb();
 		});
 	}
+	function scanRequires(name) {
+		var res = [];
+		if($.isString(name)) {
+			name = [name];
+		}
+		name.forEach(function(item) {
+			if(!module[item]) {
+				throw new Error('module[' + mod + '] is Undefined');
+			}
+			res = res.concat(module[item].requires);
+		});
+		return res;
+	}
 
 	$$.mix({
 		/**
 		 * @public 注册模块文件方法，模块可以是单独文件模块，亦可以是依赖于其它模块的模块集
-		 * @param {string} 模块名
+		 * @param {string} 模块名，唯一
 		 * @param {string/null} 模块的url，若无则设为null
+		 * @param {string/array} 可选参数，依赖的模块名
 		 * @param {object} 可选参数
 		 */
-		def: function(name, url, options) {
+		def: function(name, url, requires, options) {
+			if($.isObject(requires)) {
+				options = requires;
+				requires = [];
+			}
+			else if($.isString(requires)) {
+				requires = [requires];
+			}
+			requires = requires || [];
 			options = $.extend({
-				cache: true,
-				charset: 'utf-8'
+				cache: true
 			}, options);
 			module[name] = {
 				name: name,
 				url: url && url.length ? url : null,
+				requires: requires,
 				options: options,
 				cb: [],
 				load: UNLOAD
@@ -9722,42 +9744,46 @@ var $$ = {
 		use: function(name, cb) {
 			var list = scanModule(name),
 				len = list.length,
+				requires = scanRequires(name),
 				one;
 			cb = cb || function(){};
-			//依赖先前已经加载完了直接执行
-			if(len == 0) {
-				cb();
-			}
-			//只使用一个模块，加载callbak
-			else if(len == 1) {
-				one = list[0];
-				//先将callback放入回调列表，目的是当此模块为loading状态时不再进入下面分支判断
-				one.cb.push(cb);
-				//未读取模块时标识其为loading状态并读取
-				if(one.load == UNLOAD) {
-					one.load = LOADING;
-					loadModule(one);
-				}
-				//已加载好的直接执行回调
-				else if(one.load == LOADED) {
+			requires.length ? this.use(requires, exec) : exec();
+			function exec() {
+				//依赖先前已经加载完了直接执行
+				if(len == 0) {
 					cb();
 				}
-			}
-			//使用多个模块时，每个里面建立callback，并根据剩余数量标识全部加载成功
-			else {
-				list.forEach(function(mod) {
-					//逻辑类似上面只使用一个的情况
-					mod.cb.push(function() {
-						complete.call(mod);
+				//只使用一个模块，加载callbak
+				else if(len == 1) {
+					one = list[0];
+					//先将callback放入回调列表，目的是当此模块为loading状态时不再进入下面分支判断
+					one.cb.push(cb);
+					//未读取模块时标识其为loading状态并读取
+					if(one.load == UNLOAD) {
+						one.load = LOADING;
+						loadModule(one);
+					}
+					//已加载好的直接执行回调
+					else if(one.load == LOADED) {
+						cb();
+					}
+				}
+				//使用多个模块时，每个里面建立callback，并根据剩余数量标识全部加载成功
+				else {
+					list.forEach(function(mod) {
+						//逻辑类似上面只使用一个的情况
+						mod.cb.push(function() {
+							complete.call(mod);
+						});
+						if(!mod.load) {
+							mod.load = LOADING;
+							loadModule(mod);
+						}
+						else if(mod.load == LOADED) {
+							complete.call(mod);
+						}
 					});
-					if(!mod.load) {
-						mod.load = LOADING;
-						loadModule(mod);
-					}
-					else if(mod.load == LOADED) {
-						complete.call(mod);
-					}
-				});
+				}
 			}
 			function complete() {
 				this.load = LOADED;

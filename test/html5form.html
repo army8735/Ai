@@ -1,0 +1,67 @@
+<!DOCTYPE html><html>
+<head>
+<meta charset="utf-8"/>
+<style>
+body{background:#fff;font:12px/1.5 arial;}
+form label{display:inline-block;width:80px;}
+form input{position:relative;margin:5px 0;padding:0 2px;width:150px;height:18px;background:#fff;border:1px solid #ccc;vertical-align:middle;font-family:arial;}
+form input[type="search"]{-webkit-appearance:textfield;}
+form textarea{margin:5px 0;width:200px;height:60px;background:#fff;border:1px solid #ccc;font-size:12px;font-family:arial;vertical-align:top;overflow-y:auto;}
+form .sub{margin-left:83px;padding:0 5px;width:auto;height:22px;cursor:pointer;}
+
+.td_placeholder{color:#808080;}
+.td_valid{color:#f00;}
+.td_error{padding-left:1em;color:#f00;}
+
+</style>
+</head>
+<body>
+	<form action="#">
+		<label>placeholder:</label>
+		<input type="text" placeholder="army8735" autocomplete="off"/>
+		<br/>
+		<label>autofocus:</label>
+		<input type="text" autocomplete="off" autofocus/>
+		<br/>
+		<label>email:</label>
+		<input type="email" autocomplete="off"/>
+		<br/>
+		<label>required:</label>
+		<input autocomplete="off" required/>
+		<br/>
+		<label>url:</label>
+		<input type="url" autocomplete="off"/>
+		<br/>
+		<label>number:</label>
+		<input type="number" max="6" step="2" autocomplete="off"/>
+		<br/>
+		<label>date:</label>
+		<input type="date" autocomplete="off"/>
+		<br/>
+		<label>time:</label>
+		<input type="time" name="time" autocomplete="off"/>
+		<br/>
+		<label>search:</label>
+		<input type="search" maxlength="2" autocomplete="off"/>
+		<br/>
+		<label>color:</label>
+		<input type="color" autocomplete="off"/>
+		<br/>
+		<label>pattern中文:</label>
+		<input type="text" pattern="^[\u4e00-\u9fa5]+$" autocomplete="off"/>
+		<br/>
+		<label>textarea:</label>
+		<textarea maxlength="4" autocomplete="off"></textarea>
+		<br/>
+		<input type="submit" class="sub" value="submit"/>
+	</form>
+<script src="../Ai.js"></script>
+<script>
+	$$.def('html5formcore', '../plugin/html5formcore.js?' + (+new Date()));
+	$$.def('html5form', '../plugin/html5form.js?' + (+new Date()), 'html5formcore');
+	$$.use('html5form', function() {
+		$('form').html5form();
+	});
+</script>
+</body>
+</html>

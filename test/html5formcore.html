@@ -32,7 +32,7 @@ form .sub{margin-left:83px;padding:0 5px;width:auto;height:22px;cursor:pointer;}
 <body>
 	<form action="#">
 		<label>placeholder:</label>
-		<input type="text" placeholder="army8735"/>
+		<input type="text" placeholder="army8735" autocomplete="off"/>
 		<br/>
 		<label>autofocus:</label>
 		<input type="text" autofocus/>
@@ -69,12 +69,11 @@ form .sub{margin-left:83px;padding:0 5px;width:auto;height:22px;cursor:pointer;}
 		<br/>
 		<input type="submit" class="sub" value="submit"/>
 	</form>
-<script src="Ai.min.js"></script>
-<script src="plugin/html5form.js"></script>
+<script src="../Ai.js"></script>
 <script>
-	$('form').html5form(function() {
-		alert(this + '：提交完成！');
-		return false;
+	$$.def('html5formcore', '../plugin/html5formcore.js');
+	$$.use('html5formcore', function() {
+		$('form').html5formcore();
 	});
 </script>
 </body>
