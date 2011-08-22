@@ -44,12 +44,10 @@
 							//打开状态下认为是占位符
 							if(place) {
 								item.val('');
-								if(!last) {
-									options.placeholder.call(item[0], true);
+								place = false
+								if(last != place) {
+									options.placeholder.call(item[0], false);
 								}
-							}
-							else if(last) {
-								options.placeholder.call(item[0], false);
 							}
 							last = place;
 						}
@@ -58,14 +56,8 @@
 							if(item.val() == '') {
 								item.val(ph);
 								place = true;
-								if(!last) {
+								if(last != place) {
 									options.placeholder.call(item[0], true);
-								}
-							}
-							else {
-								place = false;
-								if(last) {
-									options.placeholder.call(item[0], false);
 								}
 							}
 							last = place;

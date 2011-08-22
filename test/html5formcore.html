@@ -53,7 +53,12 @@ form .sub{margin-left:83px;padding:0 5px;width:auto;height:22px;cursor:pointer;}
 <pre class="brush:js">//html5formcore
 $$.def('html5formcore', '../plugin/html5formcore.js');
 $$.use('html5formcore', function() {
-	$('form').html5formcore();
+	$('form').html5formcore({
+		submit: function() {
+			alert('校验通过，可以提交');
+			return false;
+		}
+	});
 })
 //说明
 浏览器原生模拟html5form。在支持的高级浏览器中，此脚本基本没有运行效果；ie等不支持的会做某些模拟。
@@ -113,12 +118,10 @@ options为传入的对象，它有以下属性：{
 							//打开状态下认为是占位符
 							if(place) {
 								item.val('');
-								if(!last) {
-									options.placeholder.call(item[0], true);
+								place = false
+								if(last != place) {
+									options.placeholder.call(item[0], false);
 								}
-							}
-							else if(last) {
-								options.placeholder.call(item[0], false);
 							}
 							last = place;
 						}
@@ -127,14 +130,8 @@ options为传入的对象，它有以下属性：{
 							if(item.val() == '') {
 								item.val(ph);
 								place = true;
-								if(!last) {
+								if(last != place) {
 									options.placeholder.call(item[0], true);
-								}
-							}
-							else {
-								place = false;
-								if(last) {
-									options.placeholder.call(item[0], false);
 								}
 							}
 							last = place;
@@ -280,7 +277,12 @@ options为传入的对象，它有以下属性：{
 <script>
 	$$.def('html5formcore', '../plugin/html5formcore.js');
 	$$.use('html5formcore', function() {
-		$('form').html5formcore();
+		$('form').html5formcore({
+			submit: function() {
+				alert('校验通过，可以提交');
+				return false;
+			}
+		});
 	})
 </script>
 <object classid="clsid:d27cdb6e-ae6d-11cf-96b8-444553540000" id="jssc5" style="position:absolute;left:-9999px;">
