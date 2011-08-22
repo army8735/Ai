@@ -51,7 +51,6 @@
 					o.next('span.td_error').remove();
 				},
 				submit: function() {
-					alert('校验通过，可以提交');
 					return false;
 				}
 			});
