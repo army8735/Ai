@@ -3,7 +3,7 @@
 	var TYPE_VALID = {
 			'url': /^[a-zA-z]+:\/\/[^\s]*$/,
 			'email': /^\w+([-+.]\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$/,
-			'number': /^\d+$/,
+			'number': /^\.*\d+$/,
 			'date': /^\d{2,4}-\d{1,2}-\d{1,2}$/,
 			'time': /^\d{1,2}:\d{1,2}(:\d{1,2}(\.\d{1,3})?)?$/,
 			'color': /^#[a-z\d]{3,6}$/
@@ -25,12 +25,12 @@
 				input = document.createElement('input'),
 				autofocus = 'autofocus' in input,
 				placeholder = 'placeholder' in input,
-				required = 'required' in input,
-				maxlength = 'maxlength' in input,
+				//required = 'required' in input,
+				//maxlength = 'maxlength' in input,
 				validArray = [];
 			inputs.each(function(index) {
 				var item = $(this),
-					type = (item.attr('type') || '').toLowerCase();
+					type = (item.attr('type') || 'text').toLowerCase();
 				//placeholder占位符
 				if(!placeholder && item.attr('placeholder')) {
 					var ph = item.attr('placeholder'),
@@ -109,14 +109,27 @@
 				if(!autofocus && this.getAttribute('autofocus') != null) {
 					item.focus();
 				}
+				//required
+				if(this.getAttribute('required') != null) {
+					item.blur(function() {
+						if(item.val().trim() == '') {
+							validArray[index] = true;
+							if(!form.attr('novalidate') && !item.prop('disabled') && item.is(':visible')) {
+								options.valid.call(item[0], 'required');
+							}
+						}
+					});
+				}
 				//几种input类型的校验
 				var typeValid = TYPE_VALID[type];
 				if(this.nodeName == 'INPUT' && typeValid) {
 					item.blur(function() {
 						var v = item.val().trim();
-						validArray[index] = !!(v.length && !typeValid.test(v));
-						if(!form.attr('novalidate') && validArray[index] && !item.prop('disabled') && item.is(':visible')) {
-							options.valid.call(item[0], type);
+						if(v.length && !typeValid.test(v)) {
+							validArray[index] = true;
+							if(!form.attr('novalidate') && !item.prop('disabled') && item.is(':visible')) {
+								options.valid.call(item[0], type);
+							}
 						}
 					});
 				}
@@ -124,44 +137,46 @@
 				if(type == 'number') {
 					var max = parseFloat(item.attr('max')),
 						min = parseFloat(item.attr('min'));
-					if(!isNaN(max) || !isNaN(min)) {
+					if(!isNaN(max)) {
 						item.blur(function() {
 							var v = item.val().trim();
-							if(!form.attr('novalidate') && v.length && !item.prop('disabled') && item.is(':visible')) {
+							if(TYPE_VALID['number'].test(v)) {
 								v = parseFloat(v);
-								if(!isNaN(max) && v > max) {
+								if(v > max) {
 									validArray[index] = true;
-									options.valid.call(item[0], type, min, max);
+									if(!form.attr('novalidate') && !item.prop('disabled') && item.is(':visible')) {
+										options.valid.call(item[0], 'max', max);
+									}
 								}
-								else if(!isNaN(min) && v < min) {
+							}
+						});
+					}
+					if(!isNaN(min)) {
+						item.blur(function() {
+							var v = item.val().trim();
+							if(TYPE_VALID['number'].test(v)) {
+								v = parseFloat(v);
+								if(v < min) {
 									validArray[index] = true;
-									options.valid.call(item[0], type, min, max);
-								}
-								else {
-									validArray[index] = false;
+									if(!form.attr('novalidate') && !item.prop('disabled') && item.is(':visible')) {
+										options.valid.call(item[0], 'min', min);
+									}
 								}
 							}
 						});
 					}
 				}
-				//自定义pattern
+				//自定义pattern，只支持text类型
 				var pattern = item.attr('pattern');
-				if(pattern && pattern.length) {
+				if(pattern && pattern.length && type == 'text') {
 					pattern = new RegExp(pattern);
 					item.blur(function() {
 						var v = item.val().trim();
-						validArray[index] = (v.length && !pattern.test(v));
-						if(!form.attr('novalidate') && validArray[index]) {
-							options.valid.call(item[0], 'pattern');
-						}
-					});
-				}
-				//required
-				if(this.getAttribute('required') != null) {
-					item.blur(function() {
-						validArray[index] = (item.val().trim() == '');
-						if(!form.attr('novalidate') && validArray[index] && !item.prop('disabled') && item.is(':visible')) {
-							options.valid.call(item[0], 'required');
+						if(v.length && !pattern.test(v)) {
+							validArray[index] = true;
+							if(!form.attr('novalidate') && !item.prop('disabled') && item.is(':visible')) {
+								options.valid.call(item[0], 'pattern');
+							}
 						}
 					});
 				}

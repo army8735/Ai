@@ -1,6 +1,7 @@
 <!DOCTYPE html><html>
 <head>
 <meta charset="utf-8"/>
+<title>html5formcore</title>
 <link rel="stylesheet" href="style.css" type="text/css"/>
 <style>
 form label{display:inline-block;width:80px;}
@@ -55,6 +56,7 @@ form .sub{padding:0 5px;width:auto;height:22px;cursor:pointer;}
 	<input type="submit" class="sub" value="formtarget" formtarget="_blank"/>
 	<input type="submit" class="sub" value="formenctype" formenctype="multipart/form-data"/>
 	<input type="submit" class="sub" value="提交下面这个form" form="form2"/>
+	<input type="submit" class="sub" value="提交下面novalidate" form="form2" formnovalidate="formnovalidate"/>
 </form>
 <form action="#" id="form2">
 	<label>email:</label>
@@ -78,7 +80,7 @@ $$.use('html5formcore', function() {
 $('form').html5formcore(options);
 options为传入的对象，它有以下属性：{
 	placeholder: function(v), //在input的placeholder发生改变时触发，this指向对应的input，v为当前状态是否为占位符状态
-	valid: function(type, min, max), //在input需要校验时（如blur、提交前）触发，this指向对应的input，type为校验类型；当type为number并且min和max定义时，标明number类型的input超过限制错误
+	valid: function(type, v), //在input需要校验时（如blur、提交前）触发，this指向对应的input，type为校验类型；当type为number并且min和max定义时，第2个参数v为超过的范围
 	input: function(), //当需要校验的input发生改变（DOM input事件）时触发；ie下由于不支持，可以考虑替代的onpropertychange不完美（改变class也会触发），所以改为focus时触发
 	submit: function(cb) //通过html5form的校验后提交表单时触发；cb为回调函数，返回值和jQuery.submit(cb)效果相同
 }</pre>
@@ -87,7 +89,7 @@ options为传入的对象，它有以下属性：{
 	var TYPE_VALID = {
 			'url': /^[a-zA-z]+:\/\/[^\s]*$/,
 			'email': /^\w+([-+.]\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$/,
-			'number': /^\d+$/,
+			'number': /^\.*\d+$/,
 			'date': /^\d{2,4}-\d{1,2}-\d{1,2}$/,
 			'time': /^\d{1,2}:\d{1,2}(:\d{1,2}(\.\d{1,3})?)?$/,
 			'color': /^#[a-z\d]{3,6}$/
@@ -109,12 +111,12 @@ options为传入的对象，它有以下属性：{
 				input = document.createElement('input'),
 				autofocus = 'autofocus' in input,
 				placeholder = 'placeholder' in input,
-				required = 'required' in input,
-				maxlength = 'maxlength' in input,
+				//required = 'required' in input,
+				//maxlength = 'maxlength' in input,
 				validArray = [];
 			inputs.each(function(index) {
 				var item = $(this),
-					type = (item.attr('type') || '').toLowerCase();
+					type = (item.attr('type') || 'text').toLowerCase();
 				//placeholder占位符
 				if(!placeholder && item.attr('placeholder')) {
 					var ph = item.attr('placeholder'),
@@ -193,14 +195,27 @@ options为传入的对象，它有以下属性：{
 				if(!autofocus && this.getAttribute('autofocus') != null) {
 					item.focus();
 				}
+				//required
+				if(this.getAttribute('required') != null) {
+					item.blur(function() {
+						if(item.val().trim() == '') {
+							validArray[index] = true;
+							if(!form.attr('novalidate') && !item.prop('disabled') && item.is(':visible')) {
+								options.valid.call(item[0], 'required');
+							}
+						}
+					});
+				}
 				//几种input类型的校验
 				var typeValid = TYPE_VALID[type];
 				if(this.nodeName == 'INPUT' && typeValid) {
 					item.blur(function() {
 						var v = item.val().trim();
-						validArray[index] = !!(v.length && !typeValid.test(v));
-						if(!form.attr('novalidate') && validArray[index] && !item.prop('disabled') && item.is(':visible')) {
-							options.valid.call(item[0], type);
+						if(v.length && !typeValid.test(v)) {
+							validArray[index] = true;
+							if(!form.attr('novalidate') && !item.prop('disabled') && item.is(':visible')) {
+								options.valid.call(item[0], type);
+							}
 						}
 					});
 				}
@@ -208,44 +223,46 @@ options为传入的对象，它有以下属性：{
 				if(type == 'number') {
 					var max = parseFloat(item.attr('max')),
 						min = parseFloat(item.attr('min'));
-					if(!isNaN(max) || !isNaN(min)) {
+					if(!isNaN(max)) {
 						item.blur(function() {
 							var v = item.val().trim();
-							if(!form.attr('novalidate') && v.length && !item.prop('disabled') && item.is(':visible')) {
+							if(TYPE_VALID['number'].test(v)) {
 								v = parseFloat(v);
-								if(!isNaN(max) && v > max) {
+								if(v > max) {
 									validArray[index] = true;
-									options.valid.call(item[0], type, min, max);
+									if(!form.attr('novalidate') && !item.prop('disabled') && item.is(':visible')) {
+										options.valid.call(item[0], 'max', max);
+									}
 								}
-								else if(!isNaN(min) && v &lt; min) {
+							}
+						});
+					}
+					if(!isNaN(min)) {
+						item.blur(function() {
+							var v = item.val().trim();
+							if(TYPE_VALID['number'].test(v)) {
+								v = parseFloat(v);
+								if(v &lt; min) {
 									validArray[index] = true;
-									options.valid.call(item[0], type, min, max);
-								}
-								else {
-									validArray[index] = false;
+									if(!form.attr('novalidate') && !item.prop('disabled') && item.is(':visible')) {
+										options.valid.call(item[0], 'min', min);
+									}
 								}
 							}
 						});
 					}
 				}
-				//自定义pattern
+				//自定义pattern，只支持text类型
 				var pattern = item.attr('pattern');
-				if(pattern && pattern.length) {
+				if(pattern && pattern.length && type == 'text') {
 					pattern = new RegExp(pattern);
 					item.blur(function() {
 						var v = item.val().trim();
-						validArray[index] = (v.length && !pattern.test(v));
-						if(!form.attr('novalidate') && validArray[index]) {
-							options.valid.call(item[0], 'pattern');
-						}
-					});
-				}
-				//required
-				if(this.getAttribute('required') != null) {
-					item.blur(function() {
-						validArray[index] = (item.val().trim() == '');
-						if(!form.attr('novalidate') && validArray[index] && !item.prop('disabled') && item.is(':visible')) {
-							options.valid.call(item[0], 'required');
+						if(v.length && !pattern.test(v)) {
+							validArray[index] = true;
+							if(!form.attr('novalidate') && !item.prop('disabled') && item.is(':visible')) {
+								options.valid.call(item[0], 'pattern');
+							}
 						}
 					});
 				}

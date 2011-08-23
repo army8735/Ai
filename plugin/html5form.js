@@ -4,6 +4,8 @@
 			'url': 'url格式不合法',
 			'email': 'email格式不合法',
 			'number': '这不是一个数字',
+			'max': '超过最大值',
+			'min': '小于最小值',
 			'date': '日期格式不合法',
 			'time': '时间格式不合法',
 			'color': '颜色格式不合法',
@@ -37,12 +39,7 @@
 					var o = $(this);
 					o.addClass('td_valid');
 					o.next('span.td_error').remove();
-					if(type == 'number' && arguments.length == 3) {
-						o.after('<span class="td_error">数值超过范围限制：' + (arguments[1] || '-∞') + '~' + (arguments[2] || '+∞') + '</span>');
-					}
-					else {
-						o.after('<span class="td_error">' + (TYPE_MES[type] || '错误的格式') + '</span>');
-					}
+					o.after('<span class="td_error">' + (TYPE_MES[type] || '错误的格式') + '</span>');
 					shake(o);
 				},
 				input: function() {
