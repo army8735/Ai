@@ -32,7 +32,7 @@
 				var item = $(this),
 					type = (item.attr('type') || 'text').toLowerCase();
 				//placeholder占位符
-				if(!placeholder && item.attr('placeholder')) {
+				if(!placeholder && item.attr('placeholder') && (type == 'text' || type == '')) {
 					var ph = item.attr('placeholder'),
 						last,
 						place; //开关，标明input当前是否是占位符状态。
