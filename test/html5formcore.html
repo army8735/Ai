@@ -7,11 +7,11 @@ form label{display:inline-block;width:80px;}
 form input{margin:5px 0;padding:0;width:150px;height:18px;background:#fff;border:1px solid #ccc;vertical-align:middle;font-family:arial;}
 form input[type="search"]{-webkit-appearance:textfield;}
 form textarea{margin:5px 0;width:200px;height:60px;background:#fff;border:1px solid #ccc;font-size:12px;font-family:arial;vertical-align:top;overflow-y:auto;}
-form .sub{margin-left:83px;padding:0 5px;width:auto;height:22px;cursor:pointer;}
+form .sub{padding:0 5px;width:auto;height:22px;cursor:pointer;}
 </style>
 </head>
 <body>
-<form action="#">
+<form action="#" id="form1">
 	<label>placeholder:</label>
 	<input type="text" placeholder="army8735" autocomplete="off"/>
 	<br/>
@@ -48,7 +48,17 @@ form .sub{margin-left:83px;padding:0 5px;width:auto;height:22px;cursor:pointer;}
 	<label>textarea:</label>
 	<textarea maxlength="4"></textarea>
 	<br/>
+	<label>submit:</label>
 	<input type="submit" class="sub" value="submit"/>
+	<input type="submit" class="sub" value="formnovalidate" formnovalidate="formnovalidate"/>
+	<input type="submit" class="sub" value="formmethod" formmethod="post"/>
+	<input type="submit" class="sub" value="formtarget" formtarget="_blank"/>
+	<input type="submit" class="sub" value="formenctype" formenctype="multipart/form-data"/>
+	<input type="submit" class="sub" value="提交下面这个form" form="form2"/>
+</form>
+<form action="#" id="form2">
+	<label>email:</label>
+	<input type="email" required/>
 </form>
 <pre class="brush:js">//html5formcore
 $$.def('html5formcore', '../plugin/html5formcore.js');
@@ -62,7 +72,7 @@ $$.use('html5formcore', function() {
 })
 //说明
 浏览器原生模拟html5form。在支持的高级浏览器中，此脚本基本没有运行效果；ie等不支持的会做某些模拟。
-如：placeholder属性、autofocus功能、多种input类型、自定义pattern属性、textarea最长输入字符限制等。
+共有：novalidate属性、placeholder属性、autofocus功能、多种input类型、自定义pattern属性、输入长度限制、submit按钮的各种新属性支持。
 在没有通过校验时提交，这个提交不会成功。
 //API
 $('form').html5formcore(options);
@@ -94,10 +104,8 @@ options为传入的对象，它有以下属性：{
 			var form = $(o);
 			//验证节点
 			if(o.nodeName != 'FORM') return;
-			//novalidate属性存在时忽略校验
-			var novalidate = !!form.attr('novalidate');
-			if(novalidate) return;
 			var inputs = form.find(':input:not(:button, :submit, :radio, :checkbox)'),
+				submits = form.find('input:submit'),
 				input = document.createElement('input'),
 				autofocus = 'autofocus' in input,
 				placeholder = 'placeholder' in input,
@@ -106,7 +114,7 @@ options为传入的对象，它有以下属性：{
 				validArray = [];
 			inputs.each(function(index) {
 				var item = $(this),
-					type = item.attr('type');
+					type = (item.attr('type') || '').toLowerCase();
 				//placeholder占位符
 				if(!placeholder && item.attr('placeholder')) {
 					var ph = item.attr('placeholder'),
@@ -161,8 +169,8 @@ options为传入的对象，它有以下属性：{
 								oR = document.body.createTextRange();
 							oR.moveToElementText(item[0]);
 							bookmark = oS.getBookmark();
-							for (i = 0; oR.compareEndPoints('StartToStart', oS) < 0 && oS.moveStart("character", -1) !== 0; i++) {
-								//ie的\n也算一个长度
+							for (i = 0; oR.compareEndPoints('StartToStart', oS) &lt; 0 && oS.moveStart("character", -1) !== 0; i++) {
+								//ie的换行是\r\n，算2个字符长度
 								if(v.charAt(i) == '\n') {
 									i++;
 								}
@@ -185,22 +193,13 @@ options为传入的对象，它有以下属性：{
 				if(!autofocus && this.getAttribute('autofocus') != null) {
 					item.focus();
 				}
-				//required
-				if(this.getAttribute('required') != null) {
-					item.blur(function() {
-						validArray[index] = (item.val().trim() == '');
-						if(validArray[index] && !item.prop('disabled') && item.is(':visible')) {
-							options.valid.call(item[0], 'required');
-						}
-					});
-				}
 				//几种input类型的校验
 				var typeValid = TYPE_VALID[type];
 				if(this.nodeName == 'INPUT' && typeValid) {
 					item.blur(function() {
 						var v = item.val().trim();
-						validArray[index] = (v.length && !typeValid.test(v));
-						if(validArray[index] && !item.prop('disabled') && item.is(':visible')) {
+						validArray[index] = !!(v.length && !typeValid.test(v));
+						if(!form.attr('novalidate') && validArray[index] && !item.prop('disabled') && item.is(':visible')) {
 							options.valid.call(item[0], type);
 						}
 					});
@@ -212,13 +211,13 @@ options为传入的对象，它有以下属性：{
 					if(!isNaN(max) || !isNaN(min)) {
 						item.blur(function() {
 							var v = item.val().trim();
-							if(v.length && !item.prop('disabled') && item.is(':visible')) {
+							if(!form.attr('novalidate') && v.length && !item.prop('disabled') && item.is(':visible')) {
 								v = parseFloat(v);
 								if(!isNaN(max) && v > max) {
 									validArray[index] = true;
 									options.valid.call(item[0], type, min, max);
 								}
-								else if(!isNaN(min) && v < min) {
+								else if(!isNaN(min) && v &lt; min) {
 									validArray[index] = true;
 									options.valid.call(item[0], type, min, max);
 								}
@@ -236,8 +235,17 @@ options为传入的对象，它有以下属性：{
 					item.blur(function() {
 						var v = item.val().trim();
 						validArray[index] = (v.length && !pattern.test(v));
-						if(validArray[index]) {
+						if(!form.attr('novalidate') && validArray[index]) {
 							options.valid.call(item[0], 'pattern');
+						}
+					});
+				}
+				//required
+				if(this.getAttribute('required') != null) {
+					item.blur(function() {
+						validArray[index] = (item.val().trim() == '');
+						if(!form.attr('novalidate') && validArray[index] && !item.prop('disabled') && item.is(':visible')) {
+							options.valid.call(item[0], 'required');
 						}
 					});
 				}
@@ -252,16 +260,71 @@ options为传入的对象，它有以下属性：{
 					item.focus(onInput);
 				}
 			});
+			//submit按钮的多项html5属性暂时无法判断浏览器是否原生支持，采用autofocus判断代替
+			submits.each(function(index) {
+				var nosupport = !autofocus,
+					item = $(this),
+					formAttr = item.attr('form'),
+					formObj,
+					formMethod = item.attr('formmethod'),
+					formTarget = item.attr('formtarget'),
+					formAction = item.attr('formaction'),
+					formEnctype = item.attr('formenctype '),
+					formNovalidate = item.attr('formnovalidate');
+				//formObj在ie下未指定时会返回节点本身
+				if(formAttr && $.isString(formAttr)) {
+					formObj = $('#' + formAttr);
+				}
+				else {
+					formObj = form;
+				}
+				if(nosupport && formMethod) {
+					item.click(function() {
+						formObj.attr('method', formMethod);
+					});
+				}
+				if(nosupport && formTarget) {
+					item.click(function() {
+						formObj.attr('target', formTarget);
+					});
+				}
+				if(nosupport && formAction) {
+					item.click(function() {
+						formObj.attr('action', formAction);
+					});
+				}
+				if(nosupport && formEnctype) {
+					item.click(function() {
+						formObj.attr('formenctype', formEnctype);
+					});
+				}
+				if(formNovalidate) {
+					item.click(function() {
+						formObj.attr('novalidate', 'novalidate');
+					});
+				}
+				else {
+					item.click(function() {
+						formObj.removeAttr('novalidate');
+					});
+				}
+				item.click(function() {
+					formObj.submit();
+					return false;
+				});
+			});
 
 			form.submit(function() {
 				inputs.blur(); //全部触发可能存在的校验
 				var validResult = true;
-				validArray.forEach(function(item, i) {
-					var input = inputs.eq(i);
-					if(item && !input.prop('disabled') && input.is(':visible')) {
-						validResult = false;
-					}
-				});
+				if(!form.attr('novalidate')) {
+					validArray.forEach(function(item, i) {
+						var input = inputs.eq(i);
+						if(item && !input.prop('disabled') && input.is(':visible')) {
+							validResult = false;
+						}
+					});
+				}
 				//本身通过html5校验，如有传入callback，返回callback的值
 				if(validResult && $.isFunction(options.submit)) {
 					validResult = options.submit.call(this) !== false;

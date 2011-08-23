@@ -7,7 +7,7 @@ form label{display:inline-block;width:80px;}
 form input{position:relative;margin:5px 0;padding:0 2px;width:150px;height:18px;background:#fff;border:1px solid #ccc;vertical-align:middle;font-family:arial;}
 form input[type="search"]{-webkit-appearance:textfield;}
 form textarea{margin:5px 0;width:200px;height:60px;background:#fff;border:1px solid #ccc;font-size:12px;font-family:arial;vertical-align:top;overflow-y:auto;}
-form .sub{margin-left:83px;padding:0 5px;width:auto;height:22px;cursor:pointer;}
+form .sub{padding:0 5px;width:auto;height:22px;cursor:pointer;}
 
 .td_placeholder{color:#808080;}
 .td_valid{color:#f00;}
@@ -53,7 +53,17 @@ form .sub{margin-left:83px;padding:0 5px;width:auto;height:22px;cursor:pointer;}
 	<label>textarea:</label>
 	<textarea maxlength="4" autocomplete="off"></textarea>
 	<br/>
+	<label>submit:</label>
 	<input type="submit" class="sub" value="submit"/>
+	<input type="submit" class="sub" value="formnovalidate" formnovalid="formnovalidate"/>
+	<input type="submit" class="sub" value="formmethod" formmethod="post"/>
+	<input type="submit" class="sub" value="formtarget" formtarget="_blank"/>
+	<input type="submit" class="sub" value="formenctype" formenctype="multipart/form-data"/>
+	<input type="submit" class="sub" value="提交下面这个form" form="form2"/>
+</form>
+<form action="#" id="form2">
+	<label>email:</label>
+	<input type="email" required/>
 </form>
 <pre class="brush:js">//html5form
 $$.def('html5formcore', '../plugin/html5formcore.js');

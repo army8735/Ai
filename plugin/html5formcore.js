@@ -20,10 +20,8 @@
 			var form = $(o);
 			//验证节点
 			if(o.nodeName != 'FORM') return;
-			//novalidate属性存在时忽略校验
-			var novalidate = !!form.attr('novalidate');
-			if(novalidate) return;
 			var inputs = form.find(':input:not(:button, :submit, :radio, :checkbox)'),
+				submits = form.find('input:submit'),
 				input = document.createElement('input'),
 				autofocus = 'autofocus' in input,
 				placeholder = 'placeholder' in input,
@@ -32,7 +30,7 @@
 				validArray = [];
 			inputs.each(function(index) {
 				var item = $(this),
-					type = item.attr('type');
+					type = (item.attr('type') || '').toLowerCase();
 				//placeholder占位符
 				if(!placeholder && item.attr('placeholder')) {
 					var ph = item.attr('placeholder'),
@@ -111,22 +109,13 @@
 				if(!autofocus && this.getAttribute('autofocus') != null) {
 					item.focus();
 				}
-				//required
-				if(this.getAttribute('required') != null) {
-					item.blur(function() {
-						validArray[index] = (item.val().trim() == '');
-						if(validArray[index] && !item.prop('disabled') && item.is(':visible')) {
-							options.valid.call(item[0], 'required');
-						}
-					});
-				}
 				//几种input类型的校验
 				var typeValid = TYPE_VALID[type];
 				if(this.nodeName == 'INPUT' && typeValid) {
 					item.blur(function() {
 						var v = item.val().trim();
-						validArray[index] = (v.length && !typeValid.test(v));
-						if(validArray[index] && !item.prop('disabled') && item.is(':visible')) {
+						validArray[index] = !!(v.length && !typeValid.test(v));
+						if(!form.attr('novalidate') && validArray[index] && !item.prop('disabled') && item.is(':visible')) {
 							options.valid.call(item[0], type);
 						}
 					});
@@ -138,7 +127,7 @@
 					if(!isNaN(max) || !isNaN(min)) {
 						item.blur(function() {
 							var v = item.val().trim();
-							if(v.length && !item.prop('disabled') && item.is(':visible')) {
+							if(!form.attr('novalidate') && v.length && !item.prop('disabled') && item.is(':visible')) {
 								v = parseFloat(v);
 								if(!isNaN(max) && v > max) {
 									validArray[index] = true;
@@ -162,8 +151,17 @@
 					item.blur(function() {
 						var v = item.val().trim();
 						validArray[index] = (v.length && !pattern.test(v));
-						if(validArray[index]) {
+						if(!form.attr('novalidate') && validArray[index]) {
 							options.valid.call(item[0], 'pattern');
+						}
+					});
+				}
+				//required
+				if(this.getAttribute('required') != null) {
+					item.blur(function() {
+						validArray[index] = (item.val().trim() == '');
+						if(!form.attr('novalidate') && validArray[index] && !item.prop('disabled') && item.is(':visible')) {
+							options.valid.call(item[0], 'required');
 						}
 					});
 				}
@@ -178,16 +176,71 @@
 					item.focus(onInput);
 				}
 			});
+			//submit按钮的多项html5属性暂时无法判断浏览器是否原生支持，采用autofocus判断代替
+			submits.each(function(index) {
+				var nosupport = !autofocus,
+					item = $(this),
+					formAttr = item.attr('form'),
+					formObj,
+					formMethod = item.attr('formmethod'),
+					formTarget = item.attr('formtarget'),
+					formAction = item.attr('formaction'),
+					formEnctype = item.attr('formenctype '),
+					formNovalidate = item.attr('formnovalidate');
+				//formObj在ie下未指定时会返回节点本身
+				if(formAttr && $.isString(formAttr)) {
+					formObj = $('#' + formAttr);
+				}
+				else {
+					formObj = form;
+				}
+				if(nosupport && formMethod) {
+					item.click(function() {
+						formObj.attr('method', formMethod);
+					});
+				}
+				if(nosupport && formTarget) {
+					item.click(function() {
+						formObj.attr('target', formTarget);
+					});
+				}
+				if(nosupport && formAction) {
+					item.click(function() {
+						formObj.attr('action', formAction);
+					});
+				}
+				if(nosupport && formEnctype) {
+					item.click(function() {
+						formObj.attr('formenctype', formEnctype);
+					});
+				}
+				if(formNovalidate) {
+					item.click(function() {
+						formObj.attr('novalidate', 'novalidate');
+					});
+				}
+				else {
+					item.click(function() {
+						formObj.removeAttr('novalidate');
+					});
+				}
+				item.click(function() {
+					formObj.submit();
+					return false;
+				});
+			});
 
 			form.submit(function() {
 				inputs.blur(); //全部触发可能存在的校验
 				var validResult = true;
-				validArray.forEach(function(item, i) {
-					var input = inputs.eq(i);
-					if(item && !input.prop('disabled') && input.is(':visible')) {
-						validResult = false;
-					}
-				});
+				if(!form.attr('novalidate')) {
+					validArray.forEach(function(item, i) {
+						var input = inputs.eq(i);
+						if(item && !input.prop('disabled') && input.is(':visible')) {
+							validResult = false;
+						}
+					});
+				}
 				//本身通过html5校验，如有传入callback，返回callback的值
 				if(validResult && $.isFunction(options.submit)) {
 					validResult = options.submit.call(this) !== false;
