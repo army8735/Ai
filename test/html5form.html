@@ -146,7 +146,7 @@ cb为传入的回调函数，在通过html5form的校验后提交表单时触发
 	$$.def('html5form', '../plugin/html5form.js', 'html5formcore');
 	$$.use('html5form', function() {
 		$('form').html5form(function() {
-			alert('校验通过，可以提交');
+			alert('校验通过，可以提交' + this.id);
 			return false;
 		});
 	});

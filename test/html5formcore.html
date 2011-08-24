@@ -359,7 +359,7 @@ options为传入的对象，它有以下属性：{
 	$$.use('html5formcore', function() {
 		$('form').html5formcore({
 			submit: function() {
-				alert('校验通过，可以提交');
+				alert('校验通过，可以提交' + this.id);
 				return false;
 			}
 		});
