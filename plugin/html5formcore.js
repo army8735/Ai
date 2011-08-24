@@ -92,7 +92,7 @@
 				});
 				//ie模拟textarea的maxlength属性
 				form.delegate('textarea', 'focusin', function() {
-					if(this.nodeName == 'TEXTAREA' && textareas.indexOf(this) == -1) {
+					if(textareas.indexOf(this) == -1) {
 						textareas.push(this);
 						$(this).bind('propertychange', function() {
 							virtualTextareaMaxlength($(this));
