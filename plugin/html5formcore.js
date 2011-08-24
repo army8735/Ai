@@ -1,12 +1,12 @@
 (function() {
 
 	var TYPE_VALID = {
-			'url': /^[a-zA-z]+:\/\/[^\s]*$/,
-			'email': /^\w+([-+.]\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$/,
-			'number': /^-?\.*\d+$/,
-			'date': /^\d{2,4}-\d{1,2}-\d{1,2}$/,
-			'time': /^\d{1,2}:\d{1,2}(:\d{1,2}(\.\d{1,3})?)?$/,
-			'color': /^#[a-z\d]{3,6}$/
+			'url': /^\s*[a-zA-z]+:\/\/.*$/,
+			'email': /^\s*\w+([-+.]\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*\s*$/,
+			'number': /^\s*-?\.*\d+\s*$/,
+			'date': /^\s*\d{2,4}-\d{1,2}-\d{1,2}\s*$/,
+			'time': /^\s*\d{1,2}:\d{1,2}(:\d{1,2}(\.\d{1,3})?)?\s*$/,
+			'color': /^\s*#?[a-z\d]{3,6}\s*$/
 		},
 		input = document.createElement('input'),
 		AUTOFOCUS = 'autofocus' in input,
