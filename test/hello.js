@@ -1,7 +1,5 @@
-define('hello', ['test.js', 'test2.js'], function() {
+define('hello.js', ['test.js', 'test2.js'], function() {
 	return {
-		say: function() {
-			console.log('hello');
-		}
+		hello: 'hello'
 	}
 });

@@ -1,179 +1,168 @@
 (function() {
 
 	var module = {},
-		urlScript = {},
-		lastId,
-		lastDeps,
-		lastFactory,
-		lastUri,
-		lastMod,
-		UNLOAD = 0,
-		LOADING = 1,
-		LOADED = 2;
+		script = {},
+		lastMod;
 
+	/**
+	 * @public amd定义接口
+	 * @param {string} 模块id，可选，省略为script文件url
+	 * @param {array} 依赖模块id，可选
+	 * @param {Function/object} 初始化工厂
+	*/
 	function define(id, dependencies, factory) {
-		//前2个参数可省略
 		if(!$.isString(id)) {
 			factory = dependencies;
 			dependencies = id;
-			id = null; //省略id时默认为加载js文件的绝对路径
+			id = null;
 		}
 		if(!$.isArray(dependencies)) {
 			factory = dependencies;
 			dependencies = null;
 		}
-		lastId = id;
-		lastDeps = dependencies;
-		lastFactory = factory;window.t = window. t || 1;console.log('d' + window.t++);
-		if(id) {
-			lastMod = module[id] = {
-				id: id,
-				deps: dependencies,
-				factory: factory
-			};
-		}
-	};
+		var cb = $.isFunction(factory) ? factory : function() {
+			return factory;
+		};
+		lastMod = {
+			id: id,
+			dependencies: dependencies,
+			factory: factory,
+			uri: null
+		};
+	}
 	define.amd = {};
+	/**
+	 * @public 加载使用模块方法
+	 * @param {string/array} 模块id
+	 * @param {Function} 加载成功后回调
+	*/
 	function use(ids, cb) {
-		if($.isString(ids)) ids = [ids];
-		cb = cb || function(){};
-		var urls = [];
-		ids.forEach(function(id) {
-			if(module[id]) urls.push(module[id].uri);
-			else urls.push(getAbsUrl(id));
-		});
-		load(urls, function() {
-			var mods = urls2Mods(urls),
-				deps = [];
-			mods.forEach(function(mod) {
-				if(mod.deps) {
-					mod.deps.forEach(function(item) {
-						deps.push(item);
-					});
+		if($.isString(ids)) {
+			ids = [ids];
+		}
+		cb = cb || function() {};
+		var wrap = function() {
+				var mods = [];
+				ids.forEach(function(id) {
+					var mod = getMod(id);
+					if($.isFunction(mod.factory)) {
+						var deps = [];
+						if(mod.dependencies) {
+							mod.dependencies.forEach(function(d) {
+								deps.push(getMod(d).factory);
+							});
+						}
+						mod.factory = mod.factory.apply(null, deps);
+					}
+					mods.push(mod.factory);
+				});
+				cb.apply(null, mods);
+			},
+			recursion = function() {
+				var deps = [];
+				ids.forEach(function(id) {
+					var mod = getMod(id),
+						d = mod.dependencies;
+					if(d && d.length) {
+						deps = deps.concat(d);
+					}
+				});
+				//如果有依赖，先加载依赖，否则直接回调
+				if(deps.length) {
+					use(deps, wrap);
 				}
+				else {
+					wrap();
+				}
+			};
+		//将id转换为url
+		var urls = [];
+		ids.forEach(function(o) {
+			urls.push(id2Url(o));
+		});
+		loadScripts(urls, recursion);
+	}
+
+	function id2Url(id) {
+		if(module[id]) {
+			return module[id].url;
+		}
+		return id;
+	}
+	function url2Id(url) {
+		if(script[url]) {
+			return script[url];
+		}
+		return url;
+	}
+	function getMod(s) {
+		var mod = module[s];
+		//可能传入的是url而非id，转换下
+		if(!mod && script[s]) {
+			mod = module[script[s]];
+		}
+		if(!mod) {
+			throw new Error('module error: ' + s + ' is undefined');
+		}
+		return mod;
+	}
+	function loadScripts(urls, cb) {
+		if($.isString(urls)) {
+			urls = [urls];
+		}
+		var remote = urls.length;
+		if(remote) {
+			urls.forEach(function(url) {
+				getScript(url, function() {
+					if(--remote == 0) {
+						cb();
+					}
+				});
 			});
-			if(deps.length) {
-				use(deps, function() {
-					cb.apply(null, getModsFactories(urls2Mods(urls)));
+		}
+		else {
+			cb();
+		}
+	}
+	var getScript = (function() {
+		var state = {},
+			list = {},
+			UNLOAD = 0,
+			LOADING = 1,
+			LOADED = 2;
+		return function(url, cb) {
+			if(!state[url]) {
+				state[url] = UNLOAD;
+				list[url] = [cb];
+				$.ajax({
+					url: url,
+					dataType: 'script',
+					cache: true,
+					success: function() {
+						lastMod.uri = url;
+						lastMod.id = lastMod.id || url; //匿名module的id为本身script的url
+						if(module[lastMod.id]) {
+							throw new Error('module conflict: ' + lastMod.id + ' has already existed');
+						}
+						module[lastMod.id] = lastMod;
+						script[url] = lastMod.id;
+						//缓存记录
+						state[url] = LOADED;
+						list[url].forEach(function(cb) {
+							cb();
+						});
+						list[url] = [];
+					}
 				});
 			}
-			else cb.apply(null, getModsFactories(urls2Mods(urls)));
-		});
-	};
-
-	function getAbsUrl(url) {
-		if(/^https?:\/\//.test(url)) return url; //绝对路径
-		if(url.charAt(0) == '/') return location.host + url; //相对根路径
-		var uri = /^https?:\/\/(.+)\/[^/]*/.exec(location.href)[1];
-		//相对路径
-		if(url.charAt(0) == '.') {
-			//todo
-		}
-		//完整前缀+文件名
-		return 'http://' + uri + '/' + url;
-	};
-
-	function load(urls, cb) {
-		if($.isString(urls)) urls = [urls];
-		var loads = [];
-		urls.forEach(function(url) {
-			url = getAbsUrl(url);
-			var script = urlScript[url];
-			if(!script) script = urlScript[url] = {};
-			if(script.state != LOADED) loads.push(url);
-		});
-		var remote = loads.length;
-		if(remote == 0) cb();
-		else {
-			loads.forEach(function(url) {
-				var script = urlScript[url];
-				if(script && script.state == LOADING) script.cb.push(function() {
-					complete.call(script);
-				});
-				else {
-					urlScript[url] = {
-						state: LOADING,
-						cb: [function() {
-							complete.call(this);
-						}]
-					};
-					getScript(url);
-				}
-			});
-		}
-		function complete() {
-			this.state = LOADED;
-			if(--remote == 0) {
+			else if(state[url] == 1) {
+				list[url].push(cb);
+			}
+			else {
 				cb();
 			}
 		}
-	};
-	function getScript(url) {
-		$.ajax({
-			url: url,
-			dataType: 'script',
-			cache: true,
-			success: function() {
-				if(lastId) {
-					lastMod.uri = url;
-				}
-				else {
-					module[url] = {
-						id: url,
-						uri: url,
-						deps: lastDeps,
-						factory: lastFactory
-					};
-				}
-				/*lastId = lastId || url;console.log('---' + lastId);
-				module[lastId] = {
-					id: lastId,
-					uri: url,
-					deps: lastDeps,
-					factory: lastFactory
-				};*/
-				var script = urlScript[url];
-				script.state = LOADED;
-				script.id = lastId;
-				script.cb.forEach(function(cb) {
-					cb();
-				});
-				script.cb = [];window.t = window. t || 1;console.log('s' + window.t++);
-			}
-		});
-	};
-
-	function url2Mod(url) {
-		return module[urlScript[url].id];
-	};
-	function urls2Mods(urls) {
-		var mods = [];
-		urls.forEach(function(url) {
-			mods.push(url2Mod(url));
-		});
-		return mods;
-	};
-	function getModFactory(mod) {
-		var factory = mod.factory,
-			deps = [];
-		if($.isFunction(factory)) {
-			if(mod.deps) {
-				mod.deps.forEach(function(item) {
-					if(module[item]) deps.push(getModFactor(module[item]));
-					else deps.push(getModFactory(url2Mod(getAbsUrl(item))));
-				});
-			}
-			factory = mod.factory = factory.apply(null, deps);
-		}
-		return factory;
-	};
-	function getModsFactories(mods) {
-		var factories = [];
-		mods.forEach(function(mod) {
-			factories.push(getModFactory(mod));
-		});
-		return factories;
-	};
+	})();
 
 	window.define = define;
 	$$.use = use;
