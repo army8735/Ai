@@ -43,23 +43,18 @@
 				var mods = [];
 				ids.forEach(function(id) {
 					var mod = getMod(id);
-					//默认的3个模块没有依赖且无需转化factory
+					//默认的2个模块没有依赖且无需转化factory
 					if($.isFunction(mod.factory) && ['require', 'exports', 'module'].indexOf(id) == -1) {
 						var deps = [];
 						//有依赖参数为依赖的模块，否则默认为require, exports, module3个默认模块
 						if(mod.dependencies) {
 							mod.dependencies.forEach(function(d) {
-								deps.push(getMod(d).factory);
+								//使用module模块即为本身
+								d == 'module' ? mod : deps.push(getMod(d).factory);
 							});
 						}
 						else {
-							deps = [getMod('require').factory, getMod('exports').factory, getMod('module').factory];
-						}
-						//每次删除临时导出的数据，防止上次使用exports导出的残留数据
-						for(var i in exports) {
-							if(exports.hasOwnProperty(i)) {
-								delete exports[i];
-							}
+							deps = [getMod('require').factory, getMod('exports').factory, mod];
 						}
 						mod.factory = mod.factory.apply(null, deps) || exports;
 						//重置exports，为下次模块使用exports初始化清空
@@ -201,7 +196,7 @@
 		id: 'require',
 		dependencies: null,
 		factory: function(id) {
-			return getMod(id);
+			return getMod(id).factory;
 		},
 		uri: ''
 	};
@@ -214,8 +209,7 @@
 	module['module'] = {
 		id: 'module',
 		dependencies: null,
-		factory: function() {
-		},
+		factory: lastMod,
 		uri: ''
 	};
 
