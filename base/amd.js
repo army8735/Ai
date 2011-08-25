@@ -9,7 +9,7 @@
 	 * @param {string} 模块id，可选，省略为script文件url
 	 * @param {array} 依赖模块id，可选
 	 * @param {Function/object} 初始化工厂
-	*/
+	 */
 	function define(id, dependencies, factory) {
 		if(!$.isString(id)) {
 			factory = dependencies;
@@ -33,9 +33,9 @@
 	define.amd = {};
 	/**
 	 * @public 加载使用模块方法
-	 * @param {string/array} 模块id
+	 * @param {string/array} 模块id或url
 	 * @param {Function} 加载成功后回调
-	*/
+	 */
 	function use(ids, cb) {
 		if($.isString(ids)) {
 			ids = [ids];
@@ -82,19 +82,30 @@
 		});
 		loadScripts(urls, recursion);
 	}
-
+	/**
+	 * private 将id转换为url，如果模块url不存在，那么id本身就是url
+	 * @param {string} 模块id
+	 */
 	function id2Url(id) {
 		if(module[id]) {
 			return module[id].url;
 		}
 		return id;
 	}
+	/**
+	 * private 将url转换为id，如果模块id不存在，那么id本身就是url
+	 * @param {string} 模块id
+	 */
 	function url2Id(url) {
 		if(script[url]) {
 			return script[url];
 		}
 		return url;
 	}
+	/**
+	 * private 根据传入的id或url获取模块
+	 * @param {string} 模块id或url
+	 */
 	function getMod(s) {
 		var mod = module[s];
 		//可能传入的是url而非id，转换下
@@ -106,6 +117,11 @@
 		}
 		return mod;
 	}
+	/**
+	 * private 并行加载多个script文件
+	 * @param {string/array} url
+	 * @param {Function} 加载成功后的回调
+	 */
 	function loadScripts(urls, cb) {
 		if($.isString(urls)) {
 			urls = [urls];
@@ -124,6 +140,11 @@
 			cb();
 		}
 	}
+	/**
+	 * private 缓存加载单个script文件，仅加载一次
+	 * @param {string} url
+	 * @param {Function} 回调
+	 */
 	var getScript = (function() {
 		var state = {},
 			list = {},
