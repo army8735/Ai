@@ -1,3 +1,3 @@
-define('test3.js', {
-	test: 3
+define('test3.js', function(require, exports) {
+	exports.test = 3;
 });
