@@ -91,7 +91,7 @@
 		 * @param {string} str需要确定的字符串
 		 * @return {string} 结尾
 		 */
-		endWith: function(str, sub){
+		endsWith: function(str, sub){
 			return str.lastIndexOf(sub) == str.length - sub.length;
 		},
 		

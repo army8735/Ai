@@ -154,6 +154,7 @@
 		if($.isString(urls)) {
 			urls = [urls];
 		}
+		urls = $$.unique(urls);
 		var remote = urls.length;
 		if(remote) {
 			urls.forEach(function(url) {
