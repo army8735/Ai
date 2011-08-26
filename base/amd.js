@@ -132,7 +132,7 @@
 	 */
 	function id2Url(id) {
 		if(module[id]) {
-			return module[id].url;
+			return module[id].uri;
 		}
 		return id;
 	}
