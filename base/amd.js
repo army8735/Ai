@@ -56,10 +56,17 @@
 	 * @param {string/array} 模块id或url
 	 * @param {Function} 加载成功后回调
 	 */
-	function use(ids, cb) {
+	function use(ids, cb, history, list) {
 		if($.isString(ids)) {
 			ids = [ids];
 		}
+		var key = ids.join(',');
+		if(history[key]) {
+			list.push(key);
+			throw new Error('Cycle dependent: ' + list.join('->'));
+		}
+		history[key] = 1;
+		list.push(key);
 		cb = cb || function() {};
 		var wrap = function() {
 				var mods = [];
@@ -105,7 +112,7 @@
 				});
 				//如果有依赖，先加载依赖，否则直接回调
 				if(deps.length) {
-					use(deps, wrap);
+					use(deps, wrap, history, list);
 				}
 				else {
 					wrap();
@@ -207,7 +214,7 @@
 
 	window.define = define;
 	$$.use = function(ids, cb) {
-		use(ids, cb);
+		use(ids, cb, {}, []);
 	};
 	$$.modMap = function(id) {
 		return id ? module[id] : module;
