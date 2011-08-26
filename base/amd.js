@@ -21,6 +21,13 @@
 			factory = dependencies;
 			dependencies = null;
 		}
+		if($.isFunction(factory) && !dependencies) {
+			var res = /\brequire\s*\(\s*['"]?([^'")]*)/g.exec(factory.toString().replace(/\/\/.*\n/g, '').replace(/\/\*(\s|.)*\*\//g, ''));
+			if(res) {
+				res.shift();
+				dependencies = res.length ? res : null;
+			}
+		}
 		lastMod = {
 			id: id,
 			dependencies: dependencies,
@@ -54,9 +61,8 @@
 	 * @public 加载使用模块方法
 	 * @param {string/array} 模块id或url
 	 * @param {Function} 加载成功后回调
-	 * @param {object} 历史记录，防止循环死锁依赖，仅对内部暴露
 	 */
-	function use(ids, cb, history) {
+	function use(ids, cb) {
 		if($.isString(ids)) {
 			ids = [ids];
 		}
@@ -208,7 +214,7 @@
 
 	window.define = define;
 	$$.use = function(ids, cb) {
-		use(ids, cb, {});
+		use(ids, cb);
 	};
 	$$.modMap = function(id) {
 		return id ? module[id] : module;
