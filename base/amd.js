@@ -89,8 +89,6 @@
 							deps = [getMod('require').factory, exports, mod];
 						}
 						mod.factory = mod.factory.apply(null, deps) || exports;
-						//重置exports，为下次模块使用exports初始化清空
-						exports = {};
 					}
 					mods.push(mod.factory);
 				});
