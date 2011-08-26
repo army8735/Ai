@@ -1,12 +1,11 @@
-(function() {
-
+define('swfobject', (function() {
 	//覆盖flash默认通信方法，提高性能
 	window.__flash__escapeXML = function(s) {
 		var keywords = {
 			"\"" : "&quot;",
 			"<" : "&lt;",
 			">" : "&gt;",
-			"\"" : "&apos;"
+			"\'" : "&apos;"
 		};
 		return s.replace(/&/g, "&amp;").replace(/(['"<>])/g, function(a, b) {
 			var c = keywords[b];
@@ -167,7 +166,7 @@
 		}
 	}
 
-	$$.mix({
+	return {
 		/**
 		 * @public 获取flash对象
 		 * @param {string} 对象id
@@ -231,6 +230,6 @@
 			}
 			return version;
 		}
-	}, 'swf');
+	};
 
-})();
+})());

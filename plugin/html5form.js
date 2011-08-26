@@ -1,4 +1,4 @@
-(function() {
+define('html5form', ['../plugin/html5formcore.js'], (function() {
 
 	var TYPE_MES = {
 			'url': 'url格式不合法',
@@ -55,4 +55,4 @@
 		return this;
 	}
 
-})();
+})());

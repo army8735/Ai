@@ -1,4 +1,4 @@
-(function() {
+define('count', (function() {
 
 	var _cache, //所有点击请求都缓存至此队列
 		_url, //请求的url
@@ -123,7 +123,7 @@
 			_cache = [];
 		}
 	};
-	$$.mix({
+	return {
 		/**
 		 * @public 页面区域点击统计
 		 * @{string} 统计请求url
@@ -139,6 +139,6 @@
 				init(url, interval, delay, max);
 			}
 		}
-	}, 'count');
+	};
 
-})();
+})());

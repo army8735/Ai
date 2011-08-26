@@ -1,4 +1,4 @@
-(function() {
+define('storage', (function() {
 
 	function initStorage(url) {
 		//跨域，需加载iframe，同时考虑iframe加载完成前多次调用的设置缓存问题
@@ -24,7 +24,7 @@
 						removes.push(k);
 					}
 				},
-				iframe = '<iframe src="' + url + '" style="position:absolute;left:-9999px;visibility:hidden;"></iframe>';
+				iframe = '<iframe src="' + url + '" style="position:absolute;left:-9999px;width:0;height:0;visibility:hidden;"></iframe>';
 			iframe = $(iframe).load(function() {
 				//加载成功后执行缓存操作，再惰性覆盖原接口
 				cache = init(this.contentWindow);
@@ -113,7 +113,7 @@
 		return storage;
 	}
 
-	$$.mix({
+	return {
 		/**
 		 * @public 离线存储
 		 * @param {string} 存储的key，支持跨域存储（key后增加@和url），需引入子域的iframe，并指定document.domain为页面的域
@@ -153,6 +153,6 @@
 				}
 			};
 		})()
-	}, 'io');
+	};
 
-})();
+})());

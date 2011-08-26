@@ -1,9 +1,9 @@
-(function() {
+define('lazyLoad', (function() {
 	
 	var win = $(window),
 		height = win.height();
 
-	$$.mix({
+	return {
 		/**
 		 * @public 当滚动条拖动到对应节点显现时才进行加载
 		 * @param {string/node} 延迟加载的节点或id
@@ -104,6 +104,6 @@
 				onScroll();
 			}
 		}
-	}, 'lazy');
+	};
 
-})();
+})());

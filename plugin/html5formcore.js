@@ -1,4 +1,4 @@
-(function() {
+define('html5formcore', (function() {
 
 	var TYPE_VALID = {
 			'url': /^\s*[a-zA-z]+:\/\/.*$/,
@@ -284,4 +284,4 @@
 		}
 	}
 
-})();
+})());

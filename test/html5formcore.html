@@ -374,8 +374,7 @@ options为传入的对象，它有以下属性：{
 
 <script src="../Ai.js"></script>
 <script>
-	$$.def('html5formcore', '../plugin/html5formcore.js');
-	$$.use('html5formcore', function() {
+	$$.use('../plugin/html5formcore.js', function(html5formcore) {
 		$('form').html5formcore({
 			submit: function() {
 				alert('校验通过，可以提交' + this.id);
