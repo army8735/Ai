@@ -28,12 +28,6 @@
 				dependencies = res.length ? res : null;
 			}
 		}
-		lastMod = {
-			id: id,
-			dependencies: dependencies,
-			factory: factory,
-			uri: null
-		};
 		if(id) {
 			if(module[id]) {
 				throw new Error('module conflict: ' + lastMod.id + ' has already existed');
