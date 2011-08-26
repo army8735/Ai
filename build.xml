@@ -38,7 +38,7 @@
 			<path path="${base}/dom.js" />
 			<path path="${base}/util.js" />
 			<path path="${base}/module.js" />
-			<!--path path="${base}/amd.js" /-->
+			<path path="${base}/amd.js" />
 			<path path="${base}/event.js" />
 		</concat>
 	</target>
