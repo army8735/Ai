@@ -9639,7 +9639,52 @@ var $$ = {
 				}
 			}
 			return params;
-		}
+		},
+
+		/**
+		 * @public 可并行加载script文件，且仅加载一次
+		 * @param {url} script的url
+		 * @param {Function} 回调
+		 */
+		loadScript: (function() {
+			var state = {},
+				list = {},
+				UNLOAD = 0,
+				LOADING = 1,
+				LOADED = 2,
+				h = $('head')[0];
+			return function(url, cb) {
+				if(!state[url]) {
+					state[url] = UNLOAD;
+					list[url] = [cb];
+					var s = document.createElement('script'),
+						done;
+					s.type = 'text/javascript';
+					s.async = true;
+					s.src = url;
+					s.onload = s.onreadystatechange = function() {
+						if(!done && (!this.readyState || ['loaded', 'complete'].indexOf(this.readyState) != -1)) {
+							done = 1;
+							s.onload = s.onreadystatechange = null;
+							//缓存记录
+							state[url] = LOADED;
+							list[url].forEach(function(cb) {
+								cb();
+							});
+							list[url] = null;
+							h.removeChild(s);
+						}
+					};
+					h.appendChild(s);
+				}
+				else if(state[url] == LOADING) {
+					list[url].push(cb);
+				}
+				else if(state[url] == LOADED) {
+					cb();
+				}
+			};
+		})()
 	});
 })();
 (function() {

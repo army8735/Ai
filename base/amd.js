@@ -3,7 +3,7 @@
 	var module = {},
 		script = {},
 		lastMod,
-		exports = {};
+		cache = [];
 
 	/**
 	 * @public amd定义接口
@@ -27,14 +27,36 @@
 			factory: factory,
 			uri: null
 		};
+		if(id) {
+			if(module[id]) {
+				throw new Error('module conflict: ' + lastMod.id + ' has already existed');
+			}
+			module[id] = {
+				id: id,
+				dependencies: dependencies,
+				factory: factory,
+				uri: null
+			};
+			lastMod = null;
+			cache.push(module[id]);
+		}
+		else {
+			lastMod = {
+				id: null,
+				dependencies: dependencies,
+				factory: factory,
+				uri: null
+			};
+		}
 	}
 	define.amd = {};
 	/**
 	 * @public 加载使用模块方法
 	 * @param {string/array} 模块id或url
 	 * @param {Function} 加载成功后回调
+	 * @param {object} 历史记录，防止循环死锁依赖，仅对内部暴露
 	 */
-	function use(ids, cb) {
+	function use(ids, cb, history) {
 		if($.isString(ids)) {
 			ids = [ids];
 		}
@@ -45,16 +67,26 @@
 					var mod = getMod(id);
 					//默认的2个模块没有依赖且无需转化factory
 					if($.isFunction(mod.factory) && ['require', 'exports', 'module'].indexOf(id) == -1) {
-						var deps = [];
+						var deps = [],
+							exports = {};
 						//有依赖参数为依赖的模块，否则默认为require, exports, module3个默认模块
 						if(mod.dependencies) {
 							mod.dependencies.forEach(function(d) {
+								//使用exports模块用作导出
+								if(d == 'exports') {
+									deps.push(exports);
+								}
 								//使用module模块即为本身
-								d == 'module' ? mod : deps.push(getMod(d).factory);
+								else if(d == 'module') {
+									deps.push(mod);
+								}
+								else {
+									deps.push(getMod(d).factory);
+								}
 							});
 						}
 						else {
-							deps = [getMod('require').factory, getMod('exports').factory, mod];
+							deps = [getMod('require').factory, exports, mod];
 						}
 						mod.factory = mod.factory.apply(null, deps) || exports;
 						//重置exports，为下次模块使用exports初始化清空
@@ -99,16 +131,6 @@
 		return id;
 	}
 	/**
-	 * private 将url转换为id，如果模块id不存在，那么id本身就是url
-	 * @param {string} 模块id
-	 */
-	function url2Id(url) {
-		if(script[url]) {
-			return script[url];
-		}
-		return url;
-	}
-	/**
 	 * private 根据传入的id或url获取模块
 	 * @param {string} 模块id或url
 	 */
@@ -135,7 +157,22 @@
 		var remote = urls.length;
 		if(remote) {
 			urls.forEach(function(url) {
-				getScript(url, function() {
+				$$.loadScript(url, function() {
+					if(lastMod) {
+						lastMod.id = lastMod.uri = url; //匿名module的id为本身script的url
+						if(module[url]) {
+							throw new Error('module conflict: ' + url + ' has already existed');
+						}
+						module[url] = lastMod;
+						script[url] = url;
+					}
+					else {
+						cache.forEach(function(o) {
+							o.uri = url;
+							script[url] = o.id;
+						});
+					}
+					cache = [];
 					if(--remote == 0) {
 						cb();
 					}
@@ -146,50 +183,6 @@
 			cb();
 		}
 	}
-	/**
-	 * private 缓存加载单个script文件，仅加载一次
-	 * @param {string} url
-	 * @param {Function} 回调
-	 */
-	var getScript = (function() {
-		var state = {},
-			list = {},
-			UNLOAD = 0,
-			LOADING = 1,
-			LOADED = 2;
-		return function(url, cb) {
-			if(!state[url]) {
-				state[url] = UNLOAD;
-				list[url] = [cb];
-				$.ajax({
-					url: url,
-					dataType: 'script',
-					cache: true,
-					success: function() {
-						lastMod.uri = url;
-						lastMod.id = lastMod.id || url; //匿名module的id为本身script的url
-						if(module[lastMod.id]) {
-							throw new Error('module conflict: ' + lastMod.id + ' has already existed');
-						}
-						module[lastMod.id] = lastMod;
-						script[url] = lastMod.id;
-						//缓存记录
-						state[url] = LOADED;
-						list[url].forEach(function(cb) {
-							cb();
-						});
-						list[url] = [];
-					}
-				});
-			}
-			else if(state[url] == 1) {
-				list[url].push(cb);
-			}
-			else {
-				cb();
-			}
-		}
-	})();
 
 	//默认的require、exports、module模块
 	module['require'] = {
@@ -203,17 +196,22 @@
 	module['exports'] = {
 		id: 'exports',
 		dependencies: null,
-		factory: exports,
+		factory: null,
 		uri: ''
 	};
 	module['module'] = {
 		id: 'module',
 		dependencies: null,
-		factory: lastMod,
+		factory: null,
 		uri: ''
 	};
 
 	window.define = define;
-	$$.use = use;
+	$$.use = function(ids, cb) {
+		use(ids, cb, {});
+	};
+	$$.modMap = function(id) {
+		return id ? module[id] : module;
+	};
 
 })();
