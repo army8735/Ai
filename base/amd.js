@@ -21,6 +21,7 @@
 			factory = dependencies;
 			dependencies = null;
 		}
+		//在没有正则的情况下，通过factory.toString()方式匹配正则，智能获取依赖列表
 		if($.isFunction(factory) && !dependencies) {
 			var res = /\brequire\s*\(\s*['"]?([^'")]*)/g.exec(factory.toString().replace(/\/\/.*\n/g, '').replace(/\/\*(\s|.)*\*\//g, ''));
 			if(res) {
@@ -63,7 +64,7 @@
 		var key = ids.join(',');
 		if(history[key]) {
 			list.push(key);
-			throw new Error('Cycle dependent: ' + list.join('->'));
+			throw new Error('Cycle dependences: ' + list.join('->'));
 		}
 		history[key] = 1;
 		list.push(key);
