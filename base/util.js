@@ -222,6 +222,10 @@
 				LOADED = 2,
 				h = $('head')[0];
 			return function(url, cb) {
+				if(!url || !$.isString(url)) {
+					return;
+				}
+				cb = cb || function() {};
 				if(!state[url]) {
 					state[url] = UNLOAD;
 					list[url] = [cb];

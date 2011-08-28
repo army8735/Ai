@@ -9654,6 +9654,10 @@ var $$ = {
 				LOADED = 2,
 				h = $('head')[0];
 			return function(url, cb) {
+				if(!url || !$.isString(url)) {
+					return;
+				}
+				cb = cb || function() {};
 				if(!state[url]) {
 					state[url] = UNLOAD;
 					list[url] = [cb];
@@ -9762,7 +9766,7 @@ var $$ = {
 				var mods = [];
 				ids.forEach(function(id) {
 					var mod = getMod(id);
-					//默认的2个模块没有依赖且无需转化factory
+					//默认的3个模块没有依赖且无需转化factory
 					if($.isFunction(mod.factory) && ['require', 'exports', 'module'].indexOf(id) == -1) {
 						var deps = [],
 							exports = {};
