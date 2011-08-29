@@ -9658,28 +9658,8 @@ var $$ = {
 					return;
 				}
 				cb = cb || function() {};
-				//可能这个script被手动添加标签过了
-				var has = false;
-				$('script').each(function(i, o) {
-					var s = $(o).attr('src');
-					if(s) {
-						if(s.charAt(0) == '/') {
-							s = location.host + s;
-						}
-						else if(s.indexOf('http') == -1) {
-							s = location.href.replace(/[#?].*/, '').replace(/(.+\/).*/, '$1') + s;
-						}
-						if(s == url) {
-							has = true;
-						}
-					}
-				});
-				if(has) {
-					cb();
-					return;
-				}
 				if(!state[url]) {
-					state[url] = UNLOAD;
+					state[url] = LOADING;
 					list[url] = [cb];
 					var s = document.createElement('script'),
 						done;
@@ -9743,7 +9723,7 @@ var $$ = {
 			}
 		}
 		//先将uris设置为最后一个script，用作直接script标签的模块；其它方式加载的话uri会被覆盖为正确的
-		var lastScript = $('script:last').attr('url');
+		var lastScript = $('script:last').attr('url') || null;
 		if(lastScript && lastScript.charAt(0) == '/') {
 			lastScript = location.host + lastScript;
 		}
@@ -9751,9 +9731,6 @@ var $$ = {
 			lastScript = location.href.replace(/[#?].*/, '').replace(/(.+\/).*/, '$1') + lastScript;
 		}
 		if(id) {
-			if(module[id]) {
-				throw new Error('module conflict: ' + module[id].id + ' has already existed');
-			}
 			module[id] = {
 				id: id,
 				dependencies: dependencies,
@@ -9852,7 +9829,7 @@ var $$ = {
 	 * @param {string} 模块id
 	 */
 	function id2Url(id) {
-		if(module[id]) {
+		if(module[id] && module[id].uri) {
 			return module[id].uri;
 		}
 		return id;
@@ -9919,19 +9896,19 @@ var $$ = {
 		factory: function(id) {
 			return getMod(id).factory;
 		},
-		uri: ''
+		uri: null
 	};
 	module['exports'] = {
 		id: 'exports',
 		dependencies: null,
 		factory: null,
-		uri: ''
+		uri: null
 	};
 	module['module'] = {
 		id: 'module',
 		dependencies: null,
 		factory: null,
-		uri: ''
+		uri: null
 	};
 
 	window.define = define;
