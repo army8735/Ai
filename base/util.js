@@ -227,7 +227,7 @@
 				}
 				cb = cb || function() {};
 				if(!state[url]) {
-					state[url] = UNLOAD;
+					state[url] = LOADING;
 					list[url] = [cb];
 					var s = document.createElement('script'),
 						done;
