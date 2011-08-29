@@ -30,7 +30,7 @@
 			}
 		}
 		//先将uris设置为最后一个script，用作直接script标签的模块；其它方式加载的话uri会被覆盖为正确的
-		var lastScript = $('script:last').attr('url');
+		var lastScript = $('script:last').attr('url') || null;
 		if(lastScript && lastScript.charAt(0) == '/') {
 			lastScript = location.host + lastScript;
 		}
@@ -206,19 +206,19 @@
 		factory: function(id) {
 			return getMod(id).factory;
 		},
-		uri: ''
+		uri: null
 	};
 	module['exports'] = {
 		id: 'exports',
 		dependencies: null,
 		factory: null,
-		uri: ''
+		uri: null
 	};
 	module['module'] = {
 		id: 'module',
 		dependencies: null,
 		factory: null,
-		uri: ''
+		uri: null
 	};
 
 	window.define = define;
