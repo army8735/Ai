@@ -9658,6 +9658,26 @@ var $$ = {
 					return;
 				}
 				cb = cb || function() {};
+				//可能这个script被手动添加标签过了
+				var has = false;
+				$('script').each(function(i, o) {
+					var s = $(o).attr('src');
+					if(s) {
+						if(s.charAt(0) == '/') {
+							s = location.host + s;
+						}
+						else if(s.indexOf('http') == -1) {
+							s = location.href.replace(/[#?].*/, '').replace(/(.+\/).*/, '$1') + s;
+						}
+						if(s == url) {
+							has = true;
+						}
+					}
+				});
+				if(has) {
+					cb();
+					return;
+				}
 				if(!state[url]) {
 					state[url] = UNLOAD;
 					list[url] = [cb];
@@ -9722,15 +9742,23 @@ var $$ = {
 				dependencies = res.length ? res : null;
 			}
 		}
+		//先将uris设置为最后一个script，用作直接script标签的模块；其它方式加载的话uri会被覆盖为正确的
+		var lastScript = $('script:last').attr('url');
+		if(lastScript && lastScript.charAt(0) == '/') {
+			lastScript = location.host + lastScript;
+		}
+		else if(lastScript && lastScript.indexOf('http') == -1) {
+			lastScript = location.href.replace(/[#?].*/, '').replace(/(.+\/).*/, '$1') + lastScript;
+		}
 		if(id) {
 			if(module[id]) {
-				throw new Error('module conflict: ' + lastMod.id + ' has already existed');
+				throw new Error('module conflict: ' + module[id].id + ' has already existed');
 			}
 			module[id] = {
 				id: id,
 				dependencies: dependencies,
 				factory: factory,
-				uri: null
+				uri: lastScript
 			};
 			lastMod = null;
 			cache.push(module[id]);
@@ -9740,7 +9768,7 @@ var $$ = {
 				id: null,
 				dependencies: dependencies,
 				factory: factory,
-				uri: null
+				uri: lastScript
 			};
 		}
 	}

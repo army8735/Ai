@@ -29,15 +29,23 @@
 				dependencies = res.length ? res : null;
 			}
 		}
+		//先将uris设置为最后一个script，用作直接script标签的模块；其它方式加载的话uri会被覆盖为正确的
+		var lastScript = $('script:last').attr('url');
+		if(lastScript && lastScript.charAt(0) == '/') {
+			lastScript = location.host + lastScript;
+		}
+		else if(lastScript && lastScript.indexOf('http') == -1) {
+			lastScript = location.href.replace(/[#?].*/, '').replace(/(.+\/).*/, '$1') + lastScript;
+		}
 		if(id) {
 			if(module[id]) {
-				throw new Error('module conflict: ' + lastMod.id + ' has already existed');
+				throw new Error('module conflict: ' + module[id].id + ' has already existed');
 			}
 			module[id] = {
 				id: id,
 				dependencies: dependencies,
 				factory: factory,
-				uri: null
+				uri: lastScript
 			};
 			lastMod = null;
 			cache.push(module[id]);
@@ -47,7 +55,7 @@
 				id: null,
 				dependencies: dependencies,
 				factory: factory,
-				uri: null
+				uri: lastScript
 			};
 		}
 	}
