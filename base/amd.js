@@ -127,6 +127,10 @@
 		//将id转换为url
 		var urls = [];
 		ids.forEach(function(o) {
+			//模块以及存在说明加载过了
+			if(module[o]) {
+				return;
+			}
 			urls.push(id2Url(o));
 		});
 		loadScripts(urls, recursion);
