@@ -136,7 +136,7 @@
 	 * @param {string} 模块id
 	 */
 	function id2Url(id) {
-		if(module[id]) {
+		if(module[id] && module[id].uri) {
 			return module[id].uri;
 		}
 		return id;
