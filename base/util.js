@@ -226,26 +226,6 @@
 					return;
 				}
 				cb = cb || function() {};
-				//可能这个script被手动添加标签过了
-				var has = false;
-				$('script').each(function(i, o) {
-					var s = $(o).attr('src');
-					if(s) {
-						if(s.charAt(0) == '/') {
-							s = location.host + s;
-						}
-						else if(s.indexOf('http') == -1) {
-							s = location.href.replace(/[#?].*/, '').replace(/(.+\/).*/, '$1') + s;
-						}
-						if(s == url) {
-							has = true;
-						}
-					}
-				});
-				if(has) {
-					cb();
-					return;
-				}
 				if(!state[url]) {
 					state[url] = UNLOAD;
 					list[url] = [cb];
