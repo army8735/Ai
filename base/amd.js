@@ -38,9 +38,6 @@
 			lastScript = location.href.replace(/[#?].*/, '').replace(/(.+\/).*/, '$1') + lastScript;
 		}
 		if(id) {
-			if(module[id]) {
-				throw new Error('module conflict: ' + module[id].id + ' has already existed');
-			}
 			module[id] = {
 				id: id,
 				dependencies: dependencies,
