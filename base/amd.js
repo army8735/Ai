@@ -34,7 +34,7 @@
 		if(lastScript && lastScript.charAt(0) == '/') {
 			lastScript = location.host + lastScript;
 		}
-		else if(lastScript && lastScript.indexOf('http') == -1) {
+		else if(lastScript && !/^https?\:\/\//.test(lastScript)) {
 			lastScript = location.href.replace(/[#?].*/, '').replace(/(.+\/).*/, '$1') + lastScript;
 		}
 		if(id) {
