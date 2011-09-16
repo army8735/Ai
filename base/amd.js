@@ -30,11 +30,11 @@
 			}
 		}
 		//先将uris设置为最后一个script，用作直接script标签的模块；其它方式加载的话uri会被覆盖为正确的
-		var lastScript = $('script:last').attr('url') || null;
-		if(lastScript && lastScript.charAt(0) == '/') {
+		var lastScript = $('script:last').attr('url') || location.href;
+		if(lastScript.charAt(0) == '/') {
 			lastScript = location.host + lastScript;
 		}
-		else if(lastScript && !/^https?\:\/\//.test(lastScript)) {
+		else if(!/^https?\:\/\//.test(lastScript)) {
 			lastScript = location.href.replace(/[#?].*/, '').replace(/(.+\/).*/, '$1') + lastScript;
 		}
 		if(id) {
