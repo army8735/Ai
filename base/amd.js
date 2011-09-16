@@ -42,6 +42,7 @@
 				id: id,
 				dependencies: dependencies,
 				factory: factory,
+				exports: null,
 				uri: lastScript
 			};
 			lastMod = null;
@@ -52,6 +53,7 @@
 				id: null,
 				dependencies: dependencies,
 				factory: factory,
+				exports: null,
 				uri: lastScript
 			};
 		}
@@ -80,7 +82,7 @@
 				ids.forEach(function(id) {
 					var mod = getMod(id);
 					//默认的3个模块没有依赖且无需转化factory
-					if($.isFunction(mod.factory) && ['require', 'exports', 'module'].indexOf(id) == -1) {
+					if(!mod.exports && ['require', 'exports', 'module'].indexOf(id) == -1) {
 						var deps = [],
 							exports = {};
 						//有依赖参数为依赖的模块，否则默认为require, exports, module3个默认模块
@@ -95,16 +97,17 @@
 									deps.push(mod);
 								}
 								else {
-									deps.push(getMod(d).factory);
+									deps.push(getMod(d).exports);
 								}
 							});
 						}
 						else {
-							deps = [getMod('require').factory, exports, mod];
+							deps = [getMod('require').exports, exports, mod];
 						}
-						mod.factory = mod.factory.apply(null, deps) || exports;
+						mod.exports = $.isFunction(mod.factory) ? (mod.factory.apply(null, deps) || exports) : mod.factory;
+						delete mod.factory;
 					}
-					mods.push(mod.factory);
+					mods.push(mod.exports);
 				});
 				cb.apply(null, mods);
 			},
@@ -177,9 +180,6 @@
 				$$.loadScript(url, function() {
 					if(lastMod) {
 						lastMod.id = lastMod.uri = url; //匿名module的id为本身script的url
-						if(module[url]) {
-							throw new Error('module conflict: ' + url + ' has already existed');
-						}
 						module[url] = lastMod;
 						script[url] = url;
 					}
@@ -205,21 +205,21 @@
 	module['require'] = {
 		id: 'require',
 		dependencies: null,
-		factory: function(id) {
-			return getMod(id).factory;
+		exports: function(id) {
+			return getMod(id).exports;
 		},
 		uri: null
 	};
 	module['exports'] = {
 		id: 'exports',
 		dependencies: null,
-		factory: null,
+		exports: null,
 		uri: null
 	};
 	module['module'] = {
 		id: 'module',
 		dependencies: null,
-		factory: null,
+		exports: null,
 		uri: null
 	};
 

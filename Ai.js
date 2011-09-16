@@ -9696,7 +9696,7 @@ var $$ = {
 	var module = {},
 		script = {},
 		lastMod,
-		cache = [];
+		cache;
 
 	/**
 	 * @public amd定义接口
@@ -9723,11 +9723,11 @@ var $$ = {
 			}
 		}
 		//先将uris设置为最后一个script，用作直接script标签的模块；其它方式加载的话uri会被覆盖为正确的
-		var lastScript = $('script:last').attr('url') || null;
-		if(lastScript && lastScript.charAt(0) == '/') {
+		var lastScript = $('script:last').attr('url') || location.href;
+		if(lastScript.charAt(0) == '/') {
 			lastScript = location.host + lastScript;
 		}
-		else if(lastScript && lastScript.indexOf('http') == -1) {
+		else if(!/^https?\:\/\//.test(lastScript)) {
 			lastScript = location.href.replace(/[#?].*/, '').replace(/(.+\/).*/, '$1') + lastScript;
 		}
 		if(id) {
@@ -9735,16 +9735,18 @@ var $$ = {
 				id: id,
 				dependencies: dependencies,
 				factory: factory,
+				exports: null,
 				uri: lastScript
 			};
 			lastMod = null;
-			cache.push(module[id]);
+			cache && cache.push(module[id]);
 		}
 		else {
 			lastMod = {
 				id: null,
 				dependencies: dependencies,
 				factory: factory,
+				exports: null,
 				uri: lastScript
 			};
 		}
@@ -9756,6 +9758,7 @@ var $$ = {
 	 * @param {Function} 加载成功后回调
 	 */
 	function use(ids, cb, history, list) {
+		cache = cache || []; //use之前的模块为手动添加在页面script标签的模块，它们的uri为标签src或者location.href
 		if($.isString(ids)) {
 			ids = [ids];
 		}
@@ -9772,7 +9775,7 @@ var $$ = {
 				ids.forEach(function(id) {
 					var mod = getMod(id);
 					//默认的3个模块没有依赖且无需转化factory
-					if($.isFunction(mod.factory) && ['require', 'exports', 'module'].indexOf(id) == -1) {
+					if(!mod.exports && ['require', 'exports', 'module'].indexOf(id) == -1) {
 						var deps = [],
 							exports = {};
 						//有依赖参数为依赖的模块，否则默认为require, exports, module3个默认模块
@@ -9787,16 +9790,17 @@ var $$ = {
 									deps.push(mod);
 								}
 								else {
-									deps.push(getMod(d).factory);
+									deps.push(getMod(d).exports);
 								}
 							});
 						}
 						else {
-							deps = [getMod('require').factory, exports, mod];
+							deps = [getMod('require').exports, exports, mod];
 						}
-						mod.factory = mod.factory.apply(null, deps) || exports;
+						mod.exports = $.isFunction(mod.factory) ? (mod.factory.apply(null, deps) || exports) : mod.factory;
+						delete mod.factory;
 					}
-					mods.push(mod.factory);
+					mods.push(mod.exports);
 				});
 				cb.apply(null, mods);
 			},
@@ -9869,9 +9873,6 @@ var $$ = {
 				$$.loadScript(url, function() {
 					if(lastMod) {
 						lastMod.id = lastMod.uri = url; //匿名module的id为本身script的url
-						if(module[url]) {
-							throw new Error('module conflict: ' + url + ' has already existed');
-						}
 						module[url] = lastMod;
 						script[url] = url;
 					}
@@ -9897,21 +9898,21 @@ var $$ = {
 	module['require'] = {
 		id: 'require',
 		dependencies: null,
-		factory: function(id) {
-			return getMod(id).factory;
+		exports: function(id) {
+			return getMod(id).exports;
 		},
 		uri: null
 	};
 	module['exports'] = {
 		id: 'exports',
 		dependencies: null,
-		factory: null,
+		exports: null,
 		uri: null
 	};
 	module['module'] = {
 		id: 'module',
 		dependencies: null,
-		factory: null,
+		exports: null,
 		uri: null
 	};
 
