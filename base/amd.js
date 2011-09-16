@@ -3,7 +3,7 @@
 	var module = {},
 		script = {},
 		lastMod,
-		cache = [];
+		cache;
 
 	/**
 	 * @public amd定义接口
@@ -45,7 +45,7 @@
 				uri: lastScript
 			};
 			lastMod = null;
-			cache.push(module[id]);
+			cache && cache.push(module[id]);
 		}
 		else {
 			lastMod = {
@@ -63,6 +63,7 @@
 	 * @param {Function} 加载成功后回调
 	 */
 	function use(ids, cb, history, list) {
+		cache = cache || []; //use之前的模块为手动添加在页面script标签的模块，它们的uri为标签src或者location.href
 		if($.isString(ids)) {
 			ids = [ids];
 		}
