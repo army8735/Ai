@@ -9455,47 +9455,7 @@ var $$ = {
 		}
 		return res.concat(complex);
 	}
-};$$.mix({
-	charset: document.charset || document['characterSet'],
-
-	/**
-	 * @public 是否是闭合标签
-	 */
-	isCloseTag: function(tagName){
-		return !!({area:1,base:1,col:1,hr:1,img:1,br:1,input:1,link:1,meta:1,param:1})[tagName.toLowerCase()];
-	},
-
-	/**
-	 * @public 继承jq的browser方法，并增加几个特性
-	 */
-	browser: (function() {
-		var userAgent = navigator.userAgent;
-		return $.extend({
-			// 是否为mobile safari浏览器（iphone, ipod touch, ipad）
-			mobileSafari: $.browser.safari && / Mobile\//.test(userAgent),
-			//语言特性
-			lang: (navigator.language || navigator.systemLanguage).toLowerCase(),
-			iOS: (this.mobileSafari ? (userAgent.match(/(ipad|iphone|ipod)/) || [])[0] : false),
-			se360: /360SE/.test(userAgent),
-			maxthon: /Maxthon/.test(userAgent),
-			tt: /TencentTraveler\s[\d.]*/.test(userAgent),
-			theWorld: /TheWorld/.test(userAgent),
-			sogo: /SE\s[\d.]*/.test(userAgent)
-		}, $.browser);
-	})(),
-	
-	/**
-	 * @public 操作系统
-	 */
-	system: (function() {
-		var p = navigator.platform.toLowerCase();
-		return {
-			windows: p ? /win/.test(p) : /win/.test(userAgent),
-			mac: p ? /mac/.test(p) : /mac/.test(u)
-		}
-	})()
-
-});(function(){
+};(function(){
 	var tplCache = {};
 	
 	$$.mix({
@@ -9990,8 +9950,7 @@ var $$ = {
 	};
 
 })();(function() {
-	var id = '-ai',
-		BINDED = 1;
+	var BINDED = 1;
 
 	/**
 	 * @public 生成一个新的事件驱动对象
@@ -10014,14 +9973,14 @@ var $$ = {
 				cb = data;
 				data = {};
 			}
-			this._node.bind(id + type, data, cb);
+			this._node.bind(type, data, cb);
 			var self = this,
-				o = this._lib[id + type];
+				o = this._lib[type];
 			if(o.tag != BINDED) {
 				o.tag = BINDED;
 				//事先fire过，绑定时要自动触发
 				o.list && o.list.forEach(function(o) {
-					self.trigger(id + type, o);
+					self.trigger(type, o);
 				});
 			}
 		},
@@ -10031,7 +9990,7 @@ var $$ = {
 		 * @param {func} 侦听的执行方法，可省略，省略为取消所有
 		 */
 		unbind: function(type, cb) {
-			this._node.unbind(id + type, cb);
+			this._node.unbind(type, cb);
 		},
 		/**
 		 * @public 触发事件，仅一次
@@ -10039,7 +9998,7 @@ var $$ = {
 		 * @param {object} 触发时的数据，可省略
 		 */
 		one: function(type, data) {
-			this._node.one(id + type, data || {});
+			this._node.one(type, data || {});
 		},
 		/**
 		 * @public 触发事件，可多次
@@ -10047,7 +10006,7 @@ var $$ = {
 		 * @param {object} 触发时的数据，可省略
 		 */
 		trigger: function(type, data) {
-			this._node.trigger(id + type, data || {});
+			this._node.trigger(type, data || {});
 		},
 		/**
 		 * @public 触发事件，可多次，可以先触发后绑定
@@ -10056,7 +10015,7 @@ var $$ = {
 		 */
 		fire: function(type, data) {
 			data = data || {};
-			var o = this._lib[id + type];
+			var o = this._lib[type];
 			if(o.tag != BINDED) {
 				if(o.list) {
 					o.list.push(data);
@@ -10066,12 +10025,12 @@ var $$ = {
 				}
 			}
 			else {
-				this._node.trigger(id + type, data);
+				this._node.trigger(type, data);
 			}
 		}
 	};
 
-	//默认的全局事件驱动对象
+	//默认的全局事件
 	$$.event = new $$.Event();
 
 })();

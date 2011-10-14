@@ -1,6 +1,5 @@
 (function() {
-	var id = '-ai',
-		BINDED = 1;
+	var BINDED = 1;
 
 	/**
 	 * @public 生成一个新的事件驱动对象
@@ -23,14 +22,14 @@
 				cb = data;
 				data = {};
 			}
-			this._node.bind(id + type, data, cb);
+			this._node.bind(type, data, cb);
 			var self = this,
-				o = this._lib[id + type];
+				o = this._lib[type];
 			if(o.tag != BINDED) {
 				o.tag = BINDED;
 				//事先fire过，绑定时要自动触发
 				o.list && o.list.forEach(function(o) {
-					self.trigger(id + type, o);
+					self.trigger(type, o);
 				});
 			}
 		},
@@ -40,7 +39,7 @@
 		 * @param {func} 侦听的执行方法，可省略，省略为取消所有
 		 */
 		unbind: function(type, cb) {
-			this._node.unbind(id + type, cb);
+			this._node.unbind(type, cb);
 		},
 		/**
 		 * @public 触发事件，仅一次
@@ -48,7 +47,7 @@
 		 * @param {object} 触发时的数据，可省略
 		 */
 		one: function(type, data) {
-			this._node.one(id + type, data || {});
+			this._node.one(type, data || {});
 		},
 		/**
 		 * @public 触发事件，可多次
@@ -56,7 +55,7 @@
 		 * @param {object} 触发时的数据，可省略
 		 */
 		trigger: function(type, data) {
-			this._node.trigger(id + type, data || {});
+			this._node.trigger(type, data || {});
 		},
 		/**
 		 * @public 触发事件，可多次，可以先触发后绑定
@@ -65,7 +64,7 @@
 		 */
 		fire: function(type, data) {
 			data = data || {};
-			var o = this._lib[id + type];
+			var o = this._lib[type];
 			if(o.tag != BINDED) {
 				if(o.list) {
 					o.list.push(data);
@@ -75,12 +74,12 @@
 				}
 			}
 			else {
-				this._node.trigger(id + type, data);
+				this._node.trigger(type, data);
 			}
 		}
 	};
 
-	//默认的全局事件驱动对象
+	//默认的全局事件
 	$$.event = new $$.Event();
 
 })();
