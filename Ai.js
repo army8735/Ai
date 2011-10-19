@@ -9969,14 +9969,14 @@ var $$ = {
 		 * @param {func} 侦听的执行方法
 		 */
 		bind: function(type, data, cb) {
-			if($.isUndefinde(cb)) {
+			if($.isUndefined(cb)) {
 				cb = data;
 				data = {};
 			}
 			this._node.bind(type, data, cb);
 			var self = this,
 				o = this._lib[type];
-			if(o.tag != BINDED) {
+			if(o && o.tag != BINDED) {
 				o.tag = BINDED;
 				//事先fire过，绑定时要自动触发
 				o.list && o.list.forEach(function(o) {
@@ -10015,7 +10015,7 @@ var $$ = {
 		 */
 		fire: function(type, data) {
 			data = data || {};
-			var o = this._lib[type];
+			var o = this._lib[type] = this._lib[type] || {};
 			if(o.tag != BINDED) {
 				if(o.list) {
 					o.list.push(data);
