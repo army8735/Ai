@@ -164,49 +164,51 @@
 			return $.trim(this);
 		};
 	}
-	Array.isArray || (Array.isArray = function (obj) {
+	Array.isArray || (Array.isArray = function(obj) {
 		return OP.toString.call(obj) === '[object Array]';
 	});
 	Date.now || (Date.now = function () {
 		return new Date().getTime();
 	});
-	Object.keys || (Object.keys = (function () {
-		var hasDontEnumBug = !{toString:''}.propertyIsEnumerable('toString'),
-			DontEnums = [
-				'toString',
-				'toLocaleString',
-				'valueOf',
-				'hasOwnProperty',
-				'isPrototypeOf',
-				'propertyIsEnumerable',
-				'constructor'
-			],
-			DontEnumsLength = DontEnums.length;
+	Object.keys || (Object.keys = function(o) {
+		if(o !== Object(o))
+			throw new TypeError('Object.keys called on non-object');
+		var ret=[],p;
+		for(p in o)
+			if(Object.prototype.hasOwnProperty.call(o,p))
+				ret.push(p);
+		return ret;
+	});
+	Object.create || (Object.create = function (o) {
+		if(arguments.length > 1) {
+			throw new Error('Object.create implementation only accepts the first parameter.');
+		}
+		function F() {}
+		F.prototype = o;
+		return new F();
+	});
+	Function.prototype.bind || (Function.prototype.bind = function(oThis) {
+		if (typeof this !== "function") {
+			// closest thing possible to the ECMAScript 5 internal IsCallable function
+			throw new TypeError("Function.prototype.bind - what is trying to be bound is not callable");
+		}
 
-		return function (o) {
-			if (o !== Object(o)) {
-				throw new TypeError(o + ' is not an object');
-			}
+		var fSlice = Array.prototype.slice,
+			aArgs = fSlice.call(arguments, 1), 
+			fToBind = this, 
+			fNOP = function () {},
+			fBound = function () {
+				return fToBind.apply(this instanceof fNOP
+									 ? this
+									 : oThis || window,
+									 aArgs.concat(fSlice.call(arguments)));
+			};
 
-			var result = [];
+		fNOP.prototype = this.prototype;
+		fBound.prototype = new fNOP();
 
-			for (var name in o) {
-				if (hasOwnProperty.call(o, name)) {
-					result.push(name);
-				}
-			}
-
-			if (hasDontEnumBug) {
-				for (var i = 0; i < DontEnumsLength; i++) {
-					if (hasOwnProperty.call(o, DontEnums[i])) {
-						result.push(DontEnums[i]);
-					}
-				}
-			}
-
-			return result;
-		};
-	})());
+		return fBound;
+	});
 
 	//flash在ie下会更改title的bug
 	if($.browser.msie) {

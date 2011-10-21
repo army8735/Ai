@@ -9210,49 +9210,51 @@ window.jQuery = window.$ = jQuery;
 			return $.trim(this);
 		};
 	}
-	Array.isArray || (Array.isArray = function (obj) {
+	Array.isArray || (Array.isArray = function(obj) {
 		return OP.toString.call(obj) === '[object Array]';
 	});
 	Date.now || (Date.now = function () {
 		return new Date().getTime();
 	});
-	Object.keys || (Object.keys = (function () {
-		var hasDontEnumBug = !{toString:''}.propertyIsEnumerable('toString'),
-			DontEnums = [
-				'toString',
-				'toLocaleString',
-				'valueOf',
-				'hasOwnProperty',
-				'isPrototypeOf',
-				'propertyIsEnumerable',
-				'constructor'
-			],
-			DontEnumsLength = DontEnums.length;
+	Object.keys || (Object.keys = function(o) {
+		if(o !== Object(o))
+			throw new TypeError('Object.keys called on non-object');
+		var ret=[],p;
+		for(p in o)
+			if(Object.prototype.hasOwnProperty.call(o,p))
+				ret.push(p);
+		return ret;
+	});
+	Object.create || (Object.create = function (o) {
+		if(arguments.length > 1) {
+			throw new Error('Object.create implementation only accepts the first parameter.');
+		}
+		function F() {}
+		F.prototype = o;
+		return new F();
+	});
+	Function.prototype.bind || (Function.prototype.bind = function(oThis) {
+		if (typeof this !== "function") {
+			// closest thing possible to the ECMAScript 5 internal IsCallable function
+			throw new TypeError("Function.prototype.bind - what is trying to be bound is not callable");
+		}
 
-		return function (o) {
-			if (o !== Object(o)) {
-				throw new TypeError(o + ' is not an object');
-			}
+		var fSlice = Array.prototype.slice,
+			aArgs = fSlice.call(arguments, 1), 
+			fToBind = this, 
+			fNOP = function () {},
+			fBound = function () {
+				return fToBind.apply(this instanceof fNOP
+									 ? this
+									 : oThis || window,
+									 aArgs.concat(fSlice.call(arguments)));
+			};
 
-			var result = [];
+		fNOP.prototype = this.prototype;
+		fBound.prototype = new fNOP();
 
-			for (var name in o) {
-				if (hasOwnProperty.call(o, name)) {
-					result.push(name);
-				}
-			}
-
-			if (hasDontEnumBug) {
-				for (var i = 0; i < DontEnumsLength; i++) {
-					if (hasOwnProperty.call(o, DontEnums[i])) {
-						result.push(DontEnums[i]);
-					}
-				}
-			}
-
-			return result;
-		};
-	})());
+		return fBound;
+	});
 
 	//flash在ie下会更改title的bug
 	if($.browser.msie) {
@@ -9948,89 +9950,5 @@ var $$ = {
 	$$.modMap = function(id) {
 		return id ? module[id] : module;
 	};
-
-})();(function() {
-	var BINDED = 1;
-
-	/**
-	 * @public 生成一个新的事件驱动对象
-	 * @return new $$.Event();
-	 */
-	$$.Event = function() {
-		this._node = $('<p>');
-		this._lib = {};
-	};
-	$$.Event.prototype = {
-		constructor: $$.Event,
-		/**
-		 * @public 绑定事件侦听
-		 * @param {string} 绑定的事件名
-		 * @param {object} 绑定时的数据，可省略
-		 * @param {func} 侦听的执行方法
-		 */
-		bind: function(type, data, cb) {
-			if($.isUndefined(cb)) {
-				cb = data;
-				data = {};
-			}
-			this._node.bind(type, data, cb);
-			var self = this,
-				o = this._lib[type];
-			if(o && o.tag != BINDED) {
-				o.tag = BINDED;
-				//事先fire过，绑定时要自动触发
-				o.list && o.list.forEach(function(o) {
-					self.trigger(type, o);
-				});
-			}
-		},
-		/**
-		 * @public 接触绑定事件侦听
-		 * @param {string} 绑定的事件名
-		 * @param {func} 侦听的执行方法，可省略，省略为取消所有
-		 */
-		unbind: function(type, cb) {
-			this._node.unbind(type, cb);
-		},
-		/**
-		 * @public 触发事件，仅一次
-		 * @param {string} 触发的事件名
-		 * @param {object} 触发时的数据，可省略
-		 */
-		one: function(type, data) {
-			this._node.one(type, data || {});
-		},
-		/**
-		 * @public 触发事件，可多次
-		 * @param {string} 触发的事件名
-		 * @param {object} 触发时的数据，可省略
-		 */
-		trigger: function(type, data) {
-			this._node.trigger(type, data || {});
-		},
-		/**
-		 * @public 触发事件，可多次，可以先触发后绑定
-		 * @param {string} 触发的事件名
-		 * @param {object} 触发时的数据，可省略
-		 */
-		fire: function(type, data) {
-			data = data || {};
-			var o = this._lib[type] = this._lib[type] || {};
-			if(o.tag != BINDED) {
-				if(o.list) {
-					o.list.push(data);
-				}
-				else {
-					o.list = [data];
-				}
-			}
-			else {
-				this._node.trigger(type, data);
-			}
-		}
-	};
-
-	//默认的全局事件
-	$$.event = new $$.Event();
 
 })();

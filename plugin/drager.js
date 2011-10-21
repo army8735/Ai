@@ -1,4 +1,4 @@
-define((function(options) {
+define(function() {
 	var doc = $(document);
 	function setCoord(node, left, top) {
 		node.css({
@@ -17,7 +17,7 @@ define((function(options) {
 		this.lastIndex = 0;
 		this.tempIndex = 0;
 		this._init();
-		this._event = new $$.Event();
+		this._event = $('<p>');
 	}
 	Klass.prototype._reset = function() {
 		var self = this,
@@ -141,7 +141,7 @@ define((function(options) {
 			this._event.trigger('drag:switch', [node, this.containers[i], j]);
 		}
 	}
-	Klass.prototype._switch = function(node, container, i) {
+	Klass.prototype._switch = function(node, container, i, last) {
 		//switch为true时，drag:end时才执行的改变位置，优化校验是否改变了位置，未改变的话不进行插入操作
 		if(last && container.children(this.options.drag).eq(i)[0] == node[0]) 
 			return;
@@ -160,11 +160,11 @@ define((function(options) {
 			before.after(node);
 		}
 	}
-	Klass.prototype.bind = function(type, cb) {
-		this._event.bind(type, cb);
+	Klass.prototype.bind = function() {
+		this._event.bind.apply(this._event, Array.prototype.slice.call(arguments, 0));
 	}
-	Klass.prototype.unbind = function(type, cb) {
-		this._event.unbind(type, cb);
+	Klass.prototype.unbind = function() {
+		this._event.unbind.apply(this._event, Array.prototype.slice.call(arguments, 0));
 	}
 	return Klass;
-})());
+});
