@@ -23,6 +23,9 @@ define((function(options) {
 		var self = this,
 			op = self.options,
 			container = $(op.container);
+		self.containers = [];
+		self.splitX = [];
+		self.splitY = [];
 		container.each(function(i, o) {
 			o = $(o);
 			//忽略被隐藏的容器
@@ -75,7 +78,7 @@ define((function(options) {
 				setCoord(node, left, right);
 				//如果switch不设置为true，说明不是实时改变拖动块的位置，而是在drag:end再改变，需侦听
 				if(!op.switch) {
-					self._switch(node, $(self.tempContainer), self.tempIndex);
+					self._switch(node, $(self.tempContainer), self.tempIndex, true);
 				}
 				//解除事件侦听
 				doc.unbind('mousemove', move);
@@ -108,48 +111,44 @@ define((function(options) {
 		var j = 0,
 			split = this.splitY[i];
 		len = split.length;
-		if(this.lastContainer == this.containers[i][0]) {
-			//从上至下寻找超过鼠标y的分割线的索引
-			for(; j < len; j++) {
-				if(split[j] >= ne.pageY) {
-					break;
-				}
+		//从上至下寻找超过鼠标y的分割线的索引
+		for(; j < len; j++) {
+			if(split[j] >= ne.pageY) {
+				break;
 			}
-			//设置上下限
-			j = Math.max(0, j);
-			j = Math.min(j, len - 1);
+		}
+		var sameContainer = this.lastContainer == this.containers[i][0];
+		//设置上下限
+		j = Math.max(0, j);
+		j = Math.min(j, sameContainer ? len - 1 : len);
+		if(sameContainer) {
 			//改变位置后才会触发
 			if(this.tempContainer != this.containers[i][0] || this.lastIndex != j) {
-				this.tempContainer = this.lastContainer;
-				this.lastIndex = this.tempIndex = j;
-				if(this.options.switch) {
-					this._switch(node, this.containers[i], j);
-				}
-				this._event.trigger('drag:switch', [node, this.containers[i], j]);
+				cb.call(this);
 			}
 		}
 		else {
-			for(; j < len; j++) {
-				if(split[j] >= ne.pageY) {
-					break;
-				}
-			}
-			//设置上下限
-			j = Math.max(0, j);
-			j = Math.min(j, len);
 			if((this.tempContainer == this.containers[i][0] && this.lastIndex != j) || this.tempContainer != this.containers[i][0]) {
-				this.tempContainer = this.containers[i][0];
-				this.lastIndex = this.tempIndex = j;
-				if(this.options.switch) {
-					this._switch(node, this.containers[i], j);
-				};
-				this._event.trigger('drag:switch', [node, this.containers[i], j]);
+				cb.call(this);
 			}
+		}
+		function cb() {
+			this.tempContainer = this.containers[i][0];
+			this.lastIndex = this.tempIndex = j;
+			if(this.options.switch) {
+				this._switch(node, this.containers[i], j);
+			};
+			this._event.trigger('drag:switch', [node, this.containers[i], j]);
 		}
 	}
 	Klass.prototype._switch = function(node, container, i) {
+		//switch为true时，drag:end时才执行的改变位置，优化校验是否改变了位置，未改变的话不进行插入操作
+		if(last && container.children(this.options.drag).eq(i)[0] == node[0]) 
+			return;
+		//为0时在头部插入
 		if(i == 0)
 			container.prepend(node);
+		//否则按照索引插入
 		else {
 			var siblings = [];
 			container.children(this.options.drag).each(function(index, o) {
