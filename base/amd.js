@@ -90,7 +90,7 @@
 							mod.dependencies.forEach(function(d) {
 								//使用exports模块用作导出
 								if(d == 'exports') {
-									deps.push(module.exports);
+									deps.push(mod.exports);
 								}
 								//使用module模块即为本身
 								else if(d == 'module') {
