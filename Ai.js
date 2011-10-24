@@ -9728,14 +9728,14 @@ var $$ = {
 					var mod = getMod(id);
 					//默认的3个模块没有依赖且无需转化factory
 					if(!mod.exports && ['require', 'exports', 'module'].indexOf(id) == -1) {
-						var deps = [],
-							exports = {};
+						var deps = [];
+						mod.exports = {};
 						//有依赖参数为依赖的模块，否则默认为require, exports, module3个默认模块
 						if(mod.dependencies) {
 							mod.dependencies.forEach(function(d) {
 								//使用exports模块用作导出
 								if(d == 'exports') {
-									deps.push(exports);
+									deps.push(module.exports);
 								}
 								//使用module模块即为本身
 								else if(d == 'module') {
@@ -9747,9 +9747,9 @@ var $$ = {
 							});
 						}
 						else {
-							deps = [getMod('require').exports, exports, mod];
+							deps = [getMod('require').exports, mod.exports, mod];
 						}
-						mod.exports = $.isFunction(mod.factory) ? (mod.factory.apply(null, deps) || exports) : mod.factory;
+						$.extend(mod.exports, $.isFunction(mod.factory) ? (mod.factory.apply(null, deps) || mod.exports) : mod.factory);
 						delete mod.factory;
 					}
 					mods.push(mod.exports);
