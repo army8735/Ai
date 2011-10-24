@@ -9889,6 +9889,7 @@ var $$ = {
 	Klass.prototype.dispatchEvent = function() {
 		this._event.triggerHandler.apply(this._event, Array.prototype.slice.call(arguments, 0));
 	}
+	$$.Event = Klass;
 	$$.event = new Klass();
 	return Klass;
 });

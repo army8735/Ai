@@ -10,9 +10,7 @@ define(['Event'], function(Event) {
 		Event.call(this);
 		this.options = options;
 		this.left = this.top = 0;
-		this.containers = [];
-		this.splitX = [];
-		this.splitY = [];
+		this.split = [];
 		this.lastContainer = null;
 		this.tempContainer = null;
 		this.lastIndex = 0;
@@ -25,26 +23,32 @@ define(['Event'], function(Event) {
 		var self = this,
 			op = self.options,
 			container = $(op.container);
-		self.containers = [];
-		self.splitX = [];
-		self.splitY = [];
+		self.split = [];
 		container.each(function(i, o) {
 			o = $(o);
 			//忽略被隐藏的容器
-			if(o.is(':hidden'))
+			if(o.css('display') == 'none') {
 				return;
-			var drags = o.children(op.drag),
-				split = [];
-			drags.each(function(i2, o2) {
-				o2 = $(o2);
-				if(i2 > 0)
-					split.push(o2.offset().top);
-				if(i2 == drags.length - 1)
-					split.push(o2.offset().top + o2.outerHeight());
+			}
+			self.split.push({
+				node: o,
+				first: o.offset().left,
+				second: []
 			});
-			self.containers.push(o);
-			self.splitX.push(o.offset().left);
-			self.splitY.push(split);
+		});
+		self.split.sort(function(a, b) {
+			return a.first > b.first;
+		});
+		self.split.forEach(function(o) {
+			var drags = o.node.children(op.drag),
+				len = drags.length - 1;
+			drags.each(function(i, n) {
+				n = $(n);
+				if(i > 0)
+					o.second.push(n.offset().top);
+				if(i == len)
+					o.second.push(n.offset().top + n.outerHeight());
+			});
 		});
 	}
 	Klass.prototype._init = function() {
@@ -101,8 +105,10 @@ define(['Event'], function(Event) {
 		setCoord(node, left, top);
 		this._event.trigger('drag:move', [node]);
 		//检查是否发生了模块移动，先从左至右寻找容器
-		for(var i = 0, len = this.splitX.length; i < len; i++) {
-			if(this.splitX[i] >= ne.pageX) {
+		var i = j = 0,
+			len = this.split.length;
+		for(; i < len; i++) {
+			if(this.split[i].first >= ne.pageX) {
 				i--;
 				break;
 			}
@@ -110,37 +116,34 @@ define(['Event'], function(Event) {
 		//没有容器坐标值大于鼠标的x，设为最后一个容器，都大于的话，设为第一个
 		i = Math.max(0, i);
 		i = Math.min(i, len - 1);
-		var j = 0,
-			split = this.splitY[i];
-		len = split.length;
-		//从上至下寻找超过鼠标y的分割线的索引
+		var sp = this.split[i];
+		len = sp.second.length;
 		for(; j < len; j++) {
-			if(split[j] >= ne.pageY) {
+			if(sp.second[j] >= ne.pageY)
 				break;
-			}
 		}
-		var sameContainer = this.lastContainer == this.containers[i][0];
+		var sameContainer = this.lastContainer == sp.node[0];
 		//设置上下限
 		j = Math.max(0, j);
 		j = Math.min(j, sameContainer ? len - 1 : len);
 		if(sameContainer) {
 			//改变位置后才会触发
-			if(this.tempContainer != this.containers[i][0] || this.lastIndex != j) {
+			if(this.tempContainer != sp.node[0] || this.lastIndex != j) {
 				cb.call(this);
 			}
 		}
 		else {
-			if((this.tempContainer == this.containers[i][0] && this.lastIndex != j) || this.tempContainer != this.containers[i][0]) {
+			if((this.tempContainer == sp.node[0] && this.lastIndex != j) || this.tempContainer != sp.node[0]) {
 				cb.call(this);
 			}
 		}
 		function cb() {
-			this.tempContainer = this.containers[i][0];
+			this.tempContainer = sp.node[0];
 			this.lastIndex = this.tempIndex = j;
 			if(this.options.switch) {
-				this._switch(node, this.containers[i], j);
+				this._switch(node, sp.node, j);
 			};
-			this._event.trigger('drag:switch', [node, this.containers[i], j]);
+			this._event.trigger('drag:switch', [node, sp.node, j]);
 		}
 	}
 	Klass.prototype._switch = function(node, container, i, last) {
@@ -161,12 +164,6 @@ define(['Event'], function(Event) {
 			var before = $(siblings[i - 1]);
 			before.after(node);
 		}
-	}/*
-	Klass.prototype.bind = function() {
-		this._event.bind.apply(this._event, Array.prototype.slice.call(arguments, 0));
 	}
-	Klass.prototype.unbind = function() {
-		this._event.unbind.apply(this._event, Array.prototype.slice.call(arguments, 0));
-	}*/
 	return Klass;
 });
