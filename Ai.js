@@ -9291,45 +9291,6 @@ window.jQuery = window.$ = jQuery;
 		return typeof o === 'object';
 	}
 
-	$.fn.extend({
-		/**
-		 * @public 组合键
-		 * @param {array} 需侦听的组合键code
-		 * @param {func} callback
-		 */
-		'comboKey': function(keyCodes, cb) {
-			var length = keyCodes.length,
-				count = 0,
-				keyHash = {};
-			//转换hash判断增快速度
-			keyCodes.forEach(function(item) {
-				keyHash[item] = 1;
-			});
-			//有callback为侦听，否则为移除
-			if(cb) {
-				this.bind('keydown', keyDown);
-				this.bind('keyUp', keyUp);
-			}
-			else {
-				this.unbind('keydown', keyDown);
-				this.unbind('keyUp', keyUp);
-			}
-			//handler
-			function keyDown(e) {
-				if(keyHash[e.keyCode]) {
-					if(++count == length) {
-						cb();
-					}
-				}
-			}
-			function keyUp(e) {
-				if(keyHash[e.keyCode]) {
-					--count;
-				}
-			}
-		}
-	});
-
 	$.cookie = function(name, value, options) {
 		if(!$.isUndefined(value)) { // name and value given, set cookie
 			options = options || {};
@@ -9424,88 +9385,17 @@ var $$ = {
 	},
 
 	/**
-	 * @public 去掉数组里重复成员
-	 * @note 支持所有成员类型，包括dom，对象，数组，布尔，null等，复合类型比较引用
+	 * @public 寄生组合继承
 	 */
-	unique: function(array) {
-		var res = [], complex = [], record = {}, it, tmp, id = 0,
-			type = {
-				'number': function(n) { return '_num' + n; },
-				'string': function(n) { return n; },
-				'boolean': function(n) { return '_boolean' + n; },
-				'object': function(n) { if(n !== null) complex.push(n); return n === null ? '_null' : false; },
-				'undefined': function(n) { return '_undefined'; }
-			};
-		array.forEach(function(item) {
-			it = tmp = item;
-			tmp = type[typeof it](it);
-			if(!record[tmp] && tmp) {
-				res.push(it);
-				record[tmp] = true;
-			}
-		});
-		//存在复合对象，使用indexOf比较引用
-		if(complex.length) {
-			var i = 0;
-			while(i < complex.length) {
-				it = complex[i];
-				while((tmp = complex.lastIndexOf(it)) !== i) {
-					complex.splice(tmp, 1);
-				}
-				i++;
-			}
-		}
-		return res.concat(complex);
+	inheritPrototype: function(subType, superType) {
+		var prototype = Object.create(superType.prototype);
+		prototype.constructor = subType;
+		subType.prototype = prototype;
 	}
 };(function(){
 	var tplCache = {};
 	
 	$$.mix({
-		/**
-		 * @public 生成随机整数
-		 * @note 最小为0
-		 * @param {number} min,max是随机数的范围，当只有一个参数时，min默认为0。当没有参数时，默认Math.random()的整数
-		 * @return {int} 返回大于或等于0，小于范围的整数
-		 */
-		rand: function(min, max) {
-			if($.isUndefined(min)) {
-				return Math.floor(Math.random() * 100000000000000000);
-			}
-			else if($.isUndefined(max)) {
-				max = min;
-				min = 0;
-			}
-			return min + Math.floor(Math.random() * (max - min));
-		},
-	
-		/**
-		 * @public 取最大值
-		 * @note 仅限数字
-		 */
-		max: function() {
-			var args = arguments,
-				i = args.length - 2,
-				v = args[i + 1];
-			for(; i > -1; i--) {
-				if(args[i] > v) v = args[i];
-			}
-			return v;
-		},
-	
-		/**
-		 * @public 取最小值
-		 * @note 仅限数字
-		 */
-		min: function() {
-			var args = arguments,
-				i = args.length - 2,
-				v = args[i + 1];
-			for(; i > -1; i--) {
-				if(args[i] < v) v = args[i];
-			}
-			return v;
-		},
-		
 		/**
 		 * @public html转义
 		 * @param {string} 需要转义的字符串
@@ -9552,6 +9442,41 @@ var $$ = {
 		 */
 		endsWith: function(str, sub){
 			return str.lastIndexOf(sub) == str.length - sub.length;
+		},
+
+		/**
+		 * @public 去掉数组里重复成员
+		 * @note 支持所有成员类型，包括dom，对象，数组，布尔，null等，复合类型比较引用
+		 */
+		unique: function(array) {
+			var res = [], complex = [], record = {}, it, tmp, id = 0,
+				type = {
+					'number': function(n) { return '_num' + n; },
+					'string': function(n) { return n; },
+					'boolean': function(n) { return '_boolean' + n; },
+					'object': function(n) { if(n !== null) complex.push(n); return n === null ? '_null' : false; },
+					'undefined': function(n) { return '_undefined'; }
+				};
+			array.forEach(function(item) {
+				it = tmp = item;
+				tmp = type[typeof it](it);
+				if(!record[tmp] && tmp) {
+					res.push(it);
+					record[tmp] = true;
+				}
+			});
+			//存在复合对象，使用indexOf比较引用
+			if(complex.length) {
+				var i = 0;
+				while(i < complex.length) {
+					it = complex[i];
+					while((tmp = complex.lastIndexOf(it)) !== i) {
+						complex.splice(tmp, 1);
+					}
+					i++;
+				}
+			}
+			return res.concat(complex);
 		},
 		
 		/**
@@ -9656,9 +9581,9 @@ var $$ = {
 		 * @public 返回url的get变量，以hash模式
 		 * @return {object} hash的变量
 		 */
-		pageParams: function() {
+		pageParams: function(url) {
 			var params = {};
-			var result = /[^\s&\?#=\/]+=[^\s&\?#=]+/g.exec(location.href || '');
+			var result = /[^\s&\?#=\/]+=[^\s&\?#=]+/g.exec(url);
 			if(result){
 				for(var i = 0, l = result.length; i < l; i++){
 					var n = result[i].split("=");
@@ -9951,4 +9876,19 @@ var $$ = {
 		return id ? module[id] : module;
 	};
 
-})();
+})();define('Event', function() {
+	function Klass() {
+		this._event = $('<p>');
+	}
+	Klass.prototype.addEventListener = function() {
+		this._event.bind.apply(this._event, Array.prototype.slice.call(arguments, 0));
+	}
+	Klass.prototype.removeEventListener = function() {
+		this._event.unbind.apply(this._event, Array.prototype.slice.call(arguments, 0));
+	}
+	Klass.prototype.dispatchEvent = function() {
+		this._event.triggerHandler.apply(this._event, Array.prototype.slice.call(arguments, 0));
+	}
+	$$.event = new Klass();
+	return Klass;
+});

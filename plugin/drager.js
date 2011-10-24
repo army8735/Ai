@@ -1,4 +1,4 @@
-define(function() {
+define(['Event'], function(Event) {
 	var doc = $(document);
 	function setCoord(node, left, top) {
 		node.css({
@@ -7,6 +7,7 @@ define(function() {
 		});
 	}
 	function Klass(options) {
+		Event.call(this);
 		this.options = options;
 		this.left = this.top = 0;
 		this.containers = [];
@@ -19,6 +20,7 @@ define(function() {
 		this._init();
 		this._event = $('<p>');
 	}
+	$$.inheritPrototype(Klass, Event);
 	Klass.prototype._reset = function() {
 		var self = this,
 			op = self.options,
@@ -159,12 +161,12 @@ define(function() {
 			var before = $(siblings[i - 1]);
 			before.after(node);
 		}
-	}
+	}/*
 	Klass.prototype.bind = function() {
 		this._event.bind.apply(this._event, Array.prototype.slice.call(arguments, 0));
 	}
 	Klass.prototype.unbind = function() {
 		this._event.unbind.apply(this._event, Array.prototype.slice.call(arguments, 0));
-	}
+	}*/
 	return Klass;
 });

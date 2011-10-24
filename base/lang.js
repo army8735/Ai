@@ -18,45 +18,6 @@
 		return typeof o === 'object';
 	}
 
-	$.fn.extend({
-		/**
-		 * @public 组合键
-		 * @param {array} 需侦听的组合键code
-		 * @param {func} callback
-		 */
-		'comboKey': function(keyCodes, cb) {
-			var length = keyCodes.length,
-				count = 0,
-				keyHash = {};
-			//转换hash判断增快速度
-			keyCodes.forEach(function(item) {
-				keyHash[item] = 1;
-			});
-			//有callback为侦听，否则为移除
-			if(cb) {
-				this.bind('keydown', keyDown);
-				this.bind('keyUp', keyUp);
-			}
-			else {
-				this.unbind('keydown', keyDown);
-				this.unbind('keyUp', keyUp);
-			}
-			//handler
-			function keyDown(e) {
-				if(keyHash[e.keyCode]) {
-					if(++count == length) {
-						cb();
-					}
-				}
-			}
-			function keyUp(e) {
-				if(keyHash[e.keyCode]) {
-					--count;
-				}
-			}
-		}
-	});
-
 	$.cookie = function(name, value, options) {
 		if(!$.isUndefined(value)) { // name and value given, set cookie
 			options = options || {};
@@ -151,37 +112,11 @@ var $$ = {
 	},
 
 	/**
-	 * @public 去掉数组里重复成员
-	 * @note 支持所有成员类型，包括dom，对象，数组，布尔，null等，复合类型比较引用
+	 * @public 寄生组合继承
 	 */
-	unique: function(array) {
-		var res = [], complex = [], record = {}, it, tmp, id = 0,
-			type = {
-				'number': function(n) { return '_num' + n; },
-				'string': function(n) { return n; },
-				'boolean': function(n) { return '_boolean' + n; },
-				'object': function(n) { if(n !== null) complex.push(n); return n === null ? '_null' : false; },
-				'undefined': function(n) { return '_undefined'; }
-			};
-		array.forEach(function(item) {
-			it = tmp = item;
-			tmp = type[typeof it](it);
-			if(!record[tmp] && tmp) {
-				res.push(it);
-				record[tmp] = true;
-			}
-		});
-		//存在复合对象，使用indexOf比较引用
-		if(complex.length) {
-			var i = 0;
-			while(i < complex.length) {
-				it = complex[i];
-				while((tmp = complex.lastIndexOf(it)) !== i) {
-					complex.splice(tmp, 1);
-				}
-				i++;
-			}
-		}
-		return res.concat(complex);
+	inheritPrototype: function(subType, superType) {
+		var prototype = Object.create(superType.prototype);
+		prototype.constructor = subType;
+		subType.prototype = prototype;
 	}
 };
