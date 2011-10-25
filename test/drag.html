@@ -131,10 +131,10 @@ options: {
 }
 //可侦听的事件
 {
-	'drag:start': function(node), //鼠标按下开始拖动时触发，参数为jq鼠标事件对象和被拖动的jq节点
-	'drag:move': function(node), //拖动移动时触发，参数为jq鼠标事件对象和被拖动的jq节点
-	'drag:switch': function(node, container, index), //被拖动的节点产生位置切换时触发，参数为jq鼠标事件对象、被拖动的jq节点、节点的容器、切换到容器位置的索引（无论options的switch是否设为true）
-	'drag:end': function(node) //鼠标弹起拖动结束时触发，参数为jq鼠标事件对象
+	'drag:start': function(node), //鼠标按下开始拖动时触发，参数为被拖动的jq节点
+	'drag:move': function(node), //拖动移动时触发，参数为被拖动的jq节点
+	'drag:switch': function(node, container, index), //被拖动的节点产生位置切换时触发，参数为被拖动的jq节点、节点的容器、切换到容器位置的索引（无论options的switch是否设为true）
+	'drag:end': function(node) //鼠标弹起拖动结束时触发，参数为被拖动的jq节点
 }
 //页面中的例子
 var modDrag = new Drager({
