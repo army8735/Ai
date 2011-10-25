@@ -1,4 +1,4 @@
-define(['Event'], function(Event) {
+define(['Event'], function(Event) {console.log(Event)
 	var doc = $(document);
 	function setCoord(node, left, top) {
 		node.css({

@@ -86,12 +86,12 @@ $$.use('../plugin/drager.js', function(Drager) {
 		'switch': false
 	});
 	var placeBox = $('<div class="placebox">');
-	modDrag.addEventListener('drag:start', function(e, node) {
+	modDrag.bind('drag:start', function(e, node) {
 		placeBox.css('height', node.height()).insertAfter(node);
 		node.addClass('movebox');
 		node.parent().addClass('movecontainer');
 	});
-	modDrag.addEventListener('drag:switch', function(e, node, container, i) {
+	modDrag.bind('drag:switch', function(e, node, container, i) {
 		if(i == 0)
 			container.prepend(placeBox);
 		else {
@@ -105,7 +105,7 @@ $$.use('../plugin/drager.js', function(Drager) {
 			before.after(placeBox);
 		}
 	});
-	modDrag.addEventListener('drag:end', function(e, node) {
+	modDrag.bind('drag:end', function(e, node) {
 		placeBox.remove();
 		node.removeClass('movebox');
 		node.parent().removeClass('movecontainer');
@@ -125,9 +125,9 @@ options: {
 }
 //继承的公有方法
 {
-	addEventListener: function(type, [data], callback), //添加侦听事件
-	removeEventListener: function(type, [data], callback) //解除侦听事件
-	dispatchEvent: function(type, [data]) //触发事件
+	bind: function(type, [data], callback), //添加侦听事件
+	unbind: function(type, [data], callback) //解除侦听事件
+	trigger: function(type, [data]) //触发事件
 }
 //可侦听的事件
 {
@@ -144,12 +144,12 @@ var modDrag = new Drager({
 	'switch': false
 });
 var placeBox = $('&lt;div class="placebox"&gt;');
-modDrag.addEventListener('drag:start', function(e, node) {
+modDrag.bind('drag:start', function(e, node) {
 	placeBox.css('height', node.height()).insertAfter(node);
 	node.addClass('movebox');
 	node.parent().addClass('movecontainer');
 });
-modDrag.addEventListener('drag:switch', function(e, node, container, i) {
+modDrag.bind('drag:switch', function(e, node, container, i) {
 	if(i == 0)
 		container.prepend(placeBox);
 	else {
@@ -163,7 +163,7 @@ modDrag.addEventListener('drag:switch', function(e, node, container, i) {
 		before.after(placeBox);
 	}
 });
-modDrag.addEventListener('drag:end', function(e, node) {
+modDrag.bind('drag:end', function(e, node) {
 	placeBox.remove();
 	node.removeClass('movebox');
 	node.parent().removeClass('movecontainer');

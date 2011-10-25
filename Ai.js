@@ -9749,7 +9749,7 @@ var $$ = {
 						else {
 							deps = [getMod('require').exports, mod.exports, mod];
 						}
-						$.extend(mod.exports, $.isFunction(mod.factory) ? (mod.factory.apply(null, deps) || mod.exports) : mod.factory);
+						mod.exports = $.isFunction(mod.factory) ? (mod.factory.apply(null, deps) || mod.exports) : mod.factory;
 						delete mod.factory;
 					}
 					mods.push(mod.exports);
@@ -9880,13 +9880,13 @@ var $$ = {
 	function Klass() {
 		this._event = $('<p>');
 	}
-	Klass.prototype.addEventListener = function() {
+	Klass.prototype.bind = function() {
 		this._event.bind.apply(this._event, Array.prototype.slice.call(arguments, 0));
 	}
-	Klass.prototype.removeEventListener = function() {
+	Klass.prototype.unbind = function() {
 		this._event.unbind.apply(this._event, Array.prototype.slice.call(arguments, 0));
 	}
-	Klass.prototype.dispatchEvent = function() {
+	Klass.prototype.trigger = function() {
 		this._event.triggerHandler.apply(this._event, Array.prototype.slice.call(arguments, 0));
 	}
 	$$.Event = Klass;

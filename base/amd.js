@@ -104,7 +104,7 @@
 						else {
 							deps = [getMod('require').exports, mod.exports, mod];
 						}
-						$.extend(mod.exports, $.isFunction(mod.factory) ? (mod.factory.apply(null, deps) || mod.exports) : mod.factory);
+						mod.exports = $.isFunction(mod.factory) ? (mod.factory.apply(null, deps) || mod.exports) : mod.factory;
 						delete mod.factory;
 					}
 					mods.push(mod.exports);
