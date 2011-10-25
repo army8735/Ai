@@ -144,12 +144,12 @@ var modDrag = new Drager({
 	'switch': false
 });
 var placeBox = $('&lt;div class="placebox"&gt;');
-modDrag.bind('drag:start', function(e, node) {
+modDrag.bind('drag:start', function(node) {
 	placeBox.css('height', node.height()).insertAfter(node);
 	node.addClass('movebox');
 	node.parent().addClass('movecontainer');
 });
-modDrag.bind('drag:switch', function(e, node, container, i) {
+modDrag.bind('drag:switch', function(node, container, i) {
 	if(i == 0)
 		container.prepend(placeBox);
 	else {
@@ -163,7 +163,7 @@ modDrag.bind('drag:switch', function(e, node, container, i) {
 		before.after(placeBox);
 	}
 });
-modDrag.bind('drag:end', function(e, node) {
+modDrag.bind('drag:end', function(node) {
 	placeBox.remove();
 	node.removeClass('movebox');
 	node.parent().removeClass('movecontainer');
