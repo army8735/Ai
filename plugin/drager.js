@@ -1,4 +1,4 @@
-define(['Event'], function(Event) {console.log(Event)
+define(['Event'], function(Event) {
 	var doc = $(document);
 	function setCoord(node, left, top) {
 		node.css({
@@ -16,7 +16,6 @@ define(['Event'], function(Event) {console.log(Event)
 		this.lastIndex = 0;
 		this.tempIndex = 0;
 		this._init();
-		this._event = $('<p>');
 	}
 	$$.inheritPrototype(Klass, Event);
 	Klass.prototype._reset = function() {
