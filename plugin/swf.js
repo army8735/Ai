@@ -37,16 +37,16 @@ define('swfobject', (function() {
 	function getVersion() {
 		var d,
 			ver = [0, 0, 0];
-		if(!$.isUndefined(navigator.plugins) && $.isObject(navigator.plugins[SHOCKWAVE_FLASH])) {
+		if(navigator.plugins !== undefined && $.type(navigator.plugins[SHOCKWAVE_FLASH]) == 'object') {
 			d = navigator.plugins[SHOCKWAVE_FLASH].description;
-			if (d && !(!$.isUndefined(navigator.mimeTypes) && navigator.mimeTypes[FLASH_MIME_TYPE] && !navigator.mimeTypes[FLASH_MIME_TYPE].enabledPlugin)) { // navigator.mimeTypes["application/x-shockwave-flash"].enabledPlugin indicates whether plug-ins are enabled or disabled in Safari 3+
+			if (d && !(navigator.mimeTypes !== undefined && navigator.mimeTypes[FLASH_MIME_TYPE] && !navigator.mimeTypes[FLASH_MIME_TYPE].enabledPlugin)) { // navigator.mimeTypes["application/x-shockwave-flash"].enabledPlugin indicates whether plug-ins are enabled or disabled in Safari 3+
 				d = d.replace(/^.*\s+(\S+\s+\S+$)/, '$1');
 				ver[0] = parseInt(d.replace(/^(.*)\..*$/, '$1'), 10);
 				ver[1] = parseInt(d.replace(/^.*\.(.*)\s.*$/, '$1'), 10);
 				ver[2] = /[a-zA-Z]/.test(d) ? parseInt(d.replace(/^.*[a-zA-Z]+(.*)$/, '$1'), 10) : 0;
 			}
 		}
-		else if(!$.isUndefined(window.ActiveXObject)) {
+		else if(window.ActiveXObject !== undefined) {
 			try {
 				var a = new ActiveXObject(SHOCKWAVE_FLASH_AX);
 				if(a) { // a will return null when ActiveX is disabled
@@ -213,7 +213,7 @@ define('swfobject', (function() {
 		 * @param {func} 移除后的回调函数
 		 */
 		removeItem: function(id, cb) {
-			var obj = $.isString(id) ? document.getElementById(id) : id;
+			var obj = $.type(id) == 'string' ? document.getElementById(id) : id;
 			if (obj && obj.nodeName == 'OBJECT') {
 				removeObject(obj, cb);
 			}

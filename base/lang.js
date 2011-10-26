@@ -1,20 +1,5 @@
 (function() {
 
-	//补充jquery中一些遗漏的方法
-	var toString = Object.prototype.toString;
-	$.isString = function(o) {
-		return toString.call(o) === '[object String]';
-	}
-	$.isBoolean = function(o) {
-		return toString.call(o) === '[object Boolean]';
-	}
-	$.isNumber = function(o) {
-		return toString.call(o) === '[object Number]' && isFinite(o);
-	}
-	$.isObject = function(o) {
-		return typeof o === 'object';
-	}
-
 	$.cookie = function(name, value, options) {
 		if(value !== undefined) { // name and value given, set cookie
 			options = options || {};
@@ -77,7 +62,7 @@ var $$ = {
 			while((i = n.pop()) && n.length) {
 				p = p[i];
 				temp.push(i);
-				if(!$.isObject(p)) {
+				if($.type(p) != 'object') {
 					throw new Error('namespace: ' + namespace + ', ' + temp.join('.') + ': is not an object');
 				}
 			}
@@ -88,7 +73,7 @@ var $$ = {
 				if(p[i] === undefined) {
 					p[i] = {};
 				}
-				else if(!$.isObject(p)) {
+				else if($.type(p) != 'object') {
 					throw new Error('namespace: ' + namespace + ', ' + temp.join('.') + ': is not an object');
 				}
 				p = p[i];
@@ -130,9 +115,6 @@ var $$ = {
 			LOADED = 2,
 			h = $('head')[0];
 		return function(url, cb) {
-			if(!url || !$.isString(url)) {
-				return;
-			}
 			cb = cb || function() {};
 			if(!state[url]) {
 				state[url] = LOADING;

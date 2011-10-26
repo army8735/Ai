@@ -12,7 +12,7 @@
 	 * @param {Function/object} 初始化工厂
 	 */
 	function define(id, dependencies, factory) {
-		if(!$.isString(id)) {
+		if($.type(id) != 'string') {
 			factory = dependencies;
 			dependencies = id;
 			id = null;
@@ -66,7 +66,7 @@
 	 */
 	function use(ids, cb, history, list) {
 		cache = cache || []; //use之前的模块为手动添加在页面script标签的模块，它们的uri为标签src或者location.href
-		if($.isString(ids)) {
+		if($.type(ids) == 'string') {
 			ids = [ids];
 		}
 		var key = ids.join(',');
@@ -170,7 +170,7 @@
 	 * @param {Function} 加载成功后的回调
 	 */
 	function loadScripts(urls, cb) {
-		if($.isString(urls)) {
+		if($.type(urls) == 'string') {
 			urls = [urls];
 		}
 		var remote = urls.length;

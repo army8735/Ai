@@ -9273,21 +9273,6 @@ window.jQuery = window.$ = jQuery;
 
 })();(function() {
 
-	//补充jquery中一些遗漏的方法
-	var toString = Object.prototype.toString;
-	$.isString = function(o) {
-		return toString.call(o) === '[object String]';
-	}
-	$.isBoolean = function(o) {
-		return toString.call(o) === '[object Boolean]';
-	}
-	$.isNumber = function(o) {
-		return toString.call(o) === '[object Number]' && isFinite(o);
-	}
-	$.isObject = function(o) {
-		return typeof o === 'object';
-	}
-
 	$.cookie = function(name, value, options) {
 		if(value !== undefined) { // name and value given, set cookie
 			options = options || {};
@@ -9350,7 +9335,7 @@ var $$ = {
 			while((i = n.pop()) && n.length) {
 				p = p[i];
 				temp.push(i);
-				if(!$.isObject(p)) {
+				if($.type(p) != 'object') {
 					throw new Error('namespace: ' + namespace + ', ' + temp.join('.') + ': is not an object');
 				}
 			}
@@ -9361,7 +9346,7 @@ var $$ = {
 				if(p[i] === undefined) {
 					p[i] = {};
 				}
-				else if(!$.isObject(p)) {
+				else if($.type(p) != 'object') {
 					throw new Error('namespace: ' + namespace + ', ' + temp.join('.') + ': is not an object');
 				}
 				p = p[i];
@@ -9403,9 +9388,6 @@ var $$ = {
 			LOADED = 2,
 			h = $('head')[0];
 		return function(url, cb) {
-			if(!url || !$.isString(url)) {
-				return;
-			}
 			cb = cb || function() {};
 			if(!state[url]) {
 				state[url] = LOADING;
@@ -9452,7 +9434,7 @@ var $$ = {
 	 * @param {Function/object} 初始化工厂
 	 */
 	function define(id, dependencies, factory) {
-		if(!$.isString(id)) {
+		if($.type(id) != 'string') {
 			factory = dependencies;
 			dependencies = id;
 			id = null;
@@ -9506,7 +9488,7 @@ var $$ = {
 	 */
 	function use(ids, cb, history, list) {
 		cache = cache || []; //use之前的模块为手动添加在页面script标签的模块，它们的uri为标签src或者location.href
-		if($.isString(ids)) {
+		if($.type(ids) == 'string') {
 			ids = [ids];
 		}
 		var key = ids.join(',');
@@ -9610,7 +9592,7 @@ var $$ = {
 	 * @param {Function} 加载成功后的回调
 	 */
 	function loadScripts(urls, cb) {
-		if($.isString(urls)) {
+		if($.type(urls) == 'string') {
 			urls = [urls];
 		}
 		var remote = urls.length;
