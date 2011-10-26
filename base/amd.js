@@ -173,11 +173,10 @@
 		if($.isString(urls)) {
 			urls = [urls];
 		}
-		urls = $$.unique(urls);
 		var remote = urls.length;
 		if(remote) {
 			urls.forEach(function(url) {
-				$$.loadScript(url, function() {
+				$$.load(url, function() {
 					if(lastMod) {
 						lastMod.id = lastMod.uri = url; //匿名module的id为本身script的url
 						module[url] = lastMod;

@@ -117,7 +117,7 @@ define('storage', (function() {
 		/**
 		 * @public 离线存储
 		 * @param {string} 存储的key，支持跨域存储（key后增加@和url），需引入子域的iframe，并指定document.domain为页面的域
-		 * @param {null/string/func} 存储的值，重载：设为null为删除，string为设定，方法为读取。其中设为回调函数的目的是为了兼容跨域时的回调（加载iframe有延时存在），唯一参数为值，保持跨域与否接口也一致
+		 * @param {null/string/Function} 存储的值，重载：设为null为删除，string为设定，Function为读取。其中设为回调函数的目的是为了兼容跨域时的回调（加载iframe有延时存在），唯一参数为值，保持跨域与否接口也一致
 		 */
 		storage: (function() {
 			//为不同域初始化不同的唯一存储实例，默认非跨域为default
@@ -148,7 +148,7 @@ define('storage', (function() {
 				else if(v === null) {
 					stg.removeItem(k);
 				}
-				else if(!$.isUndefined(v)) {
+				else {
 					stg.setItem(k, v);
 				}
 			};

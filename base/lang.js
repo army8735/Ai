@@ -2,9 +2,6 @@
 
 	//补充jquery中一些遗漏的方法
 	var toString = Object.prototype.toString;
-	$.isUndefined = function(o) {
-		return o === undefined;
-	}
 	$.isString = function(o) {
 		return toString.call(o) === '[object String]';
 	}
@@ -19,7 +16,7 @@
 	}
 
 	$.cookie = function(name, value, options) {
-		if(!$.isUndefined(value)) { // name and value given, set cookie
+		if(value !== undefined) { // name and value given, set cookie
 			options = options || {};
 			if (value === null) {
 				value = '';
@@ -76,7 +73,7 @@ var $$ = {
 			p = parent || window,
 			n = namespace.split('.').reverse(),
 			temp = [];
-		if($.isUndefined(target)) {
+		if(target === undefined) {
 			while((i = n.pop()) && n.length) {
 				p = p[i];
 				temp.push(i);
@@ -88,7 +85,7 @@ var $$ = {
 		else {
 			while((i = n.pop()) && n.length) {
 				temp.push(i);
-				if($.isUndefined(p[i])) {
+				if(p[i] === undefined) {
 					p[i] = {};
 				}
 				else if(!$.isObject(p)) {
@@ -118,5 +115,54 @@ var $$ = {
 		var prototype = Object.create(superType.prototype);
 		prototype.constructor = subType;
 		subType.prototype = prototype;
-	}
+	},
+
+	/**
+	 * @public 可并行加载script文件，且仅加载一次
+	 * @param {url} script的url
+	 * @param {Function} 回调
+	 */
+	load: (function() {
+		var state = {},
+			list = {},
+			UNLOAD = 0,
+			LOADING = 1,
+			LOADED = 2,
+			h = $('head')[0];
+		return function(url, cb) {
+			if(!url || !$.isString(url)) {
+				return;
+			}
+			cb = cb || function() {};
+			if(!state[url]) {
+				state[url] = LOADING;
+				list[url] = [cb];
+				var s = document.createElement('script'),
+					done;
+				s.type = 'text/javascript';
+				s.async = true;
+				s.src = url;
+				s.onload = s.onreadystatechange = function() {
+					if(!done && (!this.readyState || ['loaded', 'complete'].indexOf(this.readyState) != -1)) {
+						done = 1;
+						s.onload = s.onreadystatechange = null;
+						//缓存记录
+						state[url] = LOADED;
+						list[url].forEach(function(cb) {
+							cb();
+						});
+						list[url] = null;
+						h.removeChild(s);
+					}
+				};
+				h.appendChild(s);
+			}
+			else if(state[url] == LOADING) {
+				list[url].push(cb);
+			}
+			else if(state[url] == LOADED) {
+				cb();
+			}
+		};
+	})()
 };

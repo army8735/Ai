@@ -16,7 +16,7 @@ define('swfobject', (function() {
 		var s = ['<array>'],
 			len = obj.length;
 		for(var i = 0; i < len; ++i) {
-			if($.isUndefined(obj[i])) {
+			if(obj[i] === undefined) {
 				s.push([
 					'<property id="',
 					i,
