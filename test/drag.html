@@ -137,36 +137,38 @@ options: {
 	'drag:end': function(node) //鼠标弹起拖动结束时触发，参数为被拖动的jq节点
 }
 //页面中的例子
-var modDrag = new Drager({
-	'container': '#mods>div',
-	'drag': 'div.box',
-	'handler': '.ti',
-	'switch': false
-});
-var placeBox = $('&lt;div class="placebox"&gt;');
-modDrag.bind('drag:start', function(node) {
-	placeBox.css('height', node.height()).insertAfter(node);
-	node.addClass('movebox');
-	node.parent().addClass('movecontainer');
-});
-modDrag.bind('drag:switch', function(node, container, i) {
-	if(i == 0)
-		container.prepend(placeBox);
-	else {
-		var siblings = [];
-		container.children('div.box').each(function(index, o) {
-			if(o != node[0]) {
-				siblings.push(o);
-			}
-		});
-		var before = $(siblings[i - 1]);
-		before.after(placeBox);
-	}
-});
-modDrag.bind('drag:end', function(node) {
-	placeBox.remove();
-	node.removeClass('movebox');
-	node.parent().removeClass('movecontainer');
+$$.use('../plugin/drager.js', function(Drager) {
+	var modDrag = new Drager({
+		'container': '#mods>div',
+		'drag': 'div.box',
+		'handler': '.ti',
+		'switch': false
+	});
+	var placeBox = $('&lt;div class="placebox"&gt;');
+	modDrag.bind('drag:start', function(node) {
+		placeBox.css('height', node.height()).insertAfter(node);
+		node.addClass('movebox');
+		node.parent().addClass('movecontainer');
+	});
+	modDrag.bind('drag:switch', function(node, container, i) {
+		if(i == 0)
+			container.prepend(placeBox);
+		else {
+			var siblings = [];
+			container.children('div.box').each(function(index, o) {
+				if(o != node[0]) {
+					siblings.push(o);
+				}
+			});
+			var before = $(siblings[i - 1]);
+			before.after(placeBox);
+		}
+	});
+	modDrag.bind('drag:end', function(node) {
+		placeBox.remove();
+		node.removeClass('movebox');
+		node.parent().removeClass('movecontainer');
+	});
 });</pre>
 <object classid="clsid:d27cdb6e-ae6d-11cf-96b8-444553540000" id="jssc5" style="position:absolute;left:-9999px;">
 	<param name="movie" value="../jssc5.swf"/>
