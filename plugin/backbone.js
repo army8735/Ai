@@ -4,7 +4,7 @@
 //     For all details and documentation:
 //     http://documentcloud.github.com/backbone
 
-define(['require', 'exports', '../plugin/underscore.js'], function(require, exports){
+define(['../plugin/underscore.js'], function(){
 
   // Initial Setup
   // -------------

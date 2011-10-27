@@ -9420,11 +9420,14 @@ var $$ = {
 			}
 		};
 	})()
-};(function() {
+};var require,
+	exports,
+	module;
 
-	var module = {},
+(function() {
+
+	var lib = {},
 		script = {},
-		lastMod,
 		cache;
 
 	/**
@@ -9443,7 +9446,7 @@ var $$ = {
 			factory = dependencies;
 			dependencies = null;
 		}
-		//在没有正则的情况下，通过factory.toString()方式匹配正则，智能获取依赖列表
+		//在没有定义依赖的情况下，通过factory.toString()方式匹配正则，智能获取依赖列表
 		if($.isFunction(factory) && !dependencies) {
 			var res = /\brequire\s*\(\s*['"]?([^'")]*)/g.exec(factory.toString().replace(/\/\/.*\n/g, '').replace(/\/\*(\s|.)*\*\//g, ''));
 			if(res) {
@@ -9460,18 +9463,18 @@ var $$ = {
 			lastScript = location.href.replace(/[#?].*/, '').replace(/(.+\/).*/, '$1') + lastScript;
 		}
 		if(id) {
-			module[id] = {
+			lib[id] = {
 				id: id,
 				dependencies: dependencies,
 				factory: factory,
 				exports: null,
 				uri: lastScript
 			};
-			lastMod = null;
-			cache && cache.push(module[id]);
+			module = null;
+			cache && cache.push(lib[id]);
 		}
 		else {
-			lastMod = {
+			module = {
 				id: null,
 				dependencies: dependencies,
 				factory: factory,
@@ -9502,11 +9505,11 @@ var $$ = {
 		var wrap = function() {
 				var mods = [];
 				ids.forEach(function(id) {
-					var mod = getMod(id);
+					var mod = module = getMod(id);
 					//默认的3个模块没有依赖且无需转化factory
 					if(!mod.exports && ['require', 'exports', 'module'].indexOf(id) == -1) {
 						var deps = [];
-						mod.exports = {};
+						mod.exports = exports = {};
 						//有依赖参数为依赖的模块，否则默认为require, exports, module3个默认模块
 						if(mod.dependencies) {
 							mod.dependencies.forEach(function(d) {
@@ -9554,7 +9557,7 @@ var $$ = {
 		var urls = [];
 		ids.forEach(function(o) {
 			//模块以及存在说明加载过了
-			if(module[o]) {
+			if(lib[o]) {
 				return;
 			}
 			urls.push(id2Url(o));
@@ -9566,8 +9569,8 @@ var $$ = {
 	 * @param {string} 模块id
 	 */
 	function id2Url(id) {
-		if(module[id] && module[id].uri) {
-			return module[id].uri;
+		if(lib[id] && lib[id].uri) {
+			return lib[id].uri;
 		}
 		return id;
 	}
@@ -9576,10 +9579,10 @@ var $$ = {
 	 * @param {string} 模块id或url
 	 */
 	function getMod(s) {
-		var mod = module[s];
+		var mod = lib[s];
 		//可能传入的是url而非id，转换下
 		if(!mod && script[s]) {
-			mod = module[script[s]];
+			mod = lib[script[s]];
 		}
 		if(!mod) {
 			throw new Error('module error: ' + s + ' is undefined');
@@ -9599,9 +9602,9 @@ var $$ = {
 		if(remote) {
 			urls.forEach(function(url) {
 				$$.load(url, function() {
-					if(lastMod) {
-						lastMod.id = lastMod.uri = url; //匿名module的id为本身script的url
-						module[url] = lastMod;
+					if(module) {
+						module.id = module.uri = url; //匿名module的id为本身script的url
+						lib[url] = module;
 						script[url] = url;
 					}
 					else {
@@ -9623,7 +9626,7 @@ var $$ = {
 	}
 
 	//默认的require、exports、module模块
-	module['require'] = {
+	lib['require'] = {
 		id: 'require',
 		dependencies: null,
 		exports: function(id) {
@@ -9631,13 +9634,14 @@ var $$ = {
 		},
 		uri: null
 	};
-	module['exports'] = {
+	require = lib['require'].exports;
+	lib['exports'] = {
 		id: 'exports',
 		dependencies: null,
 		exports: null,
 		uri: null
 	};
-	module['module'] = {
+	lib['module'] = {
 		id: 'module',
 		dependencies: null,
 		exports: null,
@@ -9649,7 +9653,7 @@ var $$ = {
 		use(ids, cb, {}, []);
 	};
 	$$.modMap = function(id) {
-		return id ? module[id] : module;
+		return id ? lib[id] : lib;
 	};
 
 })();define('Event', function() {
