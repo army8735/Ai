@@ -34,12 +34,11 @@ var require,
 		}
 		//先将uris设置为最后一个script，用作直接script标签的模块；其它方式加载的话uri会被覆盖为正确的
 		var lastScript = $('script:last').attr('url') || location.href;
-		if(lastScript.charAt(0) == '/') {
+		if(lastScript.charAt(0) == '/')
 			lastScript = location.host + lastScript;
-		}
-		else if(!/^https?\:\/\//.test(lastScript)) {
+		else if(!/^https?\:\/\//.test(lastScript))
 			lastScript = location.href.replace(/[#?].*/, '').replace(/(.+\/).*/, '$1') + lastScript;
-		}
+		//匿名模块或者是设定了id的
 		if(id) {
 			lib[id] = {
 				id: id,
@@ -66,12 +65,17 @@ var require,
 	 * @public 加载使用模块方法
 	 * @param {string/array} 模块id或url
 	 * @param {Function} 加载成功后回调
+	 * @param {HashMap} 加载历史
+	 * @param {array} 加载成功后回调
 	 */
 	function use(ids, cb, history, list) {
 		cache = cache || []; //use之前的模块为手动添加在页面script标签的模块，它们的uri为标签src或者location.href
-		if($.type(ids) == 'string') {
+		if($.type(ids) == 'string')
 			ids = [ids];
-		}
+		ids = ids.map(function(v) {
+			return lib[v] ? v : getAbsUrl(v);
+		});
+		//循环引用的检测
 		var key = ids.join(',');
 		if(history[key]) {
 			list.push(key);
@@ -79,6 +83,7 @@ var require,
 		}
 		history[key] = 1;
 		list.push(key);
+
 		cb = cb || function() {};
 		var wrap = function() {
 				var mods = [];
@@ -92,21 +97,19 @@ var require,
 						if(mod.dependencies) {
 							mod.dependencies.forEach(function(d) {
 								//使用exports模块用作导出
-								if(d == 'exports') {
+								if(d == 'exports')
 									deps.push(mod.exports);
-								}
 								//使用module模块即为本身
-								else if(d == 'module') {
+								else if(d == 'module')
 									deps.push(mod);
-								}
 								else {
-									deps.push(getMod(d).exports);
+									var m = lib[d] || getMod(getAbsUrl(d, mod.uri));
+									deps.push(m.exports);
 								}
 							});
 						}
-						else {
+						else
 							deps = [getMod('require').exports, mod.exports, mod];
-						}
 						mod.exports = $.isFunction(mod.factory) ? (mod.factory.apply(null, deps) || mod.exports) : mod.factory;
 						delete mod.factory;
 					}
@@ -116,12 +119,12 @@ var require,
 			},
 			recursion = function() {
 				var deps = [];
-				ids.forEach(function(id) {
-					var mod = getMod(id),
+				urls.forEach(function(url) {
+					var mod = getMod(url),
 						d = mod.dependencies;
-					if(d && d.length) {
-						deps = deps.concat(d);
-					}
+					d && d.forEach(function(id) {
+						deps.push(lib[id] ? id : getAbsUrl(id, mod.uri));
+					});
 				});
 				//如果有依赖，先加载依赖，否则直接回调
 				if(deps.length) {
@@ -131,14 +134,9 @@ var require,
 					wrap();
 				}
 			};
-		//将id转换为url
-		var urls = [];
-		ids.forEach(function(o) {
-			//模块以及存在说明加载过了
-			if(lib[o]) {
-				return;
-			}
-			urls.push(id2Url(o));
+		//过滤已存在id的模块
+		var urls = ids.filter(function(v) {
+			return !lib[v];
 		});
 		loadScripts(urls, recursion);
 	}
@@ -147,9 +145,8 @@ var require,
 	 * @param {string} 模块id
 	 */
 	function id2Url(id) {
-		if(lib[id] && lib[id].uri) {
+		if(lib[id] && lib[id].uri)
 			return lib[id].uri;
-		}
 		return id;
 	}
 	/**
@@ -159,12 +156,10 @@ var require,
 	function getMod(s) {
 		var mod = lib[s];
 		//可能传入的是url而非id，转换下
-		if(!mod && script[s]) {
+		if(!mod && script[s])
 			mod = lib[script[s]];
-		}
-		if(!mod) {
+		if(!mod)
 			throw new Error('module error: ' + s + ' is undefined');
-		}
 		return mod;
 	}
 	/**
@@ -173,9 +168,8 @@ var require,
 	 * @param {Function} 加载成功后的回调
 	 */
 	function loadScripts(urls, cb) {
-		if($.type(urls) == 'string') {
+		if($.type(urls) == 'string')
 			urls = [urls];
-		}
 		var remote = urls.length;
 		if(remote) {
 			urls.forEach(function(url) {
@@ -192,15 +186,39 @@ var require,
 						});
 					}
 					cache = [];
-					if(--remote == 0) {
+					if(--remote == 0)
 						cb();
-					}
 				});
 			});
 		}
-		else {
+		else
 			cb();
+	}
+
+	/**
+	 * 根据依赖script的url获取绝对路径
+	 * @param {string} url 需要转换的url
+	 * @param {string} 依赖的url
+	 */
+	function getAbsUrl(url, depend) {
+		if(url.indexOf('http://') == 0)
+			return url;
+		depend = depend || 'http://' + location.host + location.pathname;
+		var host = /(http:\/\/[^/]+)\/?(.*)/.exec(depend);
+		depend = host[2].split('/');
+		depend.unshift(host[1]);
+		if(url.charAt(0) == '/')
+			return depend[0] + url;
+		else if(url.indexOf('../') == 0) {
+			depend.pop();
+			while(url.indexOf('../') == 0) {
+				url = url.slice(3);
+				depend.pop();
+			}
+			return depend.join('/') + '/' + url;
 		}
+		depend.pop();
+		return depend.join('/') + '/' + url;
 	}
 
 	//默认的require、exports、module模块
