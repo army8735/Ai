@@ -88,13 +88,13 @@ define(['Event'], function(Event) {
 				//解除事件侦听
 				doc.unbind('mousemove', move);
 				doc.unbind('mouseup', arguments.callee);
-				self._event.trigger('drag:end', [node]);
+				self.trigger('drag:end', [node]);
 			});
 			function move(evt) {
 				self._onMoveHandler(node, e, evt);
 				return false;
 			}
-			self._event.trigger('drag:start', [node]);
+			self.trigger('drag:start', [node]);
 			return false;
 		});
 	}
@@ -102,7 +102,7 @@ define(['Event'], function(Event) {
 		var left = this.left + ne.pageX - se.pageX,
 			top = this.top + ne.pageY - se.pageY;
 		setCoord(node, left, top);
-		this._event.trigger('drag:move', [node]);
+		this.trigger('drag:move', [node]);
 		//检查是否发生了模块移动，先从左至右寻找容器
 		var i = j = 0,
 			len = this.split.length;
@@ -142,7 +142,7 @@ define(['Event'], function(Event) {
 			if(this.options.switch) {
 				this._switch(node, sp.node, j);
 			};
-			this._event.trigger('drag:switch', [node, sp.node, j]);
+			this.trigger('drag:switch', [node, sp.node, j]);
 		}
 	}
 	Klass.prototype._switch = function(node, container, i, last) {
