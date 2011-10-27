@@ -62,9 +62,20 @@ form .sub{padding:0 5px;width:auto;height:22px;cursor:pointer;}
 	<label>email:</label>
 	<input type="email" required/>
 </form>
+
+<script src="../Ai.js"></script>
+<script>
+	$$.use('../plugin/html5formcore.js', function() {
+		$('form').html5formcore({
+			submit: function() {
+				alert('校验通过，可以提交' + this.id);
+				return false;
+			}
+		});
+	})
+</script>
 <pre class="brush:js">//html5formcore
-$$.def('html5formcore', '../plugin/html5formcore.js');
-$$.use('html5formcore', function() {
+$$.use('../plugin/html5formcore.js', function() {
 	$('form').html5formcore({
 		submit: function() {
 			alert('校验通过，可以提交');
@@ -84,15 +95,15 @@ options为传入的对象，它有以下属性：{
 	input: function(), //当需要校验的input发生改变（DOM input事件）时触发；ie下由于不支持，可以考虑替代的onpropertychange不完美（改变class也会触发），所以改为focus时触发
 	submit: function(cb) //通过html5form的校验后提交表单时触发；cb为回调函数，返回值和jQuery.submit(cb)效果相同
 }</pre>
-<pre class="brush:js">(function() {
+<pre class="brush:js">define('html5formcore', (function() {
 
 	var TYPE_VALID = {
-			'url': /^[a-zA-z]+:\/\/[^\s]*$/,
-			'email': /^\w+([-+.]\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$/,
-			'number': /^-?\.*\d+$/,
-			'date': /^\d{2,4}-\d{1,2}-\d{1,2}$/,
-			'time': /^\d{1,2}:\d{1,2}(:\d{1,2}(\.\d{1,3})?)?$/,
-			'color': /^#[a-z\d]{3,6}$/
+			'url': /^\s*[a-zA-z]+:\/\/.*$/,
+			'email': /^\s*\w+([-+.]\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*\s*$/,
+			'number': /^\s*-?\.*\d+\s*$/,
+			'date': /^\s*\d{2,4}-\d{1,2}-\d{1,2}\s*$/,
+			'time': /^\s*\d{1,2}:\d{1,2}(:\d{1,2}(\.\d{1,3})?)?\s*$/,
+			'color': /^\s*#?[a-z\d]{3,6}\s*$/
 		},
 		input = document.createElement('input'),
 		AUTOFOCUS = 'autofocus' in input,
@@ -178,7 +189,7 @@ options为传入的对象，它有以下属性：{
 				});
 				//ie模拟textarea的maxlength属性
 				form.delegate('textarea', 'focusin', function() {
-					if(this.nodeName == 'TEXTAREA' && textareas.indexOf(this) == -1) {
+					if(textareas.indexOf(this) == -1) {
 						textareas.push(this);
 						$(this).bind('propertychange', function() {
 							virtualTextareaMaxlength($(this));
@@ -370,19 +381,7 @@ options为传入的对象，它有以下属性：{
 		}
 	}
 
-})();</pre>
-
-<script src="../Ai.js"></script>
-<script>
-	$$.use('../plugin/html5formcore.js', function(html5formcore) {
-		$('form').html5formcore({
-			submit: function() {
-				alert('校验通过，可以提交' + this.id);
-				return false;
-			}
-		});
-	})
-</script>
+})());</pre>
 <object classid="clsid:d27cdb6e-ae6d-11cf-96b8-444553540000" id="jssc5" style="position:absolute;left:-9999px;">
 	<param name="movie" value="../jssc5.swf"/>
 	<param name="flashvars" value="find=brush&lang=chinese&url=../jssc5.swf"/>

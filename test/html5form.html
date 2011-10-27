@@ -67,10 +67,18 @@ form .sub{padding:0 5px;width:auto;height:22px;cursor:pointer;}
 	<label>email:</label>
 	<input type="email" required/>
 </form>
+
+<script src="../Ai.min.js"></script>
+<script>
+	$$.use('../plugin/html5form.js', function() {
+		$('form').html5form(function() {
+			alert('校验通过，可以提交' + this.id);
+			return false;
+		});
+	});
+</script>
 <pre class="brush:js">//html5form
-$$.def('html5formcore', '../plugin/html5formcore.js');
-$$.def('html5form', '../plugin/html5form.js', 'html5formcore');
-$$.use('html5form', function() {
+$$.use('../plugin/html5form.js', function() {
 	$('form').html5form(function() {
 		alert('校验通过，可以提交');
 		return false;
@@ -81,7 +89,7 @@ $$.use('html5form', function() {
 //API
 $('form').html5form(cb);
 cb为传入的回调函数，在通过html5form的校验后提交表单时触发，返回值和jQuery.submit(cb)效果相同</pre>
-<pre class="brush:js">(function() {
+<pre class="brush:js">define('html5form', ['../plugin/html5formcore.js'], (function() {
 
 	var TYPE_MES = {
 			'url': 'url格式不合法',
@@ -138,17 +146,7 @@ cb为传入的回调函数，在通过html5form的校验后提交表单时触发
 		return this;
 	}
 
-})();</pre>
-
-<script src="../Ai.min.js"></script>
-<script>
-	$$.use('../plugin/html5form.js', function(html5form) {
-		$('form').html5form(function() {
-			alert('校验通过，可以提交' + this.id);
-			return false;
-		});
-	});
-</script>
+})());</pre>
 <object classid="clsid:d27cdb6e-ae6d-11cf-96b8-444553540000" id="jssc5" style="position:absolute;left:-9999px;">
 	<param name="movie" value="../jssc5.swf"/>
 	<param name="flashvars" value="find=brush&lang=chinese&url=../jssc5.swf"/>
