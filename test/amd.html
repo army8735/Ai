@@ -68,11 +68,16 @@ define('test2.js', ['test3.js'], function(test3) {
 	console.log('test2');
 });
 //test3.js
-define('test3.js', function(require, exports, module) {
+define('test3.js', function() {
 	exports.test = 3;
+	console.log(require('test4.js'));
 	console.log(module);
 });
-//其中当define未指定依赖时，默认的是require, exports, module 3个依赖。另外会根据factory中出现的require智能加载依赖模块id，如：
+//test4.js
+define({
+	data: '4'
+});
+//其中当define未指定依赖时，默认的是require, exports, module 3个依赖。另外会根据factory中出现的require智能加载依赖模块，如：
 define(function() {
 	a: require('b').data
 });
