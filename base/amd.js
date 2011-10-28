@@ -6,6 +6,7 @@ var require,
 
 	var lib = {},
 		script = {},
+		fac = {},
 		cache;
 
 	/**
@@ -49,6 +50,13 @@ var require,
 			};
 			module = null;
 			cache && cache.push(lib[id]);
+			if($.isFunction(factory)) {
+				var ts = factory.toString();
+				(fac[ts] = fac[ts] || []).push({
+					f: factory,
+					r: lib[id]
+				});
+			}
 		}
 		else {
 			module = {
@@ -58,6 +66,13 @@ var require,
 				exports: null,
 				uri: lastScript
 			};
+			if($.isFunction(factory)) {
+				var ts = factory.toString();
+				(fac[ts] = fac[ts] || []).push({
+					f: factory,
+					r: module
+				});
+			}
 		}
 	}
 	define.amd = {};
@@ -226,7 +241,16 @@ var require,
 		id: 'require',
 		dependencies: null,
 		exports: function(id) {
-			return getMod(id).exports;
+			if(lib[id])
+				return lib[id].exports;
+			var caller = arguments.callee.caller,
+				ts = caller.toString(),
+				mod;
+			fac[ts] && fac[ts].forEach(function(o) {
+				if(caller == o.f)
+					mod = o.r;
+			});
+			return getMod(getAbsUrl(id, mod.uri)).exports;
 		},
 		uri: null
 	};
