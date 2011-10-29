@@ -1,49 +1,45 @@
-(function() {
-
-	$.cookie = function(name, value, options) {
-		if(value !== undefined) { // name and value given, set cookie
-			options = options || {};
-			if (value === null) {
-				value = '';
-				options.expires = -1;
-			}
-			var expires = '';
-			if (options.expires && ($.isNumber(options.expires) || options.expires.toUTCString)) {
-				var date;
-				if ($.isNumber(options.expires)) {
-					date = new Date();
-					date.setTime(date.getTime() + (options.expires * 24 * 60 * 60 * 1000));
-				} else {
-					date = options.expires;
-				}
-				expires = '; expires=' + date.toUTCString(); // use expires attribute, max-age is not supported by IE
-			}
-			// CAUTION: Needed to parenthesize options.path and options.domain
-			// in the following expressions, otherwise they evaluate to undefined
-			// in the packed version for some reason...
-			var path = options.path ? '; path=' + (options.path) : '';
-			var domain = options.domain ? '; domain=' + (options.domain) : '';
-			var secure = options.secure ? '; secure' : '';
-			document.cookie = [name, '=', encodeURIComponent(value), expires, path, domain, secure].join('');
+$.cookie = function(name, value, options) {
+	if(value !== undefined) { // name and value given, set cookie
+		options = options || {};
+		if (value === null) {
+			value = '';
+			options.expires = -1;
 		}
-		else { // only name given, get cookie
-			var cookieValue = null;
-			if (document.cookie && document.cookie != '') {
-				var cookies = document.cookie.split(';');
-				for (var i = 0; i < cookies.length; i++) {
-					var cookie = $.trim(cookies[i]);
-					// Does this cookie string begin with the name we want?
-					if (cookie.substring(0, name.length + 1) == (name + '=')) {
-						cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-						break;
-					}
-				}
+		var expires = '';
+		if (options.expires && ($.isNumber(options.expires) || options.expires.toUTCString)) {
+			var date;
+			if ($.isNumber(options.expires)) {
+				date = new Date();
+				date.setTime(date.getTime() + (options.expires * 24 * 60 * 60 * 1000));
+			} else {
+				date = options.expires;
 			}
-			return cookieValue;
+			expires = '; expires=' + date.toUTCString(); // use expires attribute, max-age is not supported by IE
 		}
+		// CAUTION: Needed to parenthesize options.path and options.domain
+		// in the following expressions, otherwise they evaluate to undefined
+		// in the packed version for some reason...
+		var path = options.path ? '; path=' + (options.path) : '';
+		var domain = options.domain ? '; domain=' + (options.domain) : '';
+		var secure = options.secure ? '; secure' : '';
+		document.cookie = [name, '=', encodeURIComponent(value), expires, path, domain, secure].join('');
 	}
-
-})();
+	else { // only name given, get cookie
+		var cookieValue = null;
+		if (document.cookie && document.cookie != '') {
+			var cookies = document.cookie.split(';');
+			for (var i = 0; i < cookies.length; i++) {
+				var cookie = $.trim(cookies[i]);
+				// Does this cookie string begin with the name we want?
+				if (cookie.substring(0, name.length + 1) == (name + '=')) {
+					cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+					break;
+				}
+			}
+		}
+		return cookieValue;
+	}
+}
 
 var $$ = {
 	/**
@@ -101,6 +97,34 @@ var $$ = {
 		prototype.constructor = subType;
 		subType.prototype = prototype;
 	},
+
+	/**
+	 * @public EventDispatcher类
+	 */
+	Event: (function() {
+		function Klass() {
+			this._event = $('<p>');
+		}
+		Klass.prototype.bind = function() {
+			var self = this,
+				args = Array.prototype.slice.call(arguments, 0),
+				cb = args.pop();
+				cb2 = function() {
+					var as = Array.prototype.slice.call(arguments, 0);
+					as.shift();
+					cb.apply(self, as);
+				};
+				args.push(cb2);
+			this._event.bind.apply(this._event, args);
+		}
+		Klass.prototype.unbind = function() {
+			this._event.unbind.apply(this._event, Array.prototype.slice.call(arguments, 0));
+		}
+		Klass.prototype.trigger = function() {
+			this._event.triggerHandler.apply(this._event, Array.prototype.slice.call(arguments, 0));
+		}
+		return Klass;
+	})(),
 
 	/**
 	 * @public 可并行加载script文件，且仅加载一次

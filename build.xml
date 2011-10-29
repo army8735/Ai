@@ -36,7 +36,6 @@
 			<path path="${base}/fix.js" />
 			<path path="${base}/lang.js" />
 			<path path="${base}/amd.js" />
-			<path path="${base}/event.js" />
 		</concat>
 	</target>
 	

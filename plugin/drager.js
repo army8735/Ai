@@ -1,4 +1,4 @@
-define(['Event'], function(Event) {
+define(function() {
 	var doc = $(document);
 	function setCoord(node, left, top) {
 		node.css({
@@ -7,7 +7,7 @@ define(['Event'], function(Event) {
 		});
 	}
 	function Klass(options) {
-		Event.call(this);
+		$$.Event.call(this);
 		this.options = options;
 		this.left = this.top = 0;
 		this.split = [];
@@ -17,7 +17,7 @@ define(['Event'], function(Event) {
 		this.tempIndex = 0;
 		this._init();
 	}
-	$$.inheritPrototype(Klass, Event);
+	$$.inheritPrototype(Klass, $$.Event);
 	Klass.prototype._reset = function() {
 		var self = this,
 			op = self.options,
