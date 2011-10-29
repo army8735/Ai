@@ -81,8 +81,8 @@ define(['Event'], function(Event) {
 				//还原节点最初的css属性
 				node.css('position', position);
 				setCoord(node, left, right);
-				//如果switch不设置为true，说明不是实时改变拖动块的位置，而是在drag:end再改变，需侦听
-				if(!op.switch) {
+				//如果realTime不设置为true，说明不是实时改变拖动块的位置，而是在drag:end再改变，需侦听
+				if(!op.realTime) {
 					self._switch(node, $(self.tempContainer), self.tempIndex, true);
 				}
 				//解除事件侦听
@@ -138,8 +138,8 @@ define(['Event'], function(Event) {
 		}
 		function cb() {
 			this.tempContainer = sp.node[0];
-			this.lastIndex = this.tempIndex = j;
-			if(this.options.switch) {
+			this.lastIndex = this.tempIndex = j;console.log(1)
+			if(this.options.realTime) {
 				this._switch(node, sp.node, j);
 			};
 			this.trigger('drag:switch', [node, sp.node, j]);

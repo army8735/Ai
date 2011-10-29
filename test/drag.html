@@ -78,12 +78,24 @@ body{font-size:12px;line-height:1.5;}
 <br style="clear:both"/>
 <script src="../Ai.js"></script>
 <script>
+window.console = window.console || ({
+	log: function(o) {
+		var s;
+		if($.type(o) == 'string') s = o;
+		else {
+			s = [];
+			for(var i in o) s.push(i);
+			s = 'Object: ' + s.join(',');
+		}
+		$(document.body).append(s + '<br/>');
+	}
+});
 $$.use('../plugin/drager.js', function(Drager) {
 	var modDrag = new Drager({
 		'container': '#mods>div',
 		'drag': 'div.box',
 		'handler': '.ti',
-		'switch': false
+		'realTime': false
 	});
 	var placeBox = $('<div class="placebox">');
 	modDrag.bind('drag:start', function(node) {
@@ -121,7 +133,7 @@ options: {
 	'container': String, //可拖动的列表selector
 	'drag': String, //可拖动的模块selector
 	'handler': String, //拖动模块的句柄，省略的话鼠标在整个模块上按下即可拖动
-	'switch': Boolean //是否实时切换位置，设为true时被拖动模块会实时插入到拖动的位置，否则在拖动结束即鼠标弹起时插入
+	'realTime': Boolean //是否实时切换位置，设为true时被拖动模块会实时插入到拖动的位置，否则在拖动结束即鼠标弹起时插入
 }
 //继承的公有方法
 {
@@ -133,7 +145,7 @@ options: {
 {
 	'drag:start': function(node), //鼠标按下开始拖动时触发，参数为被拖动的jq节点
 	'drag:move': function(node), //拖动移动时触发，参数为被拖动的jq节点
-	'drag:switch': function(node, container, index), //被拖动的节点产生位置切换时触发，参数为被拖动的jq节点、节点的容器、切换到容器位置的索引（无论options的switch是否设为true）
+	'drag:switch': function(node, container, index), //被拖动的节点产生位置切换时触发，参数为被拖动的jq节点、节点的容器、切换到容器位置的索引（无论options的realTime是否设为true）
 	'drag:end': function(node) //鼠标弹起拖动结束时触发，参数为被拖动的jq节点
 }
 //页面中的例子
@@ -142,7 +154,7 @@ $$.use('../plugin/drager.js', function(Drager) {
 		'container': '#mods>div',
 		'drag': 'div.box',
 		'handler': '.ti',
-		'switch': false
+		'realTime': false
 	});
 	var placeBox = $('&lt;div class="placebox"&gt;');
 	modDrag.bind('drag:start', function(node) {

@@ -7,7 +7,7 @@ var require,
 	var lib = {},
 		script = {},
 		fac = {},
-		cache;
+		defQueue;
 
 	/**
 	 * @public amd定义接口
@@ -33,47 +33,28 @@ var require,
 				dependencies = res.length ? res : null;
 			}
 		}
-		//先将uris设置为最后一个script，用作直接script标签的模块；其它方式加载的话uri会被覆盖为正确的
-		var lastScript = $('script:last').attr('url') || location.href;
-		if(lastScript.charAt(0) == '/')
-			lastScript = location.host + lastScript;
-		else if(!/^https?\:\/\//.test(lastScript))
-			lastScript = location.href.replace(/[#?].*/, '').replace(/(.+\/).*/, '$1') + lastScript;
-		//匿名模块或者是设定了id的
-		if(id) {
-			lib[id] = {
-				id: id,
-				dependencies: dependencies,
-				factory: factory,
-				exports: null,
-				uri: lastScript
-			};
-			module = null;
-			cache && cache.push(lib[id]);
-			if($.isFunction(factory)) {
-				var ts = factory.toString();
-				(fac[ts] = fac[ts] || []).push({
-					f: factory,
-					r: lib[id]
-				});
-			}
+		module = {
+			id: id,
+			dependencies: dependencies,
+			factory: factory,
+			exports: null,
+			uri: null
+		};
+		//非匿名模块
+		if(id)
+			lib[id] = module;
+		//存入def队列并记录factory和module的hash对应关系
+		if(defQueue) {
+			defQueue.push(module);
+			record(factory, module);
 		}
-		else {
-			module = {
-				id: null,
-				dependencies: dependencies,
-				factory: factory,
-				exports: null,
-				uri: lastScript
-			};
-			if($.isFunction(factory)) {
-				var ts = factory.toString();
-				(fac[ts] = fac[ts] || []).push({
-					f: factory,
-					r: module
-				});
-			}
-		}
+	}
+	function record(factory, mod) {
+		var ts = factory.toString();
+		(fac[ts] = fac[ts] || []).push({
+			f: factory,
+			r: mod
+		});
 	}
 	define.amd = {};
 	/**
@@ -84,25 +65,25 @@ var require,
 	 * @param {array} 加载成功后回调
 	 */
 	function use(ids, cb, history, list) {
-		cache = cache || []; //use之前的模块为手动添加在页面script标签的模块，它们的uri为标签src或者location.href
+		defQueue = defQueue || []; //use之前的模块为手动添加在页面script标签的模块或合并在总库中的模块，它们需被排除在外
 		if($.type(ids) == 'string')
 			ids = [ids];
-		ids = ids.map(function(v) {
-			return lib[v] ? v : getAbsUrl(v);
-		});
+		//id不存在的转化为url
+		var urls = ids.map(function(v) {
+				return lib[v] ? v : getAbsUrl(v);
+			}),
+			key = ids.join(',');
 		//循环引用的检测
-		var key = ids.join(',');
+		list.push(key);
 		if(history[key]) {
-			list.push(key);
 			throw new Error('Cycle dependences: ' + list.join('->'));
 		}
 		history[key] = 1;
-		list.push(key);
 
 		cb = cb || function() {};
 		var wrap = function() {
 				var mods = [];
-				ids.forEach(function(id) {
+				urls.forEach(function(id) {
 					var mod = module = getMod(id);
 					//默认的3个模块没有依赖且无需转化factory
 					if(!mod.exports && ['require', 'exports', 'module'].indexOf(id) == -1) {
@@ -149,11 +130,11 @@ var require,
 					wrap();
 				}
 			};
-		//过滤已存在id的模块
-		var urls = ids.filter(function(v) {
+		//过滤已存在的模块
+		var s = urls.filter(function(v) {
 			return !lib[v];
 		});
-		loadScripts(urls, recursion);
+		loadScripts(s, recursion);
 	}
 	/**
 	 * private 将id转换为url，如果模块url不存在，那么id本身就是url
@@ -170,9 +151,6 @@ var require,
 	 */
 	function getMod(s) {
 		var mod = lib[s];
-		//可能传入的是url而非id，转换下
-		if(!mod && script[s])
-			mod = lib[script[s]];
 		if(!mod)
 			throw new Error('module error: ' + s + ' is undefined');
 		return mod;
@@ -189,18 +167,14 @@ var require,
 		if(remote) {
 			urls.forEach(function(url) {
 				$$.load(url, function() {
-					if(module) {
-						module.id = module.uri = url; //匿名module的id为本身script的url
-						lib[url] = module;
-						script[url] = url;
+					//必须判断重复，防止2个use线程加载同一个script同时触发2次callback
+					if(!script[url]) {
+						script[url] = 1;
+						var mod = defQueue.shift();
+						mod.id = mod.id || url;
+						mod.url = url;
+						lib[url] = mod;
 					}
-					else {
-						cache.forEach(function(o) {
-							o.uri = url;
-							script[url] = o.id;
-						});
-					}
-					cache = [];
 					if(--remote == 0)
 						cb();
 				});
