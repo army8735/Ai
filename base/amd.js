@@ -63,7 +63,7 @@ var require,
 	 * @param {string/array} 模块id或url
 	 * @param {Function} 加载成功后回调
 	 * @param {HashMap} 加载历史
-	 * @param {array} 加载成功后回调
+	 * @param {array} 加载列表
 	 */
 	function use(ids, cb, history, list) {
 		defQueue = defQueue || []; //use之前的模块为手动添加在页面script标签的模块或合并在总库中的模块，它们需被排除在外
