@@ -9445,8 +9445,9 @@ var $$ = {
 		};
 	})()
 };var require,
-	exports,
-	module;
+	exports = {},
+	module = {},
+	define;
 
 (function() {
 
@@ -9461,7 +9462,7 @@ var $$ = {
 	 * @param {array} 依赖模块id，可选
 	 * @param {Function/object} 初始化工厂
 	 */
-	function define(id, dependencies, factory) {
+	define = function(id, dependencies, factory) {
 		if($.type(id) != 'string') {
 			factory = dependencies;
 			dependencies = id;
@@ -9532,7 +9533,7 @@ var $$ = {
 				urls.forEach(function(id) {
 					var mod = module = getMod(id);
 					//默认的3个模块没有依赖且无需转化factory
-					if(!mod.exports && ['require', 'exports', 'module'].indexOf(id) == -1) {
+					if(!mod.exports) {
 						var deps = [];
 						mod.exports = exports = {};
 						//有依赖参数为依赖的模块，否则默认为require, exports, module3个默认模块
@@ -9564,7 +9565,7 @@ var $$ = {
 				urls.forEach(function(url) {
 					var mod = getMod(url),
 						d = mod.dependencies;
-					d && d.forEach(function(id) {
+					!mod.exports && d && d.forEach(function(id) {
 						deps.push(lib[id] ? id : getAbsUrl(id, mod.uri));
 					});
 				});
@@ -9678,17 +9679,16 @@ var $$ = {
 	lib['exports'] = {
 		id: 'exports',
 		dependencies: null,
-		exports: null,
+		exports: exports,
 		uri: null
 	};
 	lib['module'] = {
 		id: 'module',
 		dependencies: null,
-		exports: null,
+		exports: module,
 		uri: null
 	};
 
-	window.define = define;
 	$$.use = function(ids, cb) {
 		use(ids, cb, {}, []);
 	};
