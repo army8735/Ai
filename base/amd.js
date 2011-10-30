@@ -92,7 +92,7 @@ var require,
 				var mods = [];
 				urls.forEach(function(id) {
 					var mod = module = getMod(id);
-					//默认的3个模块没有依赖且无需转化factory
+					//初始化未初始化的模块
 					if(!mod.exports) {
 						var deps = [];
 						mod.exports = exports = {};
