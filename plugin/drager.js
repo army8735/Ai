@@ -138,7 +138,7 @@ define(function() {
 		}
 		function cb() {
 			this.tempContainer = sp.node[0];
-			this.lastIndex = this.tempIndex = j;console.log(1)
+			this.lastIndex = this.tempIndex = j;
 			if(this.options.realTime) {
 				this._switch(node, sp.node, j);
 			};

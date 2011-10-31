@@ -9376,7 +9376,7 @@ var $$ = {
 	 */
 	Event: (function() {
 		function Klass() {
-			this._event = $('<p>');
+			this._ = $('<p>');
 		}
 		Klass.prototype.bind = function() {
 			var self = this,
@@ -9388,13 +9388,13 @@ var $$ = {
 					cb.apply(self, as);
 				};
 				args.push(cb2);
-			this._event.bind.apply(this._event, args);
+			this._.bind.apply(this._, args);
 		}
 		Klass.prototype.unbind = function() {
-			this._event.unbind.apply(this._event, Array.prototype.slice.call(arguments, 0));
+			this._.unbind.apply(this._, Array.prototype.slice.call(arguments, 0));
 		}
 		Klass.prototype.trigger = function() {
-			this._event.triggerHandler.apply(this._event, Array.prototype.slice.call(arguments, 0));
+			this._.triggerHandler.apply(this._, Array.prototype.slice.call(arguments, 0));
 		}
 		return Klass;
 	})(),
@@ -9459,14 +9459,15 @@ var $$ = {
 	/**
 	 * @public amd定义接口
 	 * @param {boolean} 由自动构建工具打包合并而成一个文件时，非最后一个模块传参，特殊处理，不加入defQueue。默认false，编程时完全忽略这个参数
+	 * @param {string} 由自动构建工具打包合并而成一个文件时，非最后一个模块传参，特殊处理，不加入defQueue。默认false，编程时完全忽略这个参数
 	 * @param {string} 模块id，可选，省略为script文件url
 	 * @param {array} 依赖模块id，可选
 	 * @param {Function/object} 初始化工厂
 	 */
-	define = function(combo, id, dependencies, factory) {
+	define = function(combo, url, id, dependencies, factory) {
 		if(combo !== true) {
-			factory = dependencies;
-			dependencies = id;
+			factory = id;
+			dependencies = url;
 			id = combo;
 		}
 		if($.type(id) != 'string') {
@@ -9480,7 +9481,7 @@ var $$ = {
 		}
 		//在没有定义依赖的情况下，通过factory.toString()方式匹配正则，智能获取依赖列表
 		if(!dependencies) {
-			var res = /\brequire\s*\(\s*['"]?([^'")]*)/g.exec(factory.toString().replace(/\/\/.*\n/g, '').replace(/\/\*(\s|.)*\*\//g, ''));
+			var res = /\brequire\s*\(\s*['"]?([^'")]*)/g.exec(factory.toString().replace(/\/\/.*\n/g, ''));
 			if(res) {
 				res.shift();
 				dependencies = res.length ? res : null;
@@ -9496,11 +9497,17 @@ var $$ = {
 		//非匿名模块
 		if(id)
 			lib[id] = module;
-		//存入def队列并记录factory和module的hash对应关系
-		if(combo !== true && defQueue) {
-			defQueue.push(module);
-			record(factory, module);
+		//构建打包的模块自动拥有id和uri属性
+		if(combo === true) {
+			lib[url] = module;
+			module.id = module.id || url;
+			module.uri = url;
 		}
+		//存入def队列并记录factory和module的hash对应关系
+		else if(defQueue) {
+			defQueue.push(module);
+		}
+		record(factory, module);
 	}
 	function record(factory, mod) {
 		var ts = factory.toString();
@@ -9538,7 +9545,7 @@ var $$ = {
 				var mods = [];
 				urls.forEach(function(id) {
 					var mod = module = getMod(id);
-					//默认的3个模块没有依赖且无需转化factory
+					//初始化未初始化的模块
 					if(!mod.exports) {
 						var deps = [];
 						mod.exports = exports = {};

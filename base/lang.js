@@ -103,7 +103,7 @@ var $$ = {
 	 */
 	Event: (function() {
 		function Klass() {
-			this._event = $('<p>');
+			this._ = $('<p>');
 		}
 		Klass.prototype.bind = function() {
 			var self = this,
@@ -115,13 +115,13 @@ var $$ = {
 					cb.apply(self, as);
 				};
 				args.push(cb2);
-			this._event.bind.apply(this._event, args);
+			this._.bind.apply(this._, args);
 		}
 		Klass.prototype.unbind = function() {
-			this._event.unbind.apply(this._event, Array.prototype.slice.call(arguments, 0));
+			this._.unbind.apply(this._, Array.prototype.slice.call(arguments, 0));
 		}
 		Klass.prototype.trigger = function() {
-			this._event.triggerHandler.apply(this._event, Array.prototype.slice.call(arguments, 0));
+			this._.triggerHandler.apply(this._, Array.prototype.slice.call(arguments, 0));
 		}
 		return Klass;
 	})(),
