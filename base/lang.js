@@ -103,11 +103,11 @@ var $$ = {
 	 */
 	Event: (function() {
 		function Klass() {
-			this._ = $({});
+			this._dispatcher = $({});
 		}
 		(['unbind', 'trigger']).forEach(function(k){
 			Klass.prototype[k] = function() {
-				this._[k].apply(this._, Array.prototype.slice.call(arguments, 0));
+				this._dispatcher[k].apply(this._dispatcher, Array.prototype.slice.call(arguments, 0));
 
 			}
 		});
@@ -121,7 +121,13 @@ var $$ = {
 					cb.apply(self, as);
 				};
 				args.push(cb2);
-			this._.bind.apply(this._, args);
+			this._.bind.apply(this._dispatcher, args);
+		}
+		Klass.extend = function() {
+			Array.prototype.slice.call(arguments, 0).forEach(function(o) {
+				$.extend(o, new Klass);
+			});
+			return arguments[0];
 		}
 		return Klass;
 	})(),
