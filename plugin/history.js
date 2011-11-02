@@ -17,10 +17,7 @@ define(function() {
 	}
 	$$.inheritPrototype(Klass, $$.Event);
 	Klass.prototype.add = function(url) {
-		if(orignal){
-			location.href = url;
-		}
-		else {
+		if(!orignal){
 			var doc = this.iframe[0].contentWindow.document;
 			doc.open();
 			doc.write([
