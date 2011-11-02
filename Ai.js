@@ -9376,8 +9376,14 @@ var $$ = {
 	 */
 	Event: (function() {
 		function Klass() {
-			this._ = $('<p>');
+			this._ = $({});
 		}
+		(['unbind', 'trigger']).forEach(function(k){
+			Klass.prototype[k] = function() {
+				this._[k].apply(this._, Array.prototype.slice.call(arguments, 0));
+
+			}
+		});
 		Klass.prototype.bind = function() {
 			var self = this,
 				args = Array.prototype.slice.call(arguments, 0),
@@ -9389,12 +9395,6 @@ var $$ = {
 				};
 				args.push(cb2);
 			this._.bind.apply(this._, args);
-		}
-		Klass.prototype.unbind = function() {
-			this._.unbind.apply(this._, Array.prototype.slice.call(arguments, 0));
-		}
-		Klass.prototype.trigger = function() {
-			this._.triggerHandler.apply(this._, Array.prototype.slice.call(arguments, 0));
 		}
 		return Klass;
 	})(),
@@ -9458,8 +9458,8 @@ var $$ = {
 
 	/**
 	 * @public amd定义接口
-	 * @param {boolean} 由自动构建工具打包合并而成一个文件时，非最后一个模块传参，特殊处理，不加入defQueue。默认false，编程时完全忽略这个参数
-	 * @param {string} 由自动构建工具打包合并而成一个文件时，非最后一个模块传参，特殊处理，不加入defQueue。默认false，编程时完全忽略这个参数
+	 * @param {boolean} 由自动构建工具打包合并而成一个文件时，非最后一个模块传参，特殊处理，不加入defQueue。编程时完全忽略这个参数
+	 * @param {string} 由自动构建工具打包合并而成一个文件时，非最后一个模块传参，特殊处理，不加入defQueue。编程时完全忽略这个参数
 	 * @param {string} 模块id，可选，省略为script文件url
 	 * @param {array} 依赖模块id，可选
 	 * @param {Function/object} 初始化工厂

@@ -1,15 +1,23 @@
 define(function() {
 	var id = 0,
-		orignal = ('onhashchange' in window) && (document.documentMode === undefined || document.documentMode == 8);
+		orignal = ('onhashchange' in window) && (document.documentMode === undefined || document.documentMode == 8),
+		cbs = [];
+	if(orignal) {
+		window.onhashchange = function() {
+			cbs.forEach(function(cb) {
+				cb();
+			});
+		}
+	}
 	function Klass(src) {
 		var self = this;
 		$$.Event.call(self);
 		self.id = id++;
 		self.src = src;
 		if(orignal)
-			window.onhashchange = function() {
+			cbs.push(function() {
 				self.trigger('hashChange', location.hash);
-			}
+			});
 		else
 			self.iframe = $('<iframe src="' + src + '">');
 		$(document.body).append(this.iframe);
