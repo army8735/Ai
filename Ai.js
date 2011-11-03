@@ -9378,7 +9378,7 @@ var $$ = {
 		function Klass() {
 			this._dispatcher = $({});
 		}
-		(['unbind', 'trigger']).forEach(function(k){
+		['unbind', 'trigger'].forEach(function(k){
 			Klass.prototype[k] = function() {
 				this._dispatcher[k].apply(this._dispatcher, Array.prototype.slice.call(arguments, 0));
 
