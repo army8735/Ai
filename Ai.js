@@ -9394,7 +9394,7 @@ var $$ = {
 					cb.apply(self, as);
 				};
 				args.push(cb2);
-			this._.bind.apply(this._dispatcher, args);
+			this._dispatcher.bind.apply(this._dispatcher, args);
 		}
 		Klass.extend = function() {
 			Array.prototype.slice.call(arguments, 0).forEach(function(o) {
@@ -9417,15 +9417,16 @@ var $$ = {
 			LOADING = 1,
 			LOADED = 2,
 			h = $('head')[0];
-		return function(url, cb) {
-			cb = cb || function() {};
+		return function(url, cb, charset) {
 			if(!state[url]) {
+				charset = charset || 'gbk';
 				state[url] = LOADING;
 				list[url] = [cb];
 				var s = document.createElement('script'),
 					done;
 				s.type = 'text/javascript';
 				s.async = true;
+				s.charset = charset;
 				s.src = url;
 				s.onload = s.onreadystatechange = function() {
 					if(!done && (!this.readyState || ['loaded', 'complete'].indexOf(this.readyState) != -1)) {
