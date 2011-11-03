@@ -125,7 +125,14 @@ var $$ = {
 		}
 		Klass.extend = function() {
 			Array.prototype.slice.call(arguments, 0).forEach(function(o) {
-				$.extend(o, new Klass);
+				var e = new Klass,
+					mix = {};
+				Object.keys(Klass.prototype).forEach(function(k) {
+					mix[k] = function() {
+						e[k].apply(e, Array.prototype.slice.call(arguments, 0));
+					}
+				});
+				$.extend(o, mix);
 			});
 			return arguments[0];
 		}
@@ -140,12 +147,17 @@ var $$ = {
 	load: (function() {
 		var state = {},
 			list = {},
-			UNLOAD = 0,
 			LOADING = 1,
 			LOADED = 2,
 			h = $('head')[0];
 		return function(url, cb, charset) {
-			if(!state[url]) {
+			if(state[url] == LOADED) {
+				cb();
+			}
+			else if(state[url] == LOADING) {
+				list[url].push(cb);
+			}
+			else {
 				charset = charset || 'gbk';
 				state[url] = LOADING;
 				list[url] = [cb];
@@ -164,17 +176,11 @@ var $$ = {
 						list[url].forEach(function(cb) {
 							cb();
 						});
-						list[url] = null;
+						delete list[url];
 						h.removeChild(s);
 					}
 				};
 				h.appendChild(s);
-			}
-			else if(state[url] == LOADING) {
-				list[url].push(cb);
-			}
-			else if(state[url] == LOADED) {
-				cb();
 			}
 		};
 	})()
