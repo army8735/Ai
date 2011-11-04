@@ -284,4 +284,6 @@ define('html5formcore', (function() {
 		}
 	}
 
+	return {};
+
 })());

@@ -55,4 +55,6 @@ define('html5form', ['../plugin/html5formcore.js'], (function() {
 		return this;
 	}
 
+	return {};
+
 })());
