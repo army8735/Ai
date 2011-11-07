@@ -52,26 +52,6 @@
 			return -1;
 		};
 	}
-	if(!arrayMethod.lastIndexOf) {
-		arrayMethod.lastIndexOf = function(value, from){
-			var len = this.length >>> 0;
-
-			from = Number(from) || len - 1;
-			from = Math[from < 0 ? 'ceil' : 'floor'](from);
-			if(from < 0) {
-				from += len;
-			}
-			from = Math.min(from, len - 1);
-
-			for(; from >= 0; from--) {
-				if(from in this && this[from] === value) {
-					return from;
-				}
-			}
-
-			return -1;
-		};
-	}
 	if(!arrayMethod.every) {
 		arrayMethod.every = function(fn, context) {
 			for(var i = 0, len = this.length >>> 0; i < len; i++) {
@@ -126,42 +106,9 @@
 			return result;
 		}
 	}
-	if(!arrayMethod.reduceRight) {
-		arrayMethod.reduceRight = function (fn /*, initial*/) {
-			if(typeof fn !== 'function') {
-				throw new TypeError(fn + ' is not an function');
-			}
-
-			var len = this.length >>> 0, i = len - 1, result;
-
-			if(arguments.length > 1) {
-				result = arguments[1];
-			}
-			else {
-				do {
-					if(i in this) {
-						result = this[i--];
-						break;
-					}
-					// if array contains no values, no initial value to return
-					if(--i < 0)
-					throw new TypeError('reduce of empty array with on initial value');
-				}
-				while(true);
-			}
-
-			for(; i >= 0; i--) {
-				if(i in this) {
-					result = fn.call(null, result, this[i], i, this);
-				}
-			}
-
-			return result;
-		}
-	}
 	if(!String.prototype.trim) {
 		String.prototype.trim = function() {
-			return $.trim(this);
+			return String(this).replace(/^\s+/, '').replace(/\s+$/, '');
 		};
 	}
 	Array.isArray || (Array.isArray = function(obj) {
@@ -209,20 +156,5 @@
 
 		return fBound;
 	});
-
-	//flash在ie下会更改title的bug
-	if($.browser.msie) {
-		var title = document.title;
-		$(document).bind('mouseup', function(e) {
-			var n = e.target.nodeName;
-			if(({'EMBED': 1, 'OBJECT': 1})[n]) {
-				document.title = title;
-			}
-		});
-		//ie6缓存背景图
-		if($.browser.version == '6.0') {
-			document.execCommand('BackgroundImageCache', false, true);
-		}
-	}
 
 })();

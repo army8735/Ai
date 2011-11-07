@@ -956,20 +956,6 @@ function doScrollCheck() {
 	jQuery.ready();
 }
 
-// Expose jQuery as an AMD module, but only for AMD loaders that
-// understand the issues with loading multiple versions of jQuery
-// in a page that all might call define(). The loader will indicate
-// they have special allowances for multiple jQuery versions by
-// specifying define.amd.jQuery = true. Register as a named module,
-// since jQuery can be concatenated with other files that may use define,
-// but not use a proper concatenation script that understands anonymous
-// AMD modules. A named AMD is safest and most robust way to register.
-// Lowercase jquery is used because AMD module names are derived from
-// file names, and jQuery is normally delivered in a lowercase file name.
-if ( typeof define === "function" && define.amd && define.amd.jQuery ) {
-	define( "jquery", [], function () { return jQuery; } );
-}
-
 return jQuery;
 
 })();
@@ -9352,26 +9338,6 @@ window.jQuery = window.$ = jQuery;
 			return -1;
 		};
 	}
-	if(!arrayMethod.lastIndexOf) {
-		arrayMethod.lastIndexOf = function(value, from){
-			var len = this.length >>> 0;
-
-			from = Number(from) || len - 1;
-			from = Math[from < 0 ? 'ceil' : 'floor'](from);
-			if(from < 0) {
-				from += len;
-			}
-			from = Math.min(from, len - 1);
-
-			for(; from >= 0; from--) {
-				if(from in this && this[from] === value) {
-					return from;
-				}
-			}
-
-			return -1;
-		};
-	}
 	if(!arrayMethod.every) {
 		arrayMethod.every = function(fn, context) {
 			for(var i = 0, len = this.length >>> 0; i < len; i++) {
@@ -9426,42 +9392,9 @@ window.jQuery = window.$ = jQuery;
 			return result;
 		}
 	}
-	if(!arrayMethod.reduceRight) {
-		arrayMethod.reduceRight = function (fn /*, initial*/) {
-			if(typeof fn !== 'function') {
-				throw new TypeError(fn + ' is not an function');
-			}
-
-			var len = this.length >>> 0, i = len - 1, result;
-
-			if(arguments.length > 1) {
-				result = arguments[1];
-			}
-			else {
-				do {
-					if(i in this) {
-						result = this[i--];
-						break;
-					}
-					// if array contains no values, no initial value to return
-					if(--i < 0)
-					throw new TypeError('reduce of empty array with on initial value');
-				}
-				while(true);
-			}
-
-			for(; i >= 0; i--) {
-				if(i in this) {
-					result = fn.call(null, result, this[i], i, this);
-				}
-			}
-
-			return result;
-		}
-	}
 	if(!String.prototype.trim) {
 		String.prototype.trim = function() {
-			return $.trim(this);
+			return String(this).replace(/^\s+/, '').replace(/\s+$/, '');
 		};
 	}
 	Array.isArray || (Array.isArray = function(obj) {
@@ -9510,112 +9443,7 @@ window.jQuery = window.$ = jQuery;
 		return fBound;
 	});
 
-	//flash在ie下会更改title的bug
-	if($.browser.msie) {
-		var title = document.title;
-		$(document).bind('mouseup', function(e) {
-			var n = e.target.nodeName;
-			if(({'EMBED': 1, 'OBJECT': 1})[n]) {
-				document.title = title;
-			}
-		});
-		//ie6缓存背景图
-		if($.browser.version == '6.0') {
-			document.execCommand('BackgroundImageCache', false, true);
-		}
-	}
-
-})();$.cookie = function(name, value, options) {
-	if(value !== undefined) { // name and value given, set cookie
-		options = options || {};
-		if (value === null) {
-			value = '';
-			options.expires = -1;
-		}
-		var expires = '';
-		if (options.expires && ($.isNumber(options.expires) || options.expires.toUTCString)) {
-			var date;
-			if ($.isNumber(options.expires)) {
-				date = new Date();
-				date.setTime(date.getTime() + (options.expires * 24 * 60 * 60 * 1000));
-			} else {
-				date = options.expires;
-			}
-			expires = '; expires=' + date.toUTCString(); // use expires attribute, max-age is not supported by IE
-		}
-		// CAUTION: Needed to parenthesize options.path and options.domain
-		// in the following expressions, otherwise they evaluate to undefined
-		// in the packed version for some reason...
-		var path = options.path ? '; path=' + (options.path) : '';
-		var domain = options.domain ? '; domain=' + (options.domain) : '';
-		var secure = options.secure ? '; secure' : '';
-		document.cookie = [name, '=', encodeURIComponent(value), expires, path, domain, secure].join('');
-	}
-	else { // only name given, get cookie
-		var cookieValue = null;
-		if (document.cookie && document.cookie != '') {
-			var cookies = document.cookie.split(';');
-			for (var i = 0; i < cookies.length; i++) {
-				var cookie = $.trim(cookies[i]);
-				// Does this cookie string begin with the name we want?
-				if (cookie.substring(0, name.length + 1) == (name + '=')) {
-					cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-					break;
-				}
-			}
-		}
-		return cookieValue;
-	}
-}
-
-var $$ = {
-	/**
-	 * @public 为parent指定的命名空间
-	 * @param {string} 命名空间，如com.x.y.z，其中最后一位不包含在命名空间内，是对象名
-	 * @param {object} 可选，写入到命名空间上的对象，为空此方法重载为读取对象
-	 * @param {object} 可选，仅写入时有用，写入时的顶级对象，为空为window
-	 * @return {object} 返回被扩展的命名空间对象
-	 */
-	ns: function(namespace, target, parent){
-		var i,
-			p = parent || window,
-			n = namespace.split('.').reverse(),
-			temp = [];
-		if(target === undefined) {
-			while((i = n.pop()) && n.length) {
-				p = p[i];
-				temp.push(i);
-				if($.type(p) != 'object') {
-					throw new Error('namespace: ' + namespace + ', ' + temp.join('.') + ': is not an object');
-				}
-			}
-		}
-		else {
-			while((i = n.pop()) && n.length) {
-				temp.push(i);
-				if(p[i] === undefined) {
-					p[i] = {};
-				}
-				else if($.type(p) != 'object') {
-					throw new Error('namespace: ' + namespace + ', ' + temp.join('.') + ': is not an object');
-				}
-				p = p[i];
-			}
-			p[i] = target;
-		}
-		return p[i];
-	},
-
-	/**
-	 * @public 将参数中的对象扩展到本身上，$.extend的简写封装
-	 * @param {object} 需扩展的对象
-	 * @param {string} 需要扩展到本身的命名空间，忽略为本身
-	 */
-	mix: function(object, ns) {
-		var p = (ns ? this.ns(ns, {}, this) : this);
-		$.extend(p, object);
-	},
-
+})();var $$ = {
 	/**
 	 * @public 寄生组合继承
 	 */
@@ -9747,7 +9575,7 @@ var $$ = {
 			dependencies = null;
 		}
 		//在没有定义依赖的情况下，通过factory.toString()方式匹配正则，智能获取依赖列表
-		if(!dependencies) {
+		if(!dependencies && $.isFunction(factory)) {
 			var res = /\brequire\s*\(\s*['"]?([^'")]*)/g.exec(factory.toString().replace(/\/\/.*\n/g, ''));
 			if(res) {
 				res.shift();
@@ -9976,4 +9804,62 @@ var $$ = {
 		return id ? lib[id] : lib;
 	};
 
-})();
+})();//flash��ie�»���title��bug
+if($.browser.msie) {
+	var title = document.title;
+	$(document).bind('mouseup', function(e) {
+		var n = e.target.nodeName;
+		if(({'EMBED': 1, 'OBJECT': 1})[n]) {
+			document.title = title;
+		}
+	});
+	//ie6���汳��ͼ
+	if($.browser.version == '6.0') {
+		document.execCommand('BackgroundImageCache', false, true);
+	}
+}
+
+$.cookie = function(name, value, options) {
+	if(value !== undefined) { // name and value given, set cookie
+		options = options || {};
+		if (value === null) {
+			value = '';
+			options.expires = -1;
+		}
+		var expires = '';
+		if (options.expires && ($.isNumber(options.expires) || options.expires.toUTCString)) {
+			var date;
+			if ($.isNumber(options.expires)) {
+				date = new Date();
+				date.setTime(date.getTime() + (options.expires * 24 * 60 * 60 * 1000));
+			} else {
+				date = options.expires;
+			}
+			expires = '; expires=' + date.toUTCString(); // use expires attribute, max-age is not supported by IE
+		}
+		// CAUTION: Needed to parenthesize options.path and options.domain
+		// in the following expressions, otherwise they evaluate to undefined
+		// in the packed version for some reason...
+		var path = options.path ? '; path=' + (options.path) : '';
+		var domain = options.domain ? '; domain=' + (options.domain) : '';
+		var secure = options.secure ? '; secure' : '';
+		document.cookie = [name, '=', encodeURIComponent(value), expires, path, domain, secure].join('');
+	}
+	else { // only name given, get cookie
+		var cookieValue = null;
+		if (document.cookie && document.cookie != '') {
+			var cookies = document.cookie.split(';');
+			for (var i = 0; i < cookies.length; i++) {
+				var cookie = $.trim(cookies[i]);
+				// Does this cookie string begin with the name we want?
+				if (cookie.substring(0, name.length + 1) == (name + '=')) {
+					cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+					break;
+				}
+			}
+		}
+		return cookieValue;
+	}
+}
+
+define( "jquery", function () { return jQuery; } );
