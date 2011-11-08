@@ -9827,7 +9827,7 @@ $.cookie = function(name, value, options) {
 		return cookieValue;
 	}
 }/**
- * @public EventDispatcher��
+ * @public EventDispatcher类
  */
 $$.Event = (function() {
 	function Klass() {
@@ -9865,7 +9865,7 @@ $$.Event = (function() {
 		return arguments[0];
 	}
 	return Klass;
-})();//flash��ie�»���title��bug
+})();//flash在ie下会更改title的bug
 if($.browser.msie) {
 	var title = document.title;
 	$(document).bind('mouseup', function(e) {
@@ -9874,7 +9874,7 @@ if($.browser.msie) {
 			document.title = title;
 		}
 	});
-	//ie6���汳��ͼ
+	//ie6缓存背景图
 	if($.browser.version == '6.0') {
 		document.execCommand('BackgroundImageCache', false, true);
 	}

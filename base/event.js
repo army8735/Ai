@@ -1,5 +1,5 @@
 /**
- * @public EventDispatcherÀà
+ * @public EventDispatcherç±»
  */
 $$.Event = (function() {
 	function Klass() {

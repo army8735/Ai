@@ -1,4 +1,4 @@
-//flashÔÚieÏÂ»á¸ü¸ÄtitleµÄbug
+//flashåœ¨ieä¸‹ä¼šæ›´æ”¹titleçš„bug
 if($.browser.msie) {
 	var title = document.title;
 	$(document).bind('mouseup', function(e) {
@@ -7,7 +7,7 @@ if($.browser.msie) {
 			document.title = title;
 		}
 	});
-	//ie6»º´æ±³¾°Í¼
+	//ie6ç¼“å­˜èƒŒæ™¯å›¾
 	if($.browser.version == '6.0') {
 		document.execCommand('BackgroundImageCache', false, true);
 	}
