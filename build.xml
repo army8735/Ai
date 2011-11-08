@@ -32,10 +32,12 @@
 	
 	<target name="concat">
 		<concat destfile="${build}/Ai.js" encoding="${charset}" outputencoding="${charset}">
-			<path path="${base}/jquery-1.7.js" />
 			<path path="${base}/fix.js" />
 			<path path="${base}/lang.js" />
 			<path path="${base}/amd.js" />
+			<path path="${base}/jquery-1.7.js" />
+			<path path="${base}/cookie.js" />
+			<path path="${base}/event.js" />
 			<path path="${base}/fn.js" />
 		</concat>
 	</target>

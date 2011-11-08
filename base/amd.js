@@ -5,10 +5,18 @@ var require,
 
 (function() {
 
-	var lib = {},
+	var toString = Object.prototype.toString,
+		lib = {},
 		script = {},
 		fac = {},
 		defQueue;
+
+	function isString(o) {
+        return toString.call(o) === "[object String]";
+	}
+	function isFunction(o) {
+        return toString.call(o) === "[object Function]";
+	}
 
 	/**
 	 * @public amd定义接口
@@ -24,17 +32,17 @@ var require,
 			dependencies = url;
 			id = combo;
 		}
-		if($.type(id) != 'string') {
+		if(!isString(id)) {
 			factory = dependencies;
 			dependencies = id;
 			id = null;
 		}
-		if(!$.isArray(dependencies)) {
+		if(!Array.isArray(dependencies)) {
 			factory = dependencies;
 			dependencies = null;
 		}
 		//在没有定义依赖的情况下，通过factory.toString()方式匹配正则，智能获取依赖列表
-		if(!dependencies && $.isFunction(factory)) {
+		if(!dependencies && isFunction(factory)) {
 			var res = /\brequire\s*\(\s*['"]?([^'")]*)/g.exec(factory.toString().replace(/\/\/.*\n/g, ''));
 			if(res) {
 				res.shift();
@@ -70,7 +78,7 @@ var require,
 			r: mod
 		});
 	}
-	define.amd = {};
+	define.amd = { jQuery: true };
 	/**
 	 * @public 加载使用模块方法
 	 * @param {string/array} 模块id或url
@@ -80,7 +88,7 @@ var require,
 	 */
 	function use(ids, cb, history, list) {
 		defQueue = defQueue || []; //use之前的模块为手动添加在页面script标签的模块或合并在总库中的模块，它们需被排除在外
-		if($.type(ids) == 'string')
+		if(isString(ids))
 			ids = [ids];
 		//id不存在的转化为url
 		var urls = ids.map(function(v) {
@@ -120,7 +128,7 @@ var require,
 						}
 						else
 							deps = [getMod('require').exports, mod.exports, mod];
-						mod.exports = $.isFunction(mod.factory) ? (mod.factory.apply(null, deps) || mod.exports) : mod.factory;
+						mod.exports = isFunction(mod.factory) ? (mod.factory.apply(null, deps) || mod.exports) : mod.factory;
 						delete mod.factory;
 					}
 					mods.push(mod.exports);
@@ -175,7 +183,7 @@ var require,
 	 * @param {Function} 加载成功后的回调
 	 */
 	function loadScripts(urls, cb) {
-		if($.type(urls) == 'string')
+		if(isString(urls))
 			urls = [urls];
 		var remote = urls.length;
 		if(remote) {
