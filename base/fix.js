@@ -112,7 +112,7 @@
 		};
 	}
 	Array.isArray || (Array.isArray = function(obj) {
-		return OP.toString.call(obj) === '[object Array]';
+		return Object.prototype.toString.call(obj) === '[object Array]';
 	});
 	Date.now || (Date.now = function () {
 		return new Date().getTime();
