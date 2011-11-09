@@ -1,7 +1,7 @@
 /**
  * @public EventDispatcher类
  */
-$$.Event = (function() {
+define('Event', function() {
 	function Klass() {
 		this._dispatcher = $({});
 	}
@@ -37,4 +37,9 @@ $$.Event = (function() {
 		return arguments[0];
 	}
 	return Klass;
-})();
+});
+
+$$.use('Event', function(Event) {
+	$$.Event = Event;
+	$$.event = new Event;
+});

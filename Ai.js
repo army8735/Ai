@@ -9829,7 +9829,7 @@ $.cookie = function(name, value, options) {
 }/**
  * @public EventDispatcher类
  */
-$$.Event = (function() {
+define('Event', function() {
 	function Klass() {
 		this._dispatcher = $({});
 	}
@@ -9865,7 +9865,12 @@ $$.Event = (function() {
 		return arguments[0];
 	}
 	return Klass;
-})();//flash在ie下会更改title的bug
+});
+
+$$.use('Event', function(Event) {
+	$$.Event = Event;
+	$$.event = new Event;
+});//flash在ie下会更改title的bug
 if($.browser.msie) {
 	var title = document.title;
 	$(document).bind('mouseup', function(e) {
