@@ -9826,7 +9826,7 @@ $.cookie = function(name, value, options) {
 		}
 		return cookieValue;
 	}
-}/**
+};/**
  * @public EventDispatcher类
  */
 define('Event', function() {

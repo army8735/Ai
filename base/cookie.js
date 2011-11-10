@@ -39,4 +39,4 @@ $.cookie = function(name, value, options) {
 		}
 		return cookieValue;
 	}
-}
+};
