@@ -159,15 +159,6 @@
 
 })();var $$ = {
 	/**
-	 * @public 寄生组合继承
-	 */
-	inheritPrototype: function(subType, superType) {
-		var prototype = Object.create(superType.prototype);
-		prototype.constructor = subType;
-		subType.prototype = prototype;
-	},
-
-	/**
 	 * @public 可并行加载script文件，且仅加载一次
 	 * @param {url} script的url
 	 * @param {Function} 回调
@@ -9826,7 +9817,31 @@ $.cookie = function(name, value, options) {
 		}
 		return cookieValue;
 	}
-};/**
+};define('Class', function() {
+	function inheritPrototype(subType, superType) {
+		var prototype = Object.create(superType.prototype);
+		prototype.constructor = subType;
+		subType.prototype = prototype;
+	}
+	function wrap(fn) {
+		fn.extend = function(sub) {
+			inheritPrototype(sub, fn);
+			return wrap(sub);
+		}
+		fn.methods = function(o) {
+			Object.keys(o).forEach(function(k) {
+				fn.prototype[k] = o[k];
+			});
+			return fn;
+		};
+		return fn;
+	}
+	function klass(cons) {
+		return wrap(cons);
+	}
+	klass.extend = inheritPrototype;
+	return klass;
+});/**
  * @public EventDispatcher类
  */
 define('Event', function() {

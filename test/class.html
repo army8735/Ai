@@ -1,0 +1,32 @@
+<!DOCTYPE html><html>
+<head>
+<meta charset="gbk"/>
+<title>class</title>
+</head>
+<body>
+<script src="../Ai.js"></script>
+<script>
+$$.use('Class', function(Class) {
+	var Person = Class(function() {
+		this.name = 'army';
+	}).methods({
+		myName: function() {
+			return this.name;
+		}
+	});
+	var p = new Person;
+	console.log(p.myName());
+	var Man = Person.extend(function() {
+		Person.call(this);
+		this.sex = 'male';
+	}).methods({
+		mySex: function() {
+			return this.sex;
+		}
+	});
+	var m = new Man;
+	console.log(m.myName() + ', ' + m.mySex());
+});
+</script>
+</body>
+</html>

@@ -1,14 +1,5 @@
 var $$ = {
 	/**
-	 * @public 寄生组合继承
-	 */
-	inheritPrototype: function(subType, superType) {
-		var prototype = Object.create(superType.prototype);
-		prototype.constructor = subType;
-		subType.prototype = prototype;
-	},
-
-	/**
 	 * @public 可并行加载script文件，且仅加载一次
 	 * @param {url} script的url
 	 * @param {Function} 回调
