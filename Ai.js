@@ -157,55 +157,72 @@
 		return fBound;
 	});
 
-})();var $$ = {
+})();var $$ = (function() {
+	var lib = {},
+		state = {},
+		list = {},
+		LOADING = 1,
+		LOADED = 2,
+		h = document.getElementsByTagName('head')[0];
+	/**
+	 * @public 设置script的url的映射关系，为版本自动化做准备
+	 * @note url会类似xxx.8735.js形式，为版本控制发布工具产生，其中数字为版本号，将去除版本号的正确url对应到自身上
+	 * @param {url} script的url
+	 */
+	function join(url) {
+		lib[url.replace(/\.\d+\.js$/, '.js')] = url;
+	}
 	/**
 	 * @public 可并行加载script文件，且仅加载一次
 	 * @param {url} script的url
 	 * @param {Function} 回调
+	 * @param {String} script编码
 	 */
-	load: (function() {
-		var state = {},
-			list = {},
-			LOADING = 1,
-			LOADED = 2,
-			h = document.getElementsByTagName('head')[0];
-		return function(url, cb, charset) {
-			if(state[url] == LOADED) {
-				cb();
-			}
-			else if(state[url] == LOADING) {
-				list[url].push(cb);
-			}
-			else {
-				state[url] = LOADING;
-				list[url] = [cb];
-				var s = document.createElement('script'),
-					done;
-				s.type = 'text/javascript';
-				s.async = true;
-				if(charset)
-					s.charset = charset;
-				s.src = url;
-				s.onload = s.onreadystatechange = function() {
-					if(!done && (!this.readyState || ['loaded', 'complete'].indexOf(this.readyState) != -1)) {
-						done = 1;
-						s.onload = s.onreadystatechange = null;
-						//缓存记录
-						state[url] = LOADED;
-						list[url].forEach(function(cb) {
-							cb();
-						});
-						delete list[url];
-						h.removeChild(s);
-					}
-				};
-				h.appendChild(s);
-			}
-		};
-	})()
-};var require,
-	exports = {},
-	module = {},
+	function load(url, cb, charset) {
+		if(state[url] == LOADED) {
+			cb();
+		}
+		else if(state[url] == LOADING) {
+			list[url].push(cb);
+		}
+		else {
+			state[url] = LOADING;
+			list[url] = [cb];
+			var s = document.createElement('script'),
+				done;
+			s.async = true;
+			if(charset)
+				s.charset = charset;
+			s.src = lib[url] || url;
+			s.onload = s.onreadystatechange = function() {
+				if(!done && (!this.readyState || ['loaded', 'complete'].indexOf(this.readyState) != -1)) {
+					done = true;
+					s.onload = s.onreadystatechange = null;
+					//缓存记录
+					state[url] = LOADED;
+					list[url].forEach(function(cb) {
+						cb();
+					});
+					delete list[url];
+					h.removeChild(s);
+				}
+			};
+			h.appendChild(s);
+		}
+	}
+	/**
+	 * @public 获取映射库
+	 * @return {Object} hashmap
+	 */
+	function map() {
+		return lib;
+	}
+	return {
+		join: join,
+		load: load,
+		map: map
+	}
+})();var require,
 	define;
 
 (function() {
@@ -214,6 +231,7 @@
 		lib = {},
 		script = {},
 		fac = {},
+		baseUrl = 'http://' + location.host + location.pathname,
 		defQueue;
 
 	function isString(o) {
@@ -248,13 +266,12 @@
 		}
 		//在没有定义依赖的情况下，通过factory.toString()方式匹配正则，智能获取依赖列表
 		if(!dependencies && isFunction(factory)) {
-			var res = /\brequire\s*\(\s*['"]?([^'")]*)/g.exec(factory.toString().replace(/\/\/.*\n/g, ''));
+			var res = /(?:^|[^.])\brequire\s*\(\s*(["'])([^"'\s\)]+)\1\s*\)/g.exec(factory.toString().replace(/\/\/.*\n/g, ''));
 			if(res) {
-				res.shift();
-				dependencies = res.length ? res : null;
+				dependencies = res.slice(2);
 			}
 		}
-		module = {
+		var module = {
 			id: id,
 			dependencies: dependencies,
 			factory: factory,
@@ -270,20 +287,24 @@
 			module.id = module.id || url;
 			module.uri = url;
 		}
-		//存入def队列并记录factory和module的hash对应关系
-		else if(defQueue) {
+		//存入def队列
+		else if(defQueue)
 			defQueue.push(module);
-		}
-		record(factory, module);
+		//记录factory和module的hash对应关系
+		if(isFunction(factory))
+			record(factory, module);
 	}
+	define.amd = { jQuery: true };
 	function record(factory, mod) {
-		var ts = factory.toString();
+		var ts = genFacKey(factory);
 		(fac[ts] = fac[ts] || []).push({
 			f: factory,
 			r: mod
 		});
 	}
-	define.amd = { jQuery: true };
+	function genFacKey(factory) {
+		return factory.toString().slice(0, 32);
+	}
 	/**
 	 * @public 加载使用模块方法
 	 * @param {string/array} 模块id或url
@@ -311,11 +332,11 @@
 		var wrap = function() {
 				var mods = [];
 				urls.forEach(function(id) {
-					var mod = module = getMod(id);
+					var mod = getMod(id);
 					//初始化未初始化的模块
 					if(!mod.exports) {
 						var deps = [];
-						mod.exports = exports = {};
+						mod.exports = {};
 						//有依赖参数为依赖的模块，否则默认为require, exports, module3个默认模块
 						if(mod.dependencies) {
 							mod.dependencies.forEach(function(d) {
@@ -333,7 +354,7 @@
 						}
 						else
 							deps = [getMod('require').exports, mod.exports, mod];
-						mod.exports = isFunction(mod.factory) ? (mod.factory.apply(null, deps) || mod.exports) : mod.factory;
+						mod.exports = isFunction(mod.factory) ? (mod.factory.apply(null, deps) || mod.exports) : (mod.factory || {});
 						delete mod.factory;
 					}
 					mods.push(mod.exports);
@@ -419,7 +440,7 @@
 	function getAbsUrl(url, depend) {
 		if(url.indexOf('http://') == 0)
 			return url;
-		depend = depend || 'http://' + location.host + location.pathname;
+		depend = depend || baseUrl;
 		var host = /(http:\/\/[^/]+)\/?(.*)/.exec(depend);
 		depend = host[2].split('/');
 		depend.unshift(host[1]);
@@ -433,6 +454,9 @@
 			}
 			return depend.join('/') + '/' + url;
 		}
+		else if(url.indexOf('./') == 0) {
+			return depend[0] + url.slice(2);
+		}
 		depend.pop();
 		return depend.join('/') + '/' + url;
 	}
@@ -445,7 +469,7 @@
 			if(lib[id])
 				return lib[id].exports;
 			var caller = arguments.callee.caller,
-				ts = caller.toString(),
+				ts = genFacKey(caller),
 				mod;
 			fac[ts] && fac[ts].forEach(function(o) {
 				if(caller == o.f)
@@ -459,13 +483,13 @@
 	lib['exports'] = {
 		id: 'exports',
 		dependencies: null,
-		exports: exports,
+		exports: {},
 		uri: null
 	};
 	lib['module'] = {
 		id: 'module',
 		dependencies: null,
-		exports: module,
+		exports: {},
 		uri: null
 	};
 
@@ -474,6 +498,11 @@
 	};
 	$$.modMap = function(id) {
 		return id ? lib[id] : lib;
+	};
+	$$.base = function(url) {
+		if(url)
+			baseUrl = url;
+		return baseUrl;
 	};
 
 })();/*!
@@ -9844,29 +9873,30 @@ $.cookie = function(name, value, options) {
 });/**
  * @public EventDispatcher类
  */
-define('Event', function() {
-	function Klass() {
+define('Event', ['Class'], function(Class) {
+	var Klass = Class(function() {
 		this._dispatcher = $({});
-	}
+	}).methods({
+		bind: function() {
+			var self = this,
+				args = Array.prototype.slice.call(arguments, 0),
+				cb = args.pop();
+				cb2 = function() {
+					var as = Array.prototype.slice.call(arguments, 0);
+					as.shift();
+					cb.apply(self, as);
+				};
+				args.push(cb2);
+			this._dispatcher.bind.apply(this._dispatcher, args);
+		}
+	});
 	['unbind', 'trigger'].forEach(function(k){
 		Klass.prototype[k] = function() {
 			this._dispatcher[k].apply(this._dispatcher, Array.prototype.slice.call(arguments, 0));
 
 		}
 	});
-	Klass.prototype.bind = function() {
-		var self = this,
-			args = Array.prototype.slice.call(arguments, 0),
-			cb = args.pop();
-			cb2 = function() {
-				var as = Array.prototype.slice.call(arguments, 0);
-				as.shift();
-				cb.apply(self, as);
-			};
-			args.push(cb2);
-		this._dispatcher.bind.apply(this._dispatcher, args);
-	}
-	Klass.extend = function() {
+	Klass.mix = function() {
 		Array.prototype.slice.call(arguments, 0).forEach(function(o) {
 			var e = new Klass,
 				mix = {};
@@ -9880,11 +9910,6 @@ define('Event', function() {
 		return arguments[0];
 	}
 	return Klass;
-});
-
-$$.use('Event', function(Event) {
-	$$.Event = Event;
-	$$.event = new Event;
 });//flash在ie下会更改title的bug
 if($.browser.msie) {
 	var title = document.title;

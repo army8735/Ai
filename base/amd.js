@@ -1,6 +1,4 @@
 var require,
-	exports = {},
-	module = {},
 	define;
 
 (function() {
@@ -9,6 +7,7 @@ var require,
 		lib = {},
 		script = {},
 		fac = {},
+		baseUrl = 'http://' + location.host + location.pathname,
 		defQueue;
 
 	function isString(o) {
@@ -43,13 +42,12 @@ var require,
 		}
 		//在没有定义依赖的情况下，通过factory.toString()方式匹配正则，智能获取依赖列表
 		if(!dependencies && isFunction(factory)) {
-			var res = /\brequire\s*\(\s*['"]?([^'")]*)/g.exec(factory.toString().replace(/\/\/.*\n/g, ''));
+			var res = /(?:^|[^.])\brequire\s*\(\s*(["'])([^"'\s\)]+)\1\s*\)/g.exec(factory.toString().replace(/\/\/.*\n/g, ''));
 			if(res) {
-				res.shift();
-				dependencies = res.length ? res : null;
+				dependencies = res.slice(2);
 			}
 		}
-		module = {
+		var module = {
 			id: id,
 			dependencies: dependencies,
 			factory: factory,
@@ -65,20 +63,24 @@ var require,
 			module.id = module.id || url;
 			module.uri = url;
 		}
-		//存入def队列并记录factory和module的hash对应关系
-		else if(defQueue) {
+		//存入def队列
+		else if(defQueue)
 			defQueue.push(module);
-		}
-		record(factory, module);
+		//记录factory和module的hash对应关系
+		if(isFunction(factory))
+			record(factory, module);
 	}
+	define.amd = { jQuery: true };
 	function record(factory, mod) {
-		var ts = factory.toString();
+		var ts = genFacKey(factory);
 		(fac[ts] = fac[ts] || []).push({
 			f: factory,
 			r: mod
 		});
 	}
-	define.amd = { jQuery: true };
+	function genFacKey(factory) {
+		return factory.toString().slice(0, 32);
+	}
 	/**
 	 * @public 加载使用模块方法
 	 * @param {string/array} 模块id或url
@@ -106,11 +108,11 @@ var require,
 		var wrap = function() {
 				var mods = [];
 				urls.forEach(function(id) {
-					var mod = module = getMod(id);
+					var mod = getMod(id);
 					//初始化未初始化的模块
 					if(!mod.exports) {
 						var deps = [];
-						mod.exports = exports = {};
+						mod.exports = {};
 						//有依赖参数为依赖的模块，否则默认为require, exports, module3个默认模块
 						if(mod.dependencies) {
 							mod.dependencies.forEach(function(d) {
@@ -128,7 +130,7 @@ var require,
 						}
 						else
 							deps = [getMod('require').exports, mod.exports, mod];
-						mod.exports = isFunction(mod.factory) ? (mod.factory.apply(null, deps) || mod.exports) : mod.factory;
+						mod.exports = isFunction(mod.factory) ? (mod.factory.apply(null, deps) || mod.exports) : (mod.factory || {});
 						delete mod.factory;
 					}
 					mods.push(mod.exports);
@@ -214,7 +216,7 @@ var require,
 	function getAbsUrl(url, depend) {
 		if(url.indexOf('http://') == 0)
 			return url;
-		depend = depend || 'http://' + location.host + location.pathname;
+		depend = depend || baseUrl;
 		var host = /(http:\/\/[^/]+)\/?(.*)/.exec(depend);
 		depend = host[2].split('/');
 		depend.unshift(host[1]);
@@ -228,6 +230,9 @@ var require,
 			}
 			return depend.join('/') + '/' + url;
 		}
+		else if(url.indexOf('./') == 0) {
+			return depend[0] + url.slice(2);
+		}
 		depend.pop();
 		return depend.join('/') + '/' + url;
 	}
@@ -240,7 +245,7 @@ var require,
 			if(lib[id])
 				return lib[id].exports;
 			var caller = arguments.callee.caller,
-				ts = caller.toString(),
+				ts = genFacKey(caller),
 				mod;
 			fac[ts] && fac[ts].forEach(function(o) {
 				if(caller == o.f)
@@ -254,13 +259,13 @@ var require,
 	lib['exports'] = {
 		id: 'exports',
 		dependencies: null,
-		exports: exports,
+		exports: {},
 		uri: null
 	};
 	lib['module'] = {
 		id: 'module',
 		dependencies: null,
-		exports: module,
+		exports: {},
 		uri: null
 	};
 
@@ -269,6 +274,11 @@ var require,
 	};
 	$$.modMap = function(id) {
 		return id ? lib[id] : lib;
+	};
+	$$.base = function(url) {
+		if(url)
+			baseUrl = url;
+		return baseUrl;
 	};
 
 })();

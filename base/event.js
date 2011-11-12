@@ -1,29 +1,30 @@
 /**
  * @public EventDispatcher类
  */
-define('Event', function() {
-	function Klass() {
+define('Event', ['Class'], function(Class) {
+	var Klass = Class(function() {
 		this._dispatcher = $({});
-	}
+	}).methods({
+		bind: function() {
+			var self = this,
+				args = Array.prototype.slice.call(arguments, 0),
+				cb = args.pop();
+				cb2 = function() {
+					var as = Array.prototype.slice.call(arguments, 0);
+					as.shift();
+					cb.apply(self, as);
+				};
+				args.push(cb2);
+			this._dispatcher.bind.apply(this._dispatcher, args);
+		}
+	});
 	['unbind', 'trigger'].forEach(function(k){
 		Klass.prototype[k] = function() {
 			this._dispatcher[k].apply(this._dispatcher, Array.prototype.slice.call(arguments, 0));
 
 		}
 	});
-	Klass.prototype.bind = function() {
-		var self = this,
-			args = Array.prototype.slice.call(arguments, 0),
-			cb = args.pop();
-			cb2 = function() {
-				var as = Array.prototype.slice.call(arguments, 0);
-				as.shift();
-				cb.apply(self, as);
-			};
-			args.push(cb2);
-		this._dispatcher.bind.apply(this._dispatcher, args);
-	}
-	Klass.extend = function() {
+	Klass.mix = function() {
 		Array.prototype.slice.call(arguments, 0).forEach(function(o) {
 			var e = new Klass,
 				mix = {};
@@ -37,9 +38,4 @@ define('Event', function() {
 		return arguments[0];
 	}
 	return Klass;
-});
-
-$$.use('Event', function(Event) {
-	$$.Event = Event;
-	$$.event = new Event;
 });
