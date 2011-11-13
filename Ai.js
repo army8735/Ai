@@ -314,75 +314,92 @@
 	 */
 	function use(ids, cb, history, list) {
 		defQueue = defQueue || []; //use之前的模块为手动添加在页面script标签的模块或合并在总库中的模块，它们需被排除在外
-		if(isString(ids))
-			ids = [ids];
-		//id不存在的转化为url
-		var urls = ids.map(function(v) {
+		var idList = isString(ids) ? [ids] : ids, wrap = function() {
+			var keys = idList.map(function(v) {
 				return lib[v] ? v : getAbsUrl(v);
-			}),
-			key = ids.join(',');
-		//循环引用的检测
-		list.push(key);
-		if(history[key]) {
-			throw new Error('Cycle dependences: ' + list.join('->'));
-		}
-		history[key] = 1;
-
-		cb = cb || function() {};
-		var wrap = function() {
-				var mods = [];
-				urls.forEach(function(id) {
-					var mod = getMod(id);
-					//初始化未初始化的模块
-					if(!mod.exports) {
-						var deps = [];
-						mod.exports = {};
-						//有依赖参数为依赖的模块，否则默认为require, exports, module3个默认模块
-						if(mod.dependencies) {
-							mod.dependencies.forEach(function(d) {
-								//使用exports模块用作导出
-								if(d == 'exports')
-									deps.push(mod.exports);
-								//使用module模块即为本身
-								else if(d == 'module')
-									deps.push(mod);
-								else {
-									var m = lib[d] || getMod(getAbsUrl(d, mod.uri));
-									deps.push(m.exports);
-								}
-							});
-						}
-						else
-							deps = [getMod('require').exports, mod.exports, mod];
-						mod.exports = isFunction(mod.factory) ? (mod.factory.apply(null, deps) || mod.exports) : (mod.factory || {});
-						delete mod.factory;
+			}), mods = [];
+			keys.forEach(function(k) {
+				var mod = getMod(k);
+				if(!mod.exports) {
+					var deps = [];
+					mod.exports = {};
+					//有依赖参数为依赖的模块，否则默认为require, exports, module3个默认模块
+					if(mod.dependencies) {
+						mod.dependencies.forEach(function(d) {
+							//使用exports模块用作导出
+							if(d == 'exports')
+								deps.push(mod.exports);
+							//使用module模块即为本身
+							else if(d == 'module')
+								deps.push(mod);
+							else {
+								var m = lib[d] || getMod(getAbsUrl(d, mod.uri));
+								deps.push(m.exports);
+							}
+						});
 					}
-					mods.push(mod.exports);
-				});
-				cb.apply(null, mods);
-			},
-			recursion = function() {
-				var deps = [];
-				urls.forEach(function(url) {
-					var mod = getMod(url),
-						d = mod.dependencies;
-					!mod.exports && d && d.forEach(function(id) {
-						deps.push(lib[id] ? id : getAbsUrl(id, mod.uri));
-					});
-				});
-				//如果有依赖，先加载依赖，否则直接回调
-				if(deps.length) {
-					use(deps, wrap, history, list);
+					else
+						deps = [require, mod.exports, mod];
+					mod.exports = isFunction(mod.factory) ? (mod.factory.apply(null, deps) || mod.exports) : (mod.factory || {});
+					delete mod.factory;
 				}
-				else {
-					wrap();
+				mods.push(mod.exports);
+			});
+			cb.apply(null, mods);
+		}, recursion = function() {
+			var urls = idList.map(function(v) {
+				return lib[v] ? v : getAbsUrl(v);
+			}), deps = [];
+			urls.forEach(function(url) {
+				var mod = getMod(url),
+					d = mod.dependencies;
+				!mod.exports && d && d.forEach(function(id) {
+					deps.push(lib[id] ? id : getAbsUrl(id, mod.uri));
+				});
+			});
+			//如果有依赖，先加载依赖，否则直接回调
+			if(deps.length) {
+				use(deps, wrap, history, list);
+			}
+			else {
+				wrap();
+			}
+		};
+		if(isString(ids)) {
+			if(lib[ids]) {
+				recursion();
+			}
+			else {
+				var url = getAbsUrl(ids);
+				//循环引用的检测
+				list.push(url);
+				if(history[url]) {
+					throw new Error('Cycle dependences: ' + list.join('->'));
 				}
-			};
-		//过滤已存在的模块
-		var s = urls.filter(function(v) {
-			return !lib[v];
-		});
-		loadScripts(s, recursion);
+				history[url] = true;
+				$$.load(url, function() {
+					//必须判断重复，防止2个use线程加载同一个script同时触发2次callback
+					if(!script[url]) {
+						script[url] = true;
+						var mod = defQueue.shift();
+						mod.id = mod.id || url;
+						mod.url = url;
+						lib[url] = mod;
+					}
+					recursion();
+				});
+			}
+		}
+		else {
+			var remote = ids.length;
+			ids.forEach(function(id) {
+				use(id, function() {
+					if(--remote == 0) {
+						recursion();
+					}
+				}, history, list);
+			});
+		}
 	}
 	/**
 	 * private 将id转换为url，如果模块url不存在，那么id本身就是url
