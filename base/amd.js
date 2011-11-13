@@ -209,35 +209,6 @@ var require,
 		return mod;
 	}
 	/**
-	 * private 并行加载多个script文件
-	 * @param {string/array} url
-	 * @param {Function} 加载成功后的回调
-	 */
-	function loadScripts(urls, cb) {
-		if(isString(urls))
-			urls = [urls];
-		var remote = urls.length;
-		if(remote) {
-			urls.forEach(function(url) {
-				$$.load(url, function() {
-					//必须判断重复，防止2个use线程加载同一个script同时触发2次callback
-					if(!script[url]) {
-						script[url] = 1;
-						var mod = defQueue.shift();
-						mod.id = mod.id || url;
-						mod.url = url;
-						lib[url] = mod;
-					}
-					if(--remote == 0)
-						cb();
-				});
-			});
-		}
-		else
-			cb();
-	}
-
-	/**
 	 * 根据依赖script的url获取绝对路径
 	 * @param {string} url 需要转换的url
 	 * @param {string} 依赖的url
