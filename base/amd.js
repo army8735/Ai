@@ -85,10 +85,8 @@ var require,
 	 * @public 加载使用模块方法
 	 * @param {string/array} 模块id或url
 	 * @param {Function} 加载成功后回调
-	 * @param {HashMap} 加载历史
-	 * @param {array} 加载列表
 	 */
-	function use(ids, cb, history, list) {
+	function use(ids, cb) {
 		defQueue = defQueue || []; //use之前的模块为手动添加在页面script标签的模块或合并在总库中的模块，它们需被排除在外
 		var idList = isString(ids) ? [ids] : ids, wrap = function() {
 			var keys = idList.map(function(v) {
@@ -129,13 +127,14 @@ var require,
 			urls.forEach(function(url) {
 				var mod = getMod(url),
 					d = mod.dependencies;
+				checkCyclic(mod, {}, []);
 				!mod.exports && d && d.forEach(function(id) {
 					deps.push(lib[id] ? id : getAbsUrl(id, mod.uri));
 				});
 			});
 			//如果有依赖，先加载依赖，否则直接回调
 			if(deps.length) {
-				use(deps, wrap, history, list);
+				use(deps, wrap);
 			}
 			else {
 				wrap();
@@ -147,19 +146,13 @@ var require,
 			}
 			else {
 				var url = getAbsUrl(ids);
-				//循环引用的检测
-				list.push(url);
-				if(history[url]) {
-					throw new Error('Cycle dependences: ' + list.join('->'));
-				}
-				history[url] = true;
 				$$.load(url, function() {
 					//必须判断重复，防止2个use线程加载同一个script同时触发2次callback
 					if(!script[url]) {
 						script[url] = true;
 						var mod = defQueue.shift();
 						mod.id = mod.id || url;
-						mod.url = url;
+						mod.uri = url;
 						lib[url] = mod;
 					}
 					recursion();
@@ -173,9 +166,28 @@ var require,
 					if(--remote == 0) {
 						recursion();
 					}
-				}, history, list);
+				});
 			});
 		}
+	}
+	/**
+	 * private 检测循环依赖
+	 * @param {object} 模块
+	 * @param {hashmap} 历史记录
+	 * @param {array} 依赖顺序
+	 */
+	function checkCyclic(mod, history, list) {
+		if(!mod)
+			return;
+		var url = mod.uri;
+		list.push(url);
+		if(history[url]) {
+			throw new Error('found cyclic dependencies:\n' + list.join('\n'));
+		}
+		history[url] = true;
+		mod.dependencies && mod.dependencies.forEach(function(dep) {
+			checkCyclic(lib[getAbsUrl(dep, url)], Object.create(history), Object.create(list));
+		});
 	}
 	/**
 	 * private 将id转换为url，如果模块url不存在，那么id本身就是url
@@ -287,7 +299,7 @@ var require,
 	};
 
 	$$.use = function(ids, cb) {
-		use(ids, cb, {}, []);
+		use(ids, cb);
 	};
 	$$.modMap = function(id) {
 		return id ? lib[id] : lib;
