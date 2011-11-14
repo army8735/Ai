@@ -179,14 +179,14 @@ var require,
 	function checkCyclic(mod, history, list) {
 		if(!mod)
 			return;
-		var url = mod.uri;
-		list.push(url);
-		if(history[url]) {
+		var id = mod.id;
+		list.push(id);
+		if(history[id]) {
 			throw new Error('found cyclic dependencies:\n' + list.join('\n'));
 		}
-		history[url] = true;
+		history[id] = true;
 		mod.dependencies && mod.dependencies.forEach(function(dep) {
-			checkCyclic(lib[getAbsUrl(dep, url)], Object.create(history), Object.create(list));
+			checkCyclic(lib[dep] || lib[getAbsUrl(dep, mod.uri)], Object.create(history), Object.create(list));
 		});
 	}
 	/**

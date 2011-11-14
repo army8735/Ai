@@ -403,14 +403,14 @@
 	function checkCyclic(mod, history, list) {
 		if(!mod)
 			return;
-		var url = mod.uri;
-		list.push(url);
-		if(history[url]) {
+		var id = mod.id;
+		list.push(id);
+		if(history[id]) {
 			throw new Error('found cyclic dependencies:\n' + list.join('\n'));
 		}
-		history[url] = true;
+		history[id] = true;
 		mod.dependencies && mod.dependencies.forEach(function(dep) {
-			checkCyclic(lib[getAbsUrl(dep, url)], Object.create(history), Object.create(list));
+			checkCyclic(lib[dep] || lib[getAbsUrl(dep, mod.uri)], Object.create(history), Object.create(list));
 		});
 	}
 	/**
@@ -432,35 +432,6 @@
 			throw new Error('module error: ' + s + ' is undefined');
 		return mod;
 	}
-	/**
-	 * private 并行加载多个script文件
-	 * @param {string/array} url
-	 * @param {Function} 加载成功后的回调
-	 */
-	function loadScripts(urls, cb) {
-		if(isString(urls))
-			urls = [urls];
-		var remote = urls.length;
-		if(remote) {
-			urls.forEach(function(url) {
-				$$.load(url, function() {
-					//必须判断重复，防止2个use线程加载同一个script同时触发2次callback
-					if(!script[url]) {
-						script[url] = 1;
-						var mod = defQueue.shift();
-						mod.id = mod.id || url;
-						mod.url = url;
-						lib[url] = mod;
-					}
-					if(--remote == 0)
-						cb();
-				});
-			});
-		}
-		else
-			cb();
-	}
-
 	/**
 	 * 根据依赖script的url获取绝对路径
 	 * @param {string} url 需要转换的url
