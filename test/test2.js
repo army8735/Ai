@@ -1,4 +1,4 @@
-define('test2.js', ['test3.js'], function(test3) {
+define(['test3'], function(test3) {
 	console.log(test3);
 	console.log('test2');
 });

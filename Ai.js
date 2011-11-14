@@ -438,6 +438,9 @@
 	 * @param {string} 依赖的url
 	 */
 	function getAbsUrl(url, depend) {
+		//自动末尾补加.js
+		if(url.indexOf('.js') != url.length - 3)
+			url += '.js';
 		if(url.indexOf('http://') == 0)
 			return url;
 		depend = depend || baseUrl;
