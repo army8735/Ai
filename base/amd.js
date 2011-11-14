@@ -19,18 +19,11 @@ var require,
 
 	/**
 	 * @public amd定义接口
-	 * @param {boolean} 由自动构建工具打包合并而成一个文件时，非最后一个模块传参，特殊处理，不加入defQueue。编程时完全忽略这个参数
-	 * @param {string} 由自动构建工具打包合并而成一个文件时，非最后一个模块传参，特殊处理，不加入defQueue。编程时完全忽略这个参数
 	 * @param {string} 模块id，可选，省略为script文件url
 	 * @param {array} 依赖模块id，可选
 	 * @param {Function/object} 初始化工厂
 	 */
-	define = function(combo, url, id, dependencies, factory) {
-		if(combo !== true) {
-			factory = id;
-			dependencies = url;
-			id = combo;
-		}
+	define = function(id, dependencies, factory) {
 		if(!isString(id)) {
 			factory = dependencies;
 			dependencies = id;
@@ -71,6 +64,12 @@ var require,
 			record(factory, module);
 	}
 	define.amd = { jQuery: true };
+	define.finish = function(url) {
+		var mod = defQueue.shift();
+		mod.uri = url;
+		mod.id = mod.id || url;
+		lib[mod.id] = mod;
+	}
 	function record(factory, mod) {
 		var ts = genFacKey(factory);
 		(fac[ts] = fac[ts] || []).push({
