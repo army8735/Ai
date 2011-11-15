@@ -203,7 +203,7 @@
 					list[url].forEach(function(cb) {
 						cb();
 					});
-					delete list[url];
+					list[url] = [];
 					h.removeChild(s);
 				}
 			};
