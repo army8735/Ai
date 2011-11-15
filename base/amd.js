@@ -249,18 +249,6 @@ var require,
 		uri: null
 	};
 	require = lib['require'].exports;
-	lib['exports'] = {
-		id: 'exports',
-		dependencies: null,
-		exports: {},
-		uri: null
-	};
-	lib['module'] = {
-		id: 'module',
-		dependencies: null,
-		exports: {},
-		uri: null
-	};
 
 	$$.use = function(ids, cb) {
 		use(ids, cb);
