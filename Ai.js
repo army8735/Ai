@@ -232,7 +232,10 @@
 		script = {},
 		fac = {},
 		baseUrl = 'http://' + location.host + location.pathname,
-		defQueue;
+		defQueue,
+		delay,
+		delayCount = 0,
+		delayQueue = [];
 
 	function isString(o) {
         return toString.call(o) === "[object String]";
@@ -364,15 +367,41 @@
 			else {
 				var url = getAbsUrl(ids);
 				$$.load(url, function() {
-					//必须判断重复，防止2个use线程加载同一个script同时触发2次callback
-					if(!script[url]) {
-						script[url] = true;
-						var mod = defQueue.shift();
-						mod.id = mod.id || url;
-						mod.uri = url;
-						lib[url] = mod;
+					//延迟模式下onload先于exec，进行2次幂延迟算法等待
+					if(delay) {
+						delayQueue.push(cb);
 					}
-					recursion();
+					else {
+						cb();
+					}
+					function cb() {
+						//必须判断重复，防止2个use线程加载同一个script同时触发2次callback
+						if(!script[url]) {
+							if(defQueue.length) {
+								script[url] = true;
+								var mod = defQueue.shift();
+								mod.id = mod.id || url;
+								mod.uri = url;
+								lib[url] = mod;
+							}
+							else {
+								d2();
+							}
+						}
+						recursion();
+					}
+					function d2() {
+						if(defQueue.length) {
+							delay = false;
+							delayCount = 0;
+							cb();
+							delayQueue.length && delayQueue[0]();
+						}
+						else {
+							delay = true;
+							setTimeout(d2, Math.pow(2, delayCount++) * 32);
+						}
+					}
 				});
 			}
 		}
