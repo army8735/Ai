@@ -144,12 +144,10 @@ var require,
 				var url = getAbsUrl(ids);
 				$$.load(url, function() {
 					//延迟模式下onload先于exec，进行2次幂延迟算法等待
-					if(delay) {
+					if(delay)
 						delayQueue.push(cb);
-					}
-					else {
+					else
 						cb();
-					}
 					function cb() {
 						//必须判断重复，防止2个use线程加载同一个script同时触发2次callback
 						if(!script[url]) {
@@ -160,9 +158,8 @@ var require,
 								mod.uri = url;
 								lib[url] = mod;
 							}
-							else {
+							else 
 								d2();
-							}
 						}
 						recursion();
 					}
@@ -175,6 +172,8 @@ var require,
 						}
 						else {
 							delay = true;
+							if(delayCount >= 5)
+								throw new Error('2^ delay mode is too long to wait');
 							setTimeout(d2, Math.pow(2, delayCount++) * 32);
 						}
 					}
