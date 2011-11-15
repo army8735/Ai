@@ -30,7 +30,7 @@ var $$ = (function() {
 			state[url] = LOADING;
 			list[url] = [cb];
 			var s = document.createElement('script'),
-				done;
+				done; //done不能删，因为有极低几率移除侦听异步操作导致2次回调，用bool值可防止。
 			s.async = true;
 			if(charset)
 				s.charset = charset;
