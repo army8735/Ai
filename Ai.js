@@ -189,7 +189,7 @@
 			state[url] = LOADING;
 			list[url] = [cb];
 			var s = document.createElement('script'),
-				done;
+				done; //done不能删，因为有极低几率移除侦听异步操作导致2次回调，用bool值可防止。
 			s.async = true;
 			if(charset)
 				s.charset = charset;
@@ -279,6 +279,7 @@
 		//记录factory和module的hash对应关系
 		if(isFunction(factory))
 			record(factory, module);
+		return define;
 	}
 	define.amd = { jQuery: true };
 	define.finish = function(url) {
@@ -343,10 +344,13 @@
 			urls.forEach(function(url) {
 				var mod = getMod(url),
 					d = mod.dependencies;
-				checkCyclic(mod, {}, []);
-				!mod.exports && d && d.forEach(function(id) {
-					deps.push(lib[id] ? id : getAbsUrl(id, mod.uri));
-				});
+				//尚未初始化的模块检测循环依赖和统计依赖
+				if(!mod.exports) {
+					checkCyclic(mod, {}, []);
+					d && d.forEach(function(id) {
+						deps.push(lib[id] ? id : getAbsUrl(id, mod.uri));
+					});
+				}
 			});
 			//如果有依赖，先加载依赖，否则直接回调
 			if(deps.length)
