@@ -4,6 +4,7 @@
 	<description>Javascritp build for Ant</description>
 
 	<property name="base" location="base"/>
+	<property name="global" location="global"/>
 	<property name="build" location="."/>
 	<property name="temp" location="temp"/>
 	<property name="target" value="."/>
@@ -35,11 +36,11 @@
 			<path path="${base}/fix.js" />
 			<path path="${base}/lang.js" />
 			<path path="${base}/amd.js" />
-			<path path="${base}/jquery-1.7.js" />
-			<path path="${base}/cookie.js" />
-			<path path="${base}/class.js" />
-			<path path="${base}/event.js" />
-			<path path="${base}/fn.js" />
+			<path path="${global}/jquery-1.7.js" />
+			<path path="${global}/cookie.js" />
+			<path path="${global}/class.js" />
+			<path path="${global}/event.js" />
+			<path path="${global}/fn.js" />
 		</concat>
 	</target>
 	
