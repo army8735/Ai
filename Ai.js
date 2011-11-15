@@ -260,9 +260,8 @@
 		//在没有定义依赖的情况下，通过factory.toString()方式匹配正则，智能获取依赖列表
 		if(!dependencies && isFunction(factory)) {
 			var res = /(?:^|[^.])\brequire\s*\(\s*(["'])([^"'\s\)]+)\1\s*\)/g.exec(factory.toString().replace(/\/\/.*\n/g, ''));
-			if(res) {
+			if(res)
 				dependencies = res.slice(2);
-			}
 		}
 		var module = {
 			id: id,
@@ -274,14 +273,8 @@
 		//非匿名模块
 		if(id)
 			lib[id] = module;
-		//构建打包的模块自动拥有id和uri属性
-		if(combo === true) {
-			lib[url] = module;
-			module.id = module.id || url;
-			module.uri = url;
-		}
 		//存入def队列
-		else if(defQueue)
+		if(defQueue)
 			defQueue.push(module);
 		//记录factory和module的hash对应关系
 		if(isFunction(factory))
@@ -292,7 +285,7 @@
 		var mod = defQueue.shift();
 		mod.uri = url;
 		mod.id = mod.id || url;
-		lib[mod.id] = mod;
+		lib[mod.id] = lib[url] = mod;
 	}
 	function record(factory, mod) {
 		var ts = genFacKey(factory);
@@ -356,17 +349,14 @@
 				});
 			});
 			//如果有依赖，先加载依赖，否则直接回调
-			if(deps.length) {
+			if(deps.length)
 				use(deps, wrap);
-			}
-			else {
+			else
 				wrap();
-			}
 		};
 		if(isString(ids)) {
-			if(lib[ids]) {
+			if(lib[ids])
 				recursion();
-			}
 			else {
 				var url = getAbsUrl(ids);
 				$$.load(url, function() {
@@ -386,9 +376,8 @@
 			var remote = ids.length;
 			ids.forEach(function(id) {
 				use(id, function() {
-					if(--remote == 0) {
+					if(--remote == 0)
 						recursion();
-					}
 				});
 			});
 		}
@@ -404,9 +393,8 @@
 			return;
 		var id = mod.id;
 		list.push(id);
-		if(history[id]) {
+		if(history[id])
 			throw new Error('found cyclic dependencies:\n' + list.join('\n'));
-		}
 		history[id] = true;
 		mod.dependencies && mod.dependencies.forEach(function(dep) {
 			checkCyclic(lib[dep] || lib[getAbsUrl(dep, mod.uri)], Object.create(history), Object.create(list));
@@ -456,9 +444,8 @@
 			}
 			return depend.join('/') + '/' + url;
 		}
-		else if(url.indexOf('./') == 0) {
+		else if(url.indexOf('./') == 0)
 			return depend[0] + url.slice(2);
-		}
 		depend.pop();
 		return depend.join('/') + '/' + url;
 	}
