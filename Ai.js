@@ -400,7 +400,7 @@
 							delay = true;
 							if(delayCount > 4)
 								throw new Error('2^ delay mode is too long to wait');
-							setTimeout(d2, Math.pow(2, delayCount++) << 5);
+							setTimeout(d2, Math.pow(2, delayCount++) << 4);
 						}
 					}
 				});
