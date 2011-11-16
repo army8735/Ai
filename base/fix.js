@@ -115,7 +115,7 @@
 		return Object.prototype.toString.call(obj) === '[object Array]';
 	});
 	Date.now || (Date.now = function () {
-		return new Date().getTime();
+		return +new Date;
 	});
 	Object.keys || (Object.keys = function(o) {
 		if(o !== Object(o))

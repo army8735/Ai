@@ -115,7 +115,7 @@
 		return Object.prototype.toString.call(obj) === '[object Array]';
 	});
 	Date.now || (Date.now = function () {
-		return new Date().getTime();
+		return +new Date;
 	});
 	Object.keys || (Object.keys = function(o) {
 		if(o !== Object(o))
@@ -400,7 +400,7 @@
 							delay = true;
 							if(delayCount > 4)
 								throw new Error('2^ delay mode is too long to wait');
-							setTimeout(d2, Math.pow(2, delayCount++) << 4);
+							setTimeout(d2, Math.pow(2, delayCount++) << 4); //2 ^ n * 16的时间等比累加
 						}
 					}
 				});
@@ -479,7 +479,7 @@
 			return depend.join('/') + '/' + url;
 		}
 		else if(url.indexOf('./') == 0)
-			return depend[0] + url.slice(2);
+			url = url.slice(2);
 		depend.pop();
 		return depend.join('/') + '/' + url;
 	}

@@ -257,7 +257,7 @@ var require,
 			return depend.join('/') + '/' + url;
 		}
 		else if(url.indexOf('./') == 0)
-			return depend[0] + url.slice(2);
+			url = url.slice(2);
 		depend.pop();
 		return depend.join('/') + '/' + url;
 	}
