@@ -262,7 +262,7 @@ var require,
 		return depend.join('/') + '/' + url;
 	}
 
-	//默认的require、exports、module模块
+	//默认的require虚拟模块
 	lib['require'] = {
 		id: 'require',
 		dependencies: null,
