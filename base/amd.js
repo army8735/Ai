@@ -172,7 +172,7 @@ var require,
 						}
 						else {
 							delay = true;
-							if(delayCount >= 5)
+							if(delayCount > 4)
 								throw new Error('2^ delay mode is too long to wait');
 							setTimeout(d2, Math.pow(2, delayCount++) * 32);
 						}
@@ -274,7 +274,7 @@ var require,
 			});
 			return getMod(getAbsUrl(id, mod.uri)).exports;
 		},
-		uri: null
+		uri: getAbsUrl('/require', baseUrl)
 	};
 	require = lib['require'].exports;
 
@@ -285,8 +285,10 @@ var require,
 		return id ? lib[id] : lib;
 	};
 	$$.base = function(url) {
-		if(url)
+		if(url) {
 			baseUrl = url;
+			lib['require'].uri = getAbsUrl('/require', baseUrl);
+		}
 		return baseUrl;
 	};
 
