@@ -158,17 +158,21 @@ var require,
 								mod.uri = url;
 								lib[url] = mod;
 							}
-							else 
+							else {
 								d2();
+								return;
+							}
 						}
 						recursion();
 					}
 					function d2() {
 						if(defQueue.length) {
-							delay = false;
 							delayCount = 0;
 							cb();
-							delayQueue.length && delayQueue[0]();
+							if(delayQueue.length)
+								delayQueue.shift()();
+							else
+								delay = false;
 						}
 						else {
 							delay = true;
