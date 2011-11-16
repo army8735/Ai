@@ -29,15 +29,13 @@ var $$ = (function() {
 		else {
 			state[url] = LOADING;
 			list[url] = [cb];
-			var s = document.createElement('script'),
-				done; //done不能删，因为有极低几率移除侦听异步操作导致2次回调，用bool值可防止。
+			var s = document.createElement('script');
 			s.async = true;
 			if(charset)
 				s.charset = charset;
 			s.src = lib[url] || url;
 			s.onload = s.onreadystatechange = function() {
-				if(!done && (!this.readyState || ['loaded', 'complete'].indexOf(this.readyState) != -1)) {
-					done = true;
+				if(!this.readyState || /loaded|complete/.test(this.readyState)) {
 					s.onload = s.onreadystatechange = null;
 					//缓存记录
 					state[url] = LOADED;
