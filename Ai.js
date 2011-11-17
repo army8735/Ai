@@ -299,6 +299,7 @@
 		mod.uri = url;
 		mod.id = mod.id || url;
 		lib[mod.id] = lib[url] = mod;
+		script[url] = true; //可以使回调正常运行但不defQueue.shift()
 	}
 	function record(factory, mod) {
 		var ts = genFacKey(factory);
