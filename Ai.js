@@ -193,19 +193,30 @@
 			if(charset)
 				s.charset = charset;
 			s.src = lib[url] || url;
-			s.onload = s.onreadystatechange = function() {
-				if(!this.readyState || /loaded|complete/.test(this.readyState)) {
-					s.onload = s.onreadystatechange = null;
-					//缓存记录
-					state[url] = LOADED;
-					list[url].forEach(function(cb) {
-						cb();
-					});
-					list[url] = [];
-					h.removeChild(s);
+			if(s.addEventListener) {
+				s.onload = function() {
+					s.onload = null;
+					ol();
 				}
-			};
+			}
+			else {
+				s.onreadystatechange = function() {
+					if(/loaded|complete/.test(this.readyState)) {
+						s.onreadystatechange = null;
+						ol();
+					}
+				};
+			}
 			h.appendChild(s);
+			function ol() {
+				//缓存记录
+				state[url] = LOADED;
+				list[url].forEach(function(cb) {
+					cb();
+				});
+				list[url] = [];
+				h.removeChild(s);
+			}
 		}
 	}
 	/**
@@ -399,7 +410,7 @@
 						else {
 							delay = true;
 							if(delayCount > 4)
-								throw new Error('2^ delay mode is too long to wait');
+								throw new Error('2^ delay is too long to wait ' + url);
 							setTimeout(d2, Math.pow(2, delayCount++) << 4); //2 ^ n * 16的时间等比累加
 						}
 					}
@@ -500,9 +511,12 @@
 			});
 			return getMod(getAbsUrl(id, mod.uri)).exports;
 		},
-		uri: getAbsUrl('/require', baseUrl)
+		uri: null
 	};
 	require = lib['require'].exports;
+	//exports和module
+	define('exports', {});
+	define('module', {});
 
 	$$.use = function(ids, cb) {
 		use(ids, cb);
@@ -513,7 +527,6 @@
 	$$.base = function(url) {
 		if(url) {
 			baseUrl = url;
-			lib['require'].uri = getAbsUrl('/require', baseUrl);
 		}
 		return baseUrl;
 	};

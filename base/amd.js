@@ -177,7 +177,7 @@ var require,
 						else {
 							delay = true;
 							if(delayCount > 4)
-								throw new Error('2^ delay mode is too long to wait');
+								throw new Error('2^ delay is too long to wait ' + url);
 							setTimeout(d2, Math.pow(2, delayCount++) << 4); //2 ^ n * 16的时间等比累加
 						}
 					}
@@ -278,9 +278,12 @@ var require,
 			});
 			return getMod(getAbsUrl(id, mod.uri)).exports;
 		},
-		uri: getAbsUrl('/require', baseUrl)
+		uri: null
 	};
 	require = lib['require'].exports;
+	//exports和module
+	define('exports', {});
+	define('module', {});
 
 	$$.use = function(ids, cb) {
 		use(ids, cb);
@@ -291,7 +294,6 @@ var require,
 	$$.base = function(url) {
 		if(url) {
 			baseUrl = url;
-			lib['require'].uri = getAbsUrl('/require', baseUrl);
 		}
 		return baseUrl;
 	};

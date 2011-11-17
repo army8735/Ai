@@ -34,19 +34,30 @@ var $$ = (function() {
 			if(charset)
 				s.charset = charset;
 			s.src = lib[url] || url;
-			s.onload = s.onreadystatechange = function() {
-				if(!this.readyState || /loaded|complete/.test(this.readyState)) {
-					s.onload = s.onreadystatechange = null;
-					//缓存记录
-					state[url] = LOADED;
-					list[url].forEach(function(cb) {
-						cb();
-					});
-					list[url] = [];
-					h.removeChild(s);
+			if(s.addEventListener) {
+				s.onload = function() {
+					s.onload = null;
+					ol();
 				}
-			};
+			}
+			else {
+				s.onreadystatechange = function() {
+					if(/loaded|complete/.test(this.readyState)) {
+						s.onreadystatechange = null;
+						ol();
+					}
+				};
+			}
 			h.appendChild(s);
+			function ol() {
+				//缓存记录
+				state[url] = LOADED;
+				list[url].forEach(function(cb) {
+					cb();
+				});
+				list[url] = [];
+				h.removeChild(s);
+			}
 		}
 	}
 	/**
