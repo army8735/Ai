@@ -518,9 +518,7 @@
 	define('exports', {});
 	define('module', {});
 
-	$$.use = function(ids, cb) {
-		use(ids, cb);
-	};
+	$$.use = use;
 	$$.modMap = function(id) {
 		return id ? lib[id] : lib;
 	};
