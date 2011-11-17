@@ -62,6 +62,7 @@ var require,
 	}
 	define.amd = { jQuery: true };
 	define.finish = function(url) {
+		url = getAbsUrl(url);
 		var mod = defQueue.pop();
 		mod.uri = url;
 		mod.id = mod.id || url;
