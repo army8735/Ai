@@ -239,7 +239,7 @@
 	var toString = Object.prototype.toString,
 		lib = {},
 		script = {},
-		fac = {},
+		relation = {},
 		baseUrl = 'http://' + location.host + location.pathname,
 		defQueue,
 		delay,
@@ -290,7 +290,7 @@
 			defQueue.push(module);
 		//记录factory和module的hash对应关系
 		if(isFunction(factory))
-			record(factory, module);
+			record(factory, module, arguments.callee);
 		return define;
 	}
 	define.amd = { jQuery: true };
@@ -302,14 +302,15 @@
 		lib[mod.id] = lib[url] = mod;
 		script[url] = true; //可以使回调正常运行但不defQueue.shift()
 	}
-	function record(factory, mod) {
-		var ts = genFacKey(factory);
-		(fac[ts] = fac[ts] || []).push({
+	function record(factory, mod, callee) {
+		var ts = getFunKey(factory);
+		(relation[ts] = relation[ts] || []).push({
 			f: factory,
-			r: mod
+			m: mod,
+			c: getFunKey(callee)
 		});
 	}
-	function genFacKey(factory) {
+	function getFunKey(factory) {
 		return factory.toString().slice(0, 32);
 	}
 	/**
@@ -506,11 +507,11 @@
 			if(lib[id])
 				return lib[id].exports;
 			var caller = arguments.callee.caller,
-				ts = genFacKey(caller),
+				ts = getFunKey(caller),
 				mod;
-			fac[ts] && fac[ts].forEach(function(o) {
+			relation[ts] && relation[ts].forEach(function(o) {
 				if(caller == o.f)
-					mod = o.r;
+					mod = o.m;
 			});
 			return getMod(getAbsUrl(id, mod.uri)).exports;
 		},
