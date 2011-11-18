@@ -73,7 +73,7 @@ var require,
 		var ts = genFacKey(factory);
 		(fac[ts] = fac[ts] || []).push({
 			f: factory,
-			r: mod
+			m: mod
 		});
 	}
 	function genFacKey(factory) {
@@ -277,7 +277,7 @@ var require,
 				mod;
 			fac[ts] && fac[ts].forEach(function(o) {
 				if(caller == o.f)
-					mod = o.r;
+					mod = o.m;
 			});
 			return getMod(getAbsUrl(id, mod.uri)).exports;
 		},
