@@ -56,7 +56,6 @@ var $$ = (function() {
 					cb();
 				});
 				list[url] = [];
-				h.removeChild(s);
 			}
 		}
 	}
