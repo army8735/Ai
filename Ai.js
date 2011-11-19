@@ -215,7 +215,6 @@
 					cb();
 				});
 				list[url] = [];
-				h.removeChild(s);
 			}
 		}
 	}
@@ -292,15 +291,27 @@
 		//记录factory和module的hash对应关系
 		if(isFunction(factory))
 			record(factory, module);
+		//ie下利用interactive特性降低并发情况下非一致性错误几率
+		var s = $$.head.getElementsByTagName('script'),
+			i = 0,
+			len = s.length;
+		for(; i < len; i++) {
+			if(s[i].readyState == 'interactive') {
+				define.finish(s[i].hasAttribute ? s[i].src : s[i].getAttribute('src', 4));
+				return;
+			}
+		}
 	}
 	define.amd = { jQuery: true };
 	define.finish = function(url) {
 		url = getAbsUrl(url);
-		var mod = defQueue.pop();
-		mod.uri = url;
-		mod.id = mod.id || url;
-		lib[mod.id] = lib[url] = mod;
-		script[url] = true; //可以使回调正常运行但不defQueue.shift()
+		if(!script[url]) {
+			var mod = defQueue.pop();
+			mod.uri = url;
+			mod.id = mod.id || url;
+			lib[mod.id] = lib[url] = mod;
+			script[url] = true; //可以使回调正常运行但不defQueue.shift()
+		}
 	}
 	function record(factory, mod, callee) {
 		var ts = getFunKey(factory);
