@@ -14,10 +14,10 @@ var require,
 		delayQueue = [];
 
 	function isString(o) {
-        return toString.call(o) === "[object String]";
+        return toString.call(o) === '[object String]';
 	}
 	function isFunction(o) {
-        return toString.call(o) === "[object Function]";
+        return toString.call(o) === '[object Function]';
 	}
 
 	/**
@@ -49,7 +49,7 @@ var require,
 			exports: null,
 			uri: null
 		};
-		//非匿名模块
+		//具名模块
 		if(id)
 			lib[id] = module;
 		//存入def队列
@@ -57,8 +57,7 @@ var require,
 			defQueue.push(module);
 		//记录factory和module的hash对应关系
 		if(isFunction(factory))
-			record(factory, module, arguments.callee);
-		return define;
+			record(factory, module);
 	}
 	define.amd = { jQuery: true };
 	define.finish = function(url) {
@@ -73,8 +72,7 @@ var require,
 		var ts = getFunKey(factory);
 		(relation[ts] = relation[ts] || []).push({
 			f: factory,
-			m: mod,
-			c: getFunKey(callee)
+			m: mod
 		});
 	}
 	function getFunKey(factory) {
@@ -181,7 +179,7 @@ var require,
 						else {
 							delay = true;
 							if(delayCount > 4)
-								throw new Error('2^ delay is too long to wait ' + url);
+								throw new Error('2^ delay is too long to wait:\n' + url);
 							setTimeout(d2, Math.pow(2, delayCount++) << 4); //2 ^ n * 16的时间等比累加
 						}
 					}
@@ -210,7 +208,7 @@ var require,
 		var id = mod.id;
 		list.push(id);
 		if(history[id])
-			throw new Error('found cyclic dependencies:\n' + list.join('\n'));
+			throw new Error('cyclic dependencies:\n' + list.join('\n'));
 		history[id] = true;
 		mod.dependencies && mod.dependencies.forEach(function(dep) {
 			checkCyclic(lib[dep] || lib[getAbsUrl(dep, mod.uri)], Object.create(history), Object.create(list));
@@ -232,7 +230,7 @@ var require,
 	function getMod(s) {
 		var mod = lib[s];
 		if(!mod)
-			throw new Error('module error: ' + s + ' is undefined');
+			throw new Error('module undefined:\n' + s);
 		return mod;
 	}
 	/**
