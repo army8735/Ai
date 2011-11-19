@@ -14,10 +14,10 @@ var require,
 		delayQueue = [];
 
 	function isString(o) {
-        return toString.call(o) === "[object String]";
+        return toString.call(o) === '[object String]';
 	}
 	function isFunction(o) {
-        return toString.call(o) === "[object Function]";
+        return toString.call(o) === '[object Function]';
 	}
 
 	/**
@@ -57,7 +57,7 @@ var require,
 			defQueue.push(module);
 		//记录factory和module的hash对应关系
 		if(isFunction(factory))
-			record(factory, module, arguments.callee);
+			record(factory, module);
 		return define;
 	}
 	define.amd = { jQuery: true };
@@ -73,8 +73,7 @@ var require,
 		var ts = getFunKey(factory);
 		(relation[ts] = relation[ts] || []).push({
 			f: factory,
-			m: mod,
-			c: getFunKey(callee)
+			m: mod
 		});
 	}
 	function getFunKey(factory) {
