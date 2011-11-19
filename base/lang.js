@@ -70,6 +70,7 @@ var $$ = (function() {
 	return {
 		join: join,
 		load: load,
-		map: map
+		map: map,
+		head: h
 	}
 })();
