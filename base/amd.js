@@ -58,7 +58,6 @@ var require,
 		//记录factory和module的hash对应关系
 		if(isFunction(factory))
 			record(factory, module);
-		return define;
 	}
 	define.amd = { jQuery: true };
 	define.finish = function(url) {
