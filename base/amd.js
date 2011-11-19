@@ -180,7 +180,7 @@ var require,
 						else {
 							delay = true;
 							if(delayCount > 4)
-								throw new Error('2^ delay is too long to wait ' + url);
+								throw new Error('2^ delay is too long to wait:\n' + url);
 							setTimeout(d2, Math.pow(2, delayCount++) << 4); //2 ^ n * 16的时间等比累加
 						}
 					}
@@ -209,7 +209,7 @@ var require,
 		var id = mod.id;
 		list.push(id);
 		if(history[id])
-			throw new Error('found cyclic dependencies:\n' + list.join('\n'));
+			throw new Error('cyclic dependencies:\n' + list.join('\n'));
 		history[id] = true;
 		mod.dependencies && mod.dependencies.forEach(function(dep) {
 			checkCyclic(lib[dep] || lib[getAbsUrl(dep, mod.uri)], Object.create(history), Object.create(list));
@@ -231,7 +231,7 @@ var require,
 	function getMod(s) {
 		var mod = lib[s];
 		if(!mod)
-			throw new Error('module error: ' + s + ' is undefined');
+			throw new Error('module undefined:\n' + s);
 		return mod;
 	}
 	/**
