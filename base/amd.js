@@ -49,7 +49,7 @@ var require,
 			exports: null,
 			uri: null
 		};
-		//非匿名模块
+		//具名模块
 		if(id)
 			lib[id] = module;
 		//存入def队列
