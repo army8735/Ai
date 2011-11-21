@@ -241,10 +241,12 @@
 		script = {},
 		relation = {},
 		baseUrl = 'http://' + location.host + location.pathname,
+		finishUrl,
 		defQueue,
 		delay,
 		delayCount = 0,
-		delayQueue = [];
+		delayQueue = [],
+		interactive = document.attachEvent && !window['opera'];
 
 	function isString(o) {
         return toString.call(o) === '[object String]';
@@ -285,33 +287,40 @@
 		//具名模块
 		if(id)
 			lib[id] = module;
-		//存入def队列
-		if(defQueue)
-			defQueue.push(module);
 		//记录factory和module的hash对应关系
 		if(isFunction(factory))
 			record(factory, module);
+		//构建工具合并的模块先声明了url，可以直接跳过以后所有逻辑
+		if(finishUrl) {
+			fetch(module, finishUrl);
+			return;
+		}
 		//ie下利用interactive特性降低并发情况下非一致性错误几率
-		var s = $$.head.getElementsByTagName('script'),
-			i = 0,
-			len = s.length;
-		for(; i < len; i++) {
-			if(s[i].readyState == 'interactive') {
-				define.finish(s[i].hasAttribute ? s[i].src : s[i].getAttribute('src', 4));
-				return;
+		if(interactive) {
+			var s = $$.head.getElementsByTagName('script'),
+				i = 0,
+				len = s.length;
+			for(; i < len; i++) {
+				if(s[i].readyState == 'interactive') {
+					fetch(module, s[i].hasAttribute ? s[i].src : s[i].getAttribute('src', 4));
+					return;
+				}
 			}
 		}
+		//走正常逻辑，存入def队列
+		if(defQueue)
+			defQueue.push(module);
 	}
 	define.amd = { jQuery: true };
 	define.finish = function(url) {
-		url = getAbsUrl(url);
-		if(!script[url]) {
-			var mod = defQueue.pop();
-			mod.uri = url;
-			mod.id = mod.id || url;
-			lib[mod.id] = lib[url] = mod;
-			script[url] = true; //可以使回调正常运行但不defQueue.shift()
-		}
+		finishUrl = getAbsUrl(url);
+	}
+	function fetch(mod, url) {
+		mod.uri = url;
+		mod.id = mod.id || url;
+		lib[mod.id] = lib[url] = mod;
+		script[url] = true; //可以使回调正常运行但不defQueue.shift()
+		finishUrl = null;
 	}
 	function record(factory, mod, callee) {
 		var ts = getFunKey(factory);
