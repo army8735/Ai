@@ -24,18 +24,20 @@ define('Event', ['Class'], function(Class) {
 
 		}
 	});
-	Klass.mix = function() {
-		Array.prototype.slice.call(arguments, 0).forEach(function(o) {
-			var e = new Klass,
-				mix = {};
-			Object.keys(Klass.prototype).forEach(function(k) {
-				mix[k] = function() {
-					e[k].apply(e, Array.prototype.slice.call(arguments, 0));
-				}
+	Klass.statics({
+		mix: function() {
+			Array.prototype.slice.call(arguments, 0).forEach(function(o) {
+				var e = new Klass,
+					mix = {};
+				Object.keys(Klass.prototype).forEach(function(k) {
+					mix[k] = function() {
+						e[k].apply(e, Array.prototype.slice.call(arguments, 0));
+					}
+				});
+				$.extend(o, mix);
 			});
-			$.extend(o, mix);
-		});
-		return arguments[0];
-	}
+			return arguments[0];
+		}
+	});
 	return Klass;
 });

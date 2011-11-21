@@ -15,6 +15,12 @@ define('Class', function() {
 			});
 			return fn;
 		};
+		fn.statics = function(o) {
+			Object.keys(o).forEach(function(k) {
+				fn[k] = o[k];
+			});
+			return fn;
+		};
 		return fn;
 	}
 	function klass(cons) {
