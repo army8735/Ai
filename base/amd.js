@@ -103,8 +103,9 @@ var require,
 	 * @public 加载使用模块方法
 	 * @param {string/array} 模块id或url
 	 * @param {Function} 加载成功后回调
+	 * @param {string} 模块的强制编码，可省略
 	 */
-	function use(ids, cb) {
+	function use(ids, cb, charset) {
 		defQueue = defQueue || []; //use之前的模块为手动添加在页面script标签的模块或合并在总库中的模块，它们需被排除在外
 		var idList = isString(ids) ? [ids] : ids, wrap = function() {
 			var keys = idList.map(function(v) {
@@ -155,7 +156,7 @@ var require,
 			});
 			//如果有依赖，先加载依赖，否则直接回调
 			if(deps.length)
-				use(deps, wrap);
+				use(deps, wrap, charset);
 			else
 				wrap();
 		};
@@ -204,7 +205,7 @@ var require,
 							setTimeout(d2, Math.pow(2, delayCount++) << 4); //2 ^ n * 16的时间等比累加
 						}
 					}
-				});
+				}, charset);
 			}
 		}
 		else {
@@ -213,7 +214,7 @@ var require,
 				use(id, function() {
 					if(--remote == 0)
 						recursion();
-				});
+				}, charset);
 			});
 		}
 	}
