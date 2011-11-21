@@ -1,4 +1,0 @@
-body{font:12px/1.5 arail;}
-
-#gPanel{position:absolute;left:50%;top:50%;width:1px;height:1px;overflow:visible;visibility:hidden;}
-#gPanel .panel{position:relative;left:-200px;width:400px;background:#eee;}
