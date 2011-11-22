@@ -394,10 +394,10 @@
 				wrap();
 		};
 		if(isString(ids)) {
-			if(lib[ids])
+			var url = getAbsUrl(ids);
+			if(lib[ids] || lib[url])
 				recursion();
 			else {
-				var url = getAbsUrl(ids);
 				$$.load(url, function() {
 					//延迟模式下onload先于exec，进行2次幂延迟算法等待
 					if(delay)
