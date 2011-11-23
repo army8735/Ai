@@ -310,6 +310,7 @@
 		//走正常逻辑，存入def队列
 		if(defQueue)
 			defQueue.push(module);
+		finishUrl = null;
 	}
 	define.amd = { jQuery: true };
 	define.finish = function(url) {
@@ -408,11 +409,8 @@
 						//必须判断重复，防止2个use线程加载同一个script同时触发2次callback
 						if(!script[url]) {
 							if(defQueue.length) {
-								script[url] = true;
 								var mod = defQueue.shift();
-								mod.id = mod.id || url;
-								mod.uri = url;
-								lib[url] = mod;
+								fetch(mod, url);
 							}
 							else {
 								d2();
