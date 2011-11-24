@@ -74,10 +74,6 @@
 	}
 	if(!arrayMethod.reduce) {
 		arrayMethod.reduce = function (fn /*, initial*/) {
-			if(typeof fn !== 'function') {
-				throw new TypeError(fn + ' is not an function');
-			}
-
 			var len = this.length >>> 0, i = 0, result;
 
 			if(arguments.length > 1) {
@@ -118,8 +114,6 @@
 		return +new Date;
 	});
 	Object.keys || (Object.keys = function(o) {
-		if(o !== Object(o))
-			throw new TypeError('Object.keys called on non-object');
 		var ret=[],p;
 		for(p in o)
 			if(Object.prototype.hasOwnProperty.call(o,p))
@@ -127,19 +121,11 @@
 		return ret;
 	});
 	Object.create || (Object.create = function (o) {
-		if(arguments.length > 1) {
-			throw new Error('Object.create implementation only accepts the first parameter.');
-		}
 		function F() {}
 		F.prototype = o;
 		return new F();
 	});
 	Function.prototype.bind || (Function.prototype.bind = function(oThis) {
-		if (typeof this !== "function") {
-			// closest thing possible to the ECMAScript 5 internal IsCallable function
-			throw new TypeError("Function.prototype.bind - what is trying to be bound is not callable");
-		}
-
 		var fSlice = Array.prototype.slice,
 			aArgs = fSlice.call(arguments, 1), 
 			fToBind = this, 
