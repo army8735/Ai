@@ -454,15 +454,6 @@
 		});
 	}
 	/**
-	 * private 将id转换为url，如果模块url不存在，那么id本身就是url
-	 * @param {string} 模块id
-	 */
-	function id2Url(id) {
-		if(lib[id] && lib[id].uri)
-			return lib[id].uri;
-		return id;
-	}
-	/**
 	 * private 根据传入的id或url获取模块
 	 * @param {string} 模块id或url
 	 */
