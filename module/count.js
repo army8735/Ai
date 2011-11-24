@@ -1,4 +1,4 @@
-define('count', (function() {
+define((function() {
 
 	var _cache, //所有点击请求都缓存至此队列
 		_url, //请求的url

@@ -1,4 +1,4 @@
-define('lazyLoad', (function() {
+define((function() {
 	
 	var win = $(window),
 		height = win.height();

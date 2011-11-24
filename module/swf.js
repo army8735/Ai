@@ -1,4 +1,4 @@
-define('swfobject', (function() {
+define((function() {
 	//覆盖flash默认通信方法，提高性能
 	window.__flash__escapeXML = function(s) {
 		var keywords = {

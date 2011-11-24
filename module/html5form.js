@@ -1,4 +1,4 @@
-define('html5form', ['../plugin/html5formcore.js'], (function() {
+define(['html5formcore'], (function() {
 
 	var TYPE_MES = {
 			'url': 'url格式不合法',
@@ -54,7 +54,5 @@ define('html5form', ['../plugin/html5formcore.js'], (function() {
 		});
 		return this;
 	}
-
-	return {};
 
 })());

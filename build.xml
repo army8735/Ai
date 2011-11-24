@@ -42,10 +42,6 @@
 			<path path="${base}/lang.js" />
 			<path path="${base}/amd.js" />
 			<path path="${global}/jquery-1.7.1.js" />
-			<path path="${global}/cookie.js" />
-			<path path="${global}/class.js" />
-			<path path="${global}/event.js" />
-			<path path="${global}/fn.js" />
 		</concat>
 	</target>
 	

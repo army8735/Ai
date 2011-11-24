@@ -1,4 +1,4 @@
-define('storage', (function() {
+define((function() {
 
 	function initStorage(url) {
 		//跨域，需加载iframe，同时考虑iframe加载完成前多次调用的设置缓存问题
