@@ -303,9 +303,10 @@
 		finishUrl = getAbsUrl(url);
 	}
 	function fetch(mod, url) {
+		url = getAbsUrl(url);
 		mod.uri = url;
 		mod.id = mod.id || url;
-		lib[mod.id] = lib[url] = mod;
+		lib[url] = mod;
 		script[url] = true; //可以使回调正常运行但不defQueue.shift()
 		finishUrl = null;
 	}
