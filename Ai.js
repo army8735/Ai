@@ -303,7 +303,6 @@
 		finishUrl = getAbsUrl(url);
 	}
 	function fetch(mod, url) {
-		url = getAbsUrl(url);
 		mod.uri = url;
 		mod.id = mod.id || url;
 		lib[url] = mod;
