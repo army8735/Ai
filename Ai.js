@@ -224,7 +224,6 @@
 
 	var toString = Object.prototype.toString,
 		lib = {},
-		script = {},
 		relation = {},
 		baseUrl = 'http://' + location.host + location.pathname,
 		finishUrl,
@@ -306,7 +305,6 @@
 		mod.uri = url;
 		mod.id = mod.id || url;
 		lib[url] = mod;
-		script[url] = true; //可以使回调正常运行但不defQueue.shift()
 		finishUrl = null;
 	}
 	function record(factory, mod, callee) {
@@ -393,7 +391,7 @@
 						cb();
 					function cb() {
 						//必须判断重复，防止2个use线程加载同一个script同时触发2次callback
-						if(!script[url]) {
+						if(!lib[url]) {
 							if(defQueue.length) {
 								var mod = defQueue.shift();
 								fetch(mod, url);
@@ -406,8 +404,8 @@
 						recursion();
 					}
 					function d2() {
-						//等待到defQueue中有了的时候即可停止延迟，另外当script[url]有了的时候也可以，因为可能是打包合并的模块文件onload抢先了，此时合并的文件的模块没有存入defQueue，但在define.finish中传入url存入了script[url]
-						if(defQueue.length || script[url]) {
+						//等待到defQueue中有了的时候即可停止延迟，另外当lib[url]有了的时候也可以，因为可能是打包合并的模块文件onload抢先了，此时合并的文件的模块没有存入defQueue，但在define.finish中传入url存入了lib[url]
+						if(defQueue.length || lib[url]) {
 							delayCount = 0;
 							cb();
 							if(delayQueue.length)
