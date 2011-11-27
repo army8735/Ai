@@ -15,10 +15,10 @@ var require,
 		interactive = document.attachEvent && !window['opera'];
 
 	function isString(o) {
-        return toString.call(o) === '[object String]';
+        return toString.call(o) == '[object String]';
 	}
 	function isFunction(o) {
-        return toString.call(o) === '[object Function]';
+        return toString.call(o) == '[object Function]';
 	}
 
 	/**
@@ -39,7 +39,7 @@ var require,
 		}
 		//在没有定义依赖的情况下，通过factory.toString()方式匹配正则，智能获取依赖列表
 		if(!dependencies && isFunction(factory)) {
-			var res = /(?:^|[^.])\brequire\s*\(\s*(["'])([^"'\s\)]+)\1\s*\)/g.exec(factory.toString().replace(/\/\/.*\n/g, ''));
+			var res = /(?:^|[^.])\brequire\s*\(\s*(["'])([^"'\s\)]+)\1\s*\)/g.exec(factory.toString());
 			if(res)
 				dependencies = res.slice(2);
 		}
@@ -270,7 +270,6 @@ var require,
 		depend.pop();
 		return depend.join('/') + '/' + url;
 	}
-
 	//默认的require虚拟模块
 	require = function(id) {
 		if(lib[id])
@@ -278,7 +277,7 @@ var require,
 		var caller = arguments.callee.caller,
 			ts = getFunKey(caller),
 			mod;
-		relation[ts] && relation[ts].forEach(function(o) {
+		relation[ts].forEach(function(o) {
 			if(caller == o.f)
 				mod = o.m;
 		});
