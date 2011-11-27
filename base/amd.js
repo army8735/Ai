@@ -274,24 +274,19 @@ var require,
 	}
 
 	//默认的require虚拟模块
-	lib['require'] = {
-		id: 'require',
-		dependencies: null,
-		exports: function(id) {
-			if(lib[id])
-				return lib[id].exports;
-			var caller = arguments.callee.caller,
-				ts = getFunKey(caller),
-				mod;
-			relation[ts] && relation[ts].forEach(function(o) {
-				if(caller == o.f)
-					mod = o.m;
-			});
-			return getMod(getAbsUrl(id, mod.uri)).exports;
-		},
-		uri: null
+	require = function(id) {
+		if(lib[id])
+			return lib[id].exports;
+		var caller = arguments.callee.caller,
+			ts = getFunKey(caller),
+			mod;
+		relation[ts] && relation[ts].forEach(function(o) {
+			if(caller == o.f)
+				mod = o.m;
+		});
+		return getMod(getAbsUrl(id, mod.uri)).exports;
 	};
-	require = lib['require'].exports;
+	define('require', require);
 	//exports和module
 	define('exports', {});
 	define('module', {});
