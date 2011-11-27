@@ -46,9 +46,7 @@ var require,
 		var module = {
 			id: id,
 			dependencies: dependencies,
-			factory: factory,
-			exports: null,
-			uri: null
+			factory: factory
 		};
 		//具名模块
 		if(id)
