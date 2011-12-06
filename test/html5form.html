@@ -70,7 +70,7 @@ form .sub{padding:0 5px;width:auto;height:22px;cursor:pointer;}
 
 <script src="../Aij.js"></script>
 <script>
-	$$.use('../module/html5form.js', function() {
+	require('../module/html5form.js', function() {
 		$('form').html5form(function() {
 			alert('校验通过，可以提交' + this.id);
 			return false;
@@ -78,7 +78,7 @@ form .sub{padding:0 5px;width:auto;height:22px;cursor:pointer;}
 	});
 </script>
 <pre class="brush:js">//html5form
-$$.use('../plugin/html5form.js', function() {
+require('../plugin/html5form.js', function() {
 	$('form').html5form(function() {
 		alert('校验通过，可以提交');
 		return false;

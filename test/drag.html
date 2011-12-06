@@ -90,7 +90,7 @@ window.console = window.console || ({
 		$(document.body).append(s + '<br/>');
 	}
 });
-$$.use('../module/drager.js', function(Drager) {
+require('../module/drager.js', function(Drager) {
 	var modDrag = new Drager({
 		'container': '#mods>div',
 		'drag': 'div.box',
@@ -149,7 +149,7 @@ options: {
 	'drag:end': function(node) //鼠标弹起拖动结束时触发，参数为被拖动的jq节点
 }
 //页面中的例子
-$$.use('../plugin/drager.js', function(Drager) {
+require('../plugin/drager.js', function(Drager) {
 	var modDrag = new Drager({
 		'container': '#mods>div',
 		'drag': 'div.box',

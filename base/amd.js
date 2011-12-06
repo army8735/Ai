@@ -272,23 +272,27 @@ var require,
 	}
 	//默认的require虚拟模块
 	require = function(id) {
-		if(lib[id])
-			return lib[id].exports;
-		var caller = arguments.callee.caller,
-			ts = getFunKey(caller),
-			mod;
-		relation[ts].forEach(function(o) {
-			if(caller == o.f)
-				mod = o.m;
-		});
-		return getMod(getAbsUrl(id, mod.uri)).exports;
+		var caller = arguments.callee.caller;
+		if(caller) {
+			if(lib[id])
+				return lib[id].exports;
+			var ts = getFunKey(caller),
+				mod;
+			relation[ts].forEach(function(o) {
+				if(caller == o.f)
+					mod = o.m;
+			});
+			return getMod(getAbsUrl(id, mod.uri)).exports;
+		}
+		else {
+			use.apply(null, Array.prototype.slice.call(arguments));
+		}
 	};
 	define('require', require);
 	//exports和module
 	define('exports', {});
 	define('module', {});
 
-	$$.use = use;
 	$$.modMap = function(id) {
 		return id ? lib[id] : lib;
 	};
