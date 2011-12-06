@@ -9,9 +9,12 @@ var $$ = (function() {
 	 * @public 设置script的url的映射关系，为版本自动化做准备
 	 * @note url会类似xxx.8735.js形式，为版本控制发布工具产生，其中数字为版本号，将去除版本号的正确url对应到自身上
 	 * @param {url} script的url
+	 * @param {boolean} 是否强制覆盖
 	 */
-	function join(url) {
-		lib[url.replace(/\.\d+\.js$/, '.js')] = url;
+	function join(url, force) {
+		var key = url.replace(/\.\d+\.js$/, '.js');
+		if(force || !lib[key])
+			lib[key] = url;
 	}
 	/**
 	 * @public 可并行加载script文件，且仅加载一次
