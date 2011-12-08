@@ -494,11 +494,11 @@
 	}
 	//默认的require虚拟模块
 	require = function(id) {
-		var caller = arguments.callee.caller;
-		if(caller) {
+		if(arguments.length == 1) {
 			if(lib[id])
 				return lib[id].exports;
-			var ts = getFunKey(caller),
+			var caller = arguments.callee.caller,
+				ts = getFunKey(caller),
 				mod;
 			relation[ts].forEach(function(o) {
 				if(caller == o.f)
