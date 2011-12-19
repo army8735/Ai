@@ -101,8 +101,13 @@ var require,
 	 * @param {string/array} 模块id或url
 	 * @param {Function} 加载成功后回调
 	 * @param {string} 模块的强制编码，可省略
+	 * @param {Boolean} 是否缓存加载，可省略
 	 */
-	function use(ids, cb, charset) {
+	function use(ids, cb, charset, noCache) {
+		if(charset === true) {
+			noCache = true;
+			charset = null;
+		}
 		defQueue = defQueue || []; //use之前的模块为手动添加在页面script标签的模块或合并在总库中的模块，它们需被排除在外
 		var idList = isString(ids) ? [ids] : ids, wrap = function() {
 			var keys = idList.map(function(v) {
@@ -159,7 +164,8 @@ var require,
 		};
 		if(isString(ids)) {
 			var url = getAbsUrl(ids);
-			if(lib[ids] || lib[url])
+			//注意noCache，有种极端条件——在依赖中出现多次，且前次加载完后次重新加载可能会造成数据不统一，但此情况业务逻辑中不会出现
+			if(!noCache && (lib[ids] || lib[url]))
 				recursion();
 			else {
 				$$.load(url, function() {
@@ -199,7 +205,7 @@ var require,
 							setTimeout(d2, Math.pow(2, delayCount++) << 4); //2 ^ n * 16的时间等比累加
 						}
 					}
-				}, charset);
+				}, charset, noCache);
 			}
 		}
 		else {
