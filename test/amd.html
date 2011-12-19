@@ -56,7 +56,7 @@ amd规范：CommonJs的Module/Transport规范，实现js的模块化、包管理和依赖管理
 require: function(id:String) //根据传入参数id获取模块
 exports: Object //在define定义中给模块导出赋值
 module: Object //在define定义中指向模块本身
-define: function([id:String,] [dependencies:Array,] factory:Function/Object) //定义模块的id、依赖、初始化工厂或对象，其中依赖支持相对路径</pre>
+define: function(id:String = null, dependencies:Array = null, factory:Function/Object) //定义模块的id、依赖、初始化工厂或对象，其中依赖支持相对路径</pre>
 <pre class="brush:js">
 //自己实现的加载api
 require(id:String/Array, callback:Function, charset:String = null, noCache:Boolean = false) //使用一个模块，id可以是模块的url，callback是模块加载后的回调，参数为加载的模块，charset为加载模块的编码，noCache为不使用缓存</pre>
