@@ -20,9 +20,14 @@ var $$ = (function() {
 	 * @public 可并行加载script文件，且仅加载一次
 	 * @param {url} script的url
 	 * @param {Function} 回调
-	 * @param {String} script编码
+	 * @param {String} script编码，可省略
+	 * @param {Boolean} 不缓存，每次必重新加载，可省略
 	 */
-	function load(url, cb, charset) {
+	function load(url, cb, charset, noCache) {
+		if(charset === true) {
+			noCache = true;
+			charset = null;
+		}
 		if(state[url] == LOADED) {
 			cb();
 		}
@@ -53,8 +58,8 @@ var $$ = (function() {
 			}
 			h.appendChild(s);
 			function ol() {
-				//缓存记录
-				state[url] = LOADED;
+				//根据noCache参数决定是否缓存记录，noCache时，只在loading阶段缓存cb，loaded后清除
+				state[url] = noCache ? null : LOADED;
 				list[url].forEach(function(cb) {
 					cb();
 				});
