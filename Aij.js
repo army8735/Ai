@@ -165,9 +165,14 @@
 	 * @public 可并行加载script文件，且仅加载一次
 	 * @param {url} script的url
 	 * @param {Function} 回调
-	 * @param {String} script编码
+	 * @param {String} script编码，可省略
+	 * @param {Boolean} 不缓存，每次必重新加载，可省略
 	 */
-	function load(url, cb, charset) {
+	function load(url, cb, charset, noCache) {
+		if(charset === true) {
+			noCache = true;
+			charset = null;
+		}
 		if(state[url] == LOADED) {
 			cb();
 		}
@@ -182,29 +187,24 @@
 			if(charset)
 				s.charset = charset;
 			s.src = lib[url] || url;
-			if(s.addEventListener) {
-				s.onload = function() {
-					s.onload = null;
-					ol();
-				}
-			}
-			else {
-				s.onreadystatechange = function() {
-					if(/loaded|complete/.test(this.readyState)) {
-						s.onreadystatechange = null;
-						ol();
-					}
-				};
-			}
-			h.appendChild(s);
 			function ol() {
-				//缓存记录
-				state[url] = LOADED;
+				//根据noCache参数决定是否缓存记录，noCache时，只在loading阶段缓存cb，loaded后清除
+				state[url] = noCache ? null : LOADED;
+				s.onload = s.onreadystatechange = null;
 				list[url].forEach(function(cb) {
 					cb();
 				});
 				list[url] = [];
 			}
+			if(s.addEventListener)
+				s.onload = ol;
+			else {
+				s.onreadystatechange = function() {
+					if(/loaded|complete/.test(this.readyState))
+						ol();
+				};
+			}
+			h.appendChild(s);
 		}
 	}
 	/**
@@ -323,8 +323,13 @@
 	 * @param {string/array} 模块id或url
 	 * @param {Function} 加载成功后回调
 	 * @param {string} 模块的强制编码，可省略
+	 * @param {Boolean} 是否缓存加载，可省略
 	 */
-	function use(ids, cb, charset) {
+	function use(ids, cb, charset, noCache) {
+		if(charset === true) {
+			noCache = true;
+			charset = null;
+		}
 		defQueue = defQueue || []; //use之前的模块为手动添加在页面script标签的模块或合并在总库中的模块，它们需被排除在外
 		var idList = isString(ids) ? [ids] : ids, wrap = function() {
 			var keys = idList.map(function(v) {
@@ -381,7 +386,8 @@
 		};
 		if(isString(ids)) {
 			var url = getAbsUrl(ids);
-			if(lib[ids] || lib[url])
+			//注意noCache，有种极端条件——在依赖中出现多次，且前次加载完后次重新加载可能会造成数据不统一，但此情况业务逻辑中不会出现
+			if(!noCache && (lib[ids] || lib[url]))
 				recursion();
 			else {
 				$$.load(url, function() {
@@ -421,7 +427,7 @@
 							setTimeout(d2, Math.pow(2, delayCount++) << 4); //2 ^ n * 16的时间等比累加
 						}
 					}
-				}, charset);
+				}, charset, noCache);
 			}
 		}
 		else {

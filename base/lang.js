@@ -42,29 +42,24 @@ var $$ = (function() {
 			if(charset)
 				s.charset = charset;
 			s.src = lib[url] || url;
-			if(s.addEventListener) {
-				s.onload = function() {
-					s.onload = null;
-					ol();
-				}
-			}
-			else {
-				s.onreadystatechange = function() {
-					if(/loaded|complete/.test(this.readyState)) {
-						s.onreadystatechange = null;
-						ol();
-					}
-				};
-			}
-			h.appendChild(s);
 			function ol() {
 				//根据noCache参数决定是否缓存记录，noCache时，只在loading阶段缓存cb，loaded后清除
 				state[url] = noCache ? null : LOADED;
+				s.onload = s.onreadystatechange = null;
 				list[url].forEach(function(cb) {
 					cb();
 				});
 				list[url] = [];
 			}
+			if(s.addEventListener)
+				s.onload = ol;
+			else {
+				s.onreadystatechange = function() {
+					if(/loaded|complete/.test(this.readyState))
+						ol();
+				};
+			}
+			h.appendChild(s);
 		}
 	}
 	/**
