@@ -255,7 +255,7 @@ var require,
 		//自动末尾补加.js
 		if(url.indexOf('.js') != url.length - 3)
 			url += '.js';
-		if(url.indexOf('http://') == 0)
+		if(/https?:\/\//.test(url))
 			return url;
 		depend = depend || baseUrl;
 		var host = /(http:\/\/[^/]+)\/?(.*)/.exec(depend);
