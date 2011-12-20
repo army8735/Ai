@@ -525,9 +525,8 @@
 		return id ? lib[id] : lib;
 	};
 	$$.base = function(url) {
-		if(url) {
+		if(url)
 			baseUrl = url;
-		}
 		return baseUrl;
 	};
 
