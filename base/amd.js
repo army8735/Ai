@@ -158,7 +158,7 @@ var require,
 			});
 			//如果有依赖，先加载依赖，否则直接回调
 			if(deps.length)
-				use(deps, wrap, charset);
+				use(deps, wrap, charset, noCache);
 			else
 				wrap();
 		};
@@ -214,7 +214,7 @@ var require,
 				use(id, function() {
 					if(--remote == 0)
 						recursion();
-				}, charset);
+				}, charset, noCache);
 			});
 		}
 	}

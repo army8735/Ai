@@ -380,13 +380,13 @@
 			});
 			//如果有依赖，先加载依赖，否则直接回调
 			if(deps.length)
-				use(deps, wrap, charset);
+				use(deps, wrap, charset, noCache);
 			else
 				wrap();
 		};
 		if(isString(ids)) {
 			var url = getAbsUrl(ids);
-			//注意noCache，有种极端条件——在依赖中出现多次，且前次加载完后次重新加载可能会造成数据不统一，但此情况业务逻辑中不会出现
+			//注意noCache，有种极端条件——在依赖中出现多次，且前次加载完后次重新加载可能会造成数据不统一；另外noCache后再cache加载会直接使用noCache时的模块，不像load无视之前的noCache情况，这点需注意
 			if(!noCache && (lib[ids] || lib[url]))
 				recursion();
 			else {
@@ -436,7 +436,7 @@
 				use(id, function() {
 					if(--remote == 0)
 						recursion();
-				}, charset);
+				}, charset, noCache);
 			});
 		}
 	}
