@@ -477,7 +477,7 @@
 		//自动末尾补加.js
 		if(url.indexOf('.js') != url.length - 3)
 			url += '.js';
-		if(/https?:\/\//.test(url))
+		if(/^https?:\/\//.test(url))
 			return url;
 		depend = depend || baseUrl;
 		var host = /(http:\/\/[^/]+)\/?(.*)/.exec(depend);
