@@ -6,7 +6,6 @@ var require,
 	var toString = Object.prototype.toString,
 		lib = {},
 		relation = {},
-		baseUrl = 'http://' + location.host + location.pathname,
 		finishUrl,
 		defQueue,
 		delay,
@@ -255,26 +254,7 @@ var require,
 		//自动末尾补加.js
 		if(url.indexOf('.js') != url.length - 3)
 			url += '.js';
-		if(/^https?:\/\//.test(url))
-			return url;
-		depend = depend || baseUrl;
-		var host = /(http:\/\/[^/]+)\/?(.*)/.exec(depend);
-		depend = host[2].split('/');
-		depend.unshift(host[1]);
-		if(url.charAt(0) == '/')
-			return depend[0] + url;
-		else if(url.indexOf('../') == 0) {
-			depend.pop();
-			while(url.indexOf('../') == 0) {
-				url = url.slice(3);
-				depend.pop();
-			}
-			return depend.join('/') + '/' + url;
-		}
-		else if(url.indexOf('./') == 0)
-			url = url.slice(2);
-		depend.pop();
-		return depend.join('/') + '/' + url;
+		return $$.absUrl(url, depend);
 	}
 	//默认的require虚拟模块
 	require = function(id) {
@@ -299,13 +279,8 @@ var require,
 	define('exports', {});
 	define('module', {});
 
-	$$.modMap = function(id) {
+	$$.mod = function(id) {
 		return id ? lib[id] : lib;
-	};
-	$$.base = function(url) {
-		if(url)
-			baseUrl = url;
-		return baseUrl;
 	};
 
 })();
