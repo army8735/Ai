@@ -198,9 +198,9 @@
 			s.src = lib[url] || url;
 			function ol() {
 				s.onload = s.onreadystatechange = null;
+				state[url] = LOADED;
 				//根据noCache参数决定是否缓存记录
 				if(!noCache) {
-					state[url] = LOADED;
 					list[url].forEach(function(cb) {
 						cb();
 					});
