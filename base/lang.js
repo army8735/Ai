@@ -28,28 +28,37 @@ var $$ = (function() {
 			noCache = true;
 			charset = null;
 		}
-		if(state[url] == LOADED) {
+		if(!noCache && state[url] == LOADED) {
 			cb();
 		}
-		else if(state[url] == LOADING) {
+		else if(!noCache && state[url] == LOADING) {
 			list[url].push(cb);
 		}
 		else {
-			state[url] = LOADING;
-			list[url] = [cb];
+			//根据noCache缓存情况设置loading状态
+			if(!noCache) {
+				state[url] = LOADING;
+				list[url] = [cb];
+			}
+			//创建script
 			var s = document.createElement('script');
 			s.async = true;
 			if(charset)
 				s.charset = charset;
+			//版本自动化
 			s.src = lib[url] || url;
 			function ol() {
-				//根据noCache参数决定是否缓存记录，noCache时，只在loading阶段缓存cb，loaded后清除
-				state[url] = noCache ? null : LOADED;
 				s.onload = s.onreadystatechange = null;
-				list[url].forEach(function(cb) {
+				//根据noCache参数决定是否缓存记录
+				if(!noCache) {
+					state[url] = LOADED;
+					list[url].forEach(function(cb) {
+						cb();
+					});
+					list[url] = [];
+				}
+				else
 					cb();
-				});
-				list[url] = [];
 			}
 			if(s.addEventListener)
 				s.onload = ol;

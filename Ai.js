@@ -173,28 +173,37 @@
 			noCache = true;
 			charset = null;
 		}
-		if(state[url] == LOADED) {
+		if(!noCache && state[url] == LOADED) {
 			cb();
 		}
-		else if(state[url] == LOADING) {
+		else if(!noCache && state[url] == LOADING) {
 			list[url].push(cb);
 		}
 		else {
-			state[url] = LOADING;
-			list[url] = [cb];
+			//根据noCache缓存情况设置loading状态
+			if(!noCache) {
+				state[url] = LOADING;
+				list[url] = [cb];
+			}
+			//创建script
 			var s = document.createElement('script');
 			s.async = true;
 			if(charset)
 				s.charset = charset;
+			//版本自动化
 			s.src = lib[url] || url;
 			function ol() {
-				//根据noCache参数决定是否缓存记录，noCache时，只在loading阶段缓存cb，loaded后清除
-				state[url] = noCache ? null : LOADED;
 				s.onload = s.onreadystatechange = null;
-				list[url].forEach(function(cb) {
+				//根据noCache参数决定是否缓存记录
+				if(!noCache) {
+					state[url] = LOADED;
+					list[url].forEach(function(cb) {
+						cb();
+					});
+					list[url] = [];
+				}
+				else
 					cb();
-				});
-				list[url] = [];
 			}
 			if(s.addEventListener)
 				s.onload = ol;
@@ -386,7 +395,7 @@
 		};
 		if(isString(ids)) {
 			var url = getAbsUrl(ids);
-			//注意noCache，有种极端条件——在依赖中出现多次，且前次加载完后次重新加载可能会造成数据不统一；另外noCache后再cache加载会直接使用noCache时的模块，不像load无视之前的noCache情况，这点需注意
+			//noCache时每次必重新加载script
 			if(!noCache && (lib[ids] || lib[url]))
 				recursion();
 			else {
@@ -397,8 +406,8 @@
 					else
 						cb();
 					function cb() {
-						//必须判断重复，防止2个use线程加载同一个script同时触发2次callback
-						if(!lib[url]) {
+						//必须判断重复，防止2个use线程加载同一个script同时触发2次callback。有noCache时忽略这个情况，因为每次加载都是新的script。
+						if(noCache || !lib[url]) {
 							if(defQueue.length) {
 								var mod = defQueue.shift();
 								fetch(mod, url);
@@ -411,8 +420,8 @@
 						recursion();
 					}
 					function d2() {
-						//等待到defQueue中有了的时候即可停止延迟，另外当lib[url]有了的时候也可以，因为可能是打包合并的模块文件onload抢先了，此时合并的文件的模块没有存入defQueue，但在define.finish中传入url存入了lib[url]
-						if(defQueue.length || lib[url]) {
+						//等待到defQueue中有了的时候即可停止延迟，另外当lib[url]有了的时候也可以，因为可能是打包合并的模块文件onload抢先了，此时合并的文件的模块没有存入defQueue，但在define.finish中传入url存入了lib[url]。注意noCache情况的判断。
+						if(defQueue.length || (!noCache && lib[url])) {
 							delayCount = 0;
 							cb();
 							if(delayQueue.length)
