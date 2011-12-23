@@ -254,7 +254,7 @@ var require,
 		//自动末尾补加.js
 		if(url.indexOf('.js') != url.length - 3)
 			url += '.js';
-		return $$.absUrl(url, depend);
+		return $$.path(url, depend);
 	}
 	//默认的require虚拟模块
 	require = function(id) {

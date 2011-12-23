@@ -159,8 +159,7 @@
 	 */
 	function join(url, force) {
 		//join时可能不是绝对路径而是相对根路径，由构建工具生成
-		if(url.indexOf('/') == 0)
-			url = baseUrl + url;
+		url = path(url);
 		var key = url.replace(/\.\d+\.js$/, '.js');
 		if(force || !lib[key])
 			lib[key] = url;
@@ -243,7 +242,7 @@
 	 * @param {string} 依赖的url
 	 * @return {String} 转换的结果
 	 */
-	function absUrl(url, depend) {
+	function path(url, depend) {
 		if(/^https?:\/\//.test(url))
 			return url;
 		depend = depend || baseUrl;
@@ -272,7 +271,7 @@
 		map: map,
 		head: h,
 		base: base,
-		absUrl: absUrl
+		path: path
 	}
 })();var require,
 	define;
@@ -530,7 +529,7 @@
 		//自动末尾补加.js
 		if(url.indexOf('.js') != url.length - 3)
 			url += '.js';
-		return $$.absUrl(url, depend);
+		return $$.path(url, depend);
 	}
 	//默认的require虚拟模块
 	require = function(id) {

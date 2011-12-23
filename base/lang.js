@@ -14,8 +14,7 @@ var $$ = (function() {
 	 */
 	function join(url, force) {
 		//join时可能不是绝对路径而是相对根路径，由构建工具生成
-		if(url.indexOf('/') == 0)
-			url = baseUrl + url;
+		url = path(url);
 		var key = url.replace(/\.\d+\.js$/, '.js');
 		if(force || !lib[key])
 			lib[key] = url;
@@ -98,7 +97,7 @@ var $$ = (function() {
 	 * @param {string} 依赖的url
 	 * @return {String} 转换的结果
 	 */
-	function absUrl(url, depend) {
+	function path(url, depend) {
 		if(/^https?:\/\//.test(url))
 			return url;
 		depend = depend || baseUrl;
@@ -127,6 +126,6 @@ var $$ = (function() {
 		map: map,
 		head: h,
 		base: base,
-		absUrl: absUrl
+		path: path
 	}
 })();
