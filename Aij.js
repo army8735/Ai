@@ -176,6 +176,7 @@
 			noCache = true;
 			charset = null;
 		}
+		url = path(url);
 		if(!noCache && state[url] == LOADED) {
 			cb();
 		}
