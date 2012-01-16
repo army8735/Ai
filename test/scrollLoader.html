@@ -1,0 +1,99 @@
+<!DOCTYPE html><html>
+<head>
+<meta charset="gbk"/>
+<title>scrollLoader</title>
+<link type="text/css" href="style.css" rel="stylesheet"/>
+<style>
+body{padding-left:60px;}
+</style>
+</head>
+<body>
+<div style="position:absolute;left:0;top:0;height:9999px;width:10px;background:#000;"></div>
+<div style="position:absolute;left:0;top:2000px;background:#f00;">2000</div>
+<div style="position:absolute;left:0;top:3000px;background:#f00;">3000</div>
+<div style="position:absolute;left:0;top:5000px;background:#f00;" id="delay">5000</div>
+<div style="position:absolute;left:0;top:8000px;background:#f00;">8000</div>
+<script src="../Aij.js"></script>
+<script>
+window.console = window.console || ({
+	log: function(o) {
+		var s;
+		if($.type(o) == 'string') s = o;
+		else {
+			s = [];
+			for(var i in o) s.push(i);
+			s = 'Object: ' + s.join(',');
+		}
+		$(document.body).append(s + '<br/>');
+	}
+});
+require('../module/scrollLoader', function(scrollLoader) {
+	scrollLoader.y(2000).load(function() {
+		console.log('load 2000 a');
+	}, function() {
+		console.log('load 2000 b');
+	});
+	scrollLoader.y(3000).load(function() {
+		console.log('load 3000');
+	});
+	scrollLoader.y(8000).time(500).load(function() {
+		console.log('time 8000');
+	});
+	scrollLoader.node('#delay', true).delay(1000).load(function() {
+		console.log('delay 5000');
+	});
+});
+</script>
+
+<h2>scrollLoader</h2>
+<h3>依赖：<a href="Class.html">Class</a></h3>
+<h4>公共方法：</h4>
+<pre class="brush:js">node(node:JQuery, size:Boolean = false):scrollLoader</pre>
+<p>设置要滚动延迟加载的节点对象，size为是否可视区域内加载，为true时自动计算node的尺寸。详见y()</p>
+<pre class="brush:js">node(selector:String, size:Boolean = false):scrollLoader</pre>
+<p>设置要滚动延迟加载的节点对象，size为是否可视区域内加载，为true时自动计算selector的尺寸。详见y()</p>
+<pre class="brush:js">y(y:uint, size:uint = 0):scrollLoader</pre>
+<p>y为滚动条滚动到开始位置的判断依据，符合情况开始延迟加载；size为结束位置。当不设置size时，滚动条+窗口高度 > y即符合情况，否则要判断滚动条是否在此区间范围内，即可视范围内</p>
+<pre class="brush:js">size(size:uint):scrollLoader</pre>
+<p>在不设置size的情况下，延迟加载为单向加载，即所有在滚动条之上的内容都会被加载，显示区域之下的内容会在滚动到下方时才开始加载。
+设置size之后，只有在当前屏幕显示区域范围内才会加载，超出的内容无论在上方或下方都不加载。</p>
+<pre class="brush:js">delay(delay:uint = 0):scrollLoader</pre>
+<p>只有在设置size时才有效，当内容进入当前显示范围内延迟多少毫秒后加载。防止滚动条快速拖动造成的不必要的浪费。</p>
+<pre class="brush:js">time(time:uint):scrollLoader</pre>
+<p>多少毫秒后，不管情况如何，开始进行加载</p>
+<pre class="brush:js">load(callback:Function...):scrollLoader</pre>
+<p>符合延迟情况后进行的回调</p>
+<pre class="brush:js">start()::scrollLoader</pre>
+<p>直接进行加载执行回调并清空自己cancel()</p>
+<pre class="brush:js">cancel():scrollLoader</pre>
+<p>永久清空自己垃圾回收</p>
+<pre class="brush:js">enable():scrollLoader</pre>
+<p>暂时使本身有效</p>
+<pre class="brush:js">disable():scrollLoader</pre>
+<p>暂时使本身无效，即符合延迟情况也不加载</p>
+<pre class="brush:js">fire():scrollLoader</pre>
+<p>手动尝试是否符合延迟情况，是的话进行加载start()</p>
+<h4>示例：</h4>
+<pre class="brush:js">require('../module/scrollLoader', function(scrollLoader) {
+	scrollLoader.y(2000).load(function() {
+		console.log('load 2000 a');
+	}, function() {
+		console.log('load 2000 b');
+	});
+	scrollLoader.y(3000).load(function() {
+		console.log('load 3000');
+	});
+	scrollLoader.y(8000).time(500).load(function() {
+		console.log('time 8000');
+	});
+	scrollLoader.node('#delay', true).delay(1000).load(function() {
+		console.log('delay 5000');
+	});
+});</pre>
+<object classid="clsid:d27cdb6e-ae6d-11cf-96b8-444553540000" id="jssc5" style="position:absolute;left:-9999px;">
+	<param name="movie" value="../jssc5.swf"/>
+	<param name="flashvars" value="find=brush&url=../jssc5.swf"/>
+	<embed src="../jssc5.swf" flashvars="find=brush&url=../jssc5.swf" name="jssc5" type="application/x-shockwave-flash" style="position:absolute;left:-9999px;"/>
+</object>
+</body>
+</html>
