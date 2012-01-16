@@ -76,7 +76,7 @@ var require,
 		finishUrl = null;
 	}
 	define.amd = { jQuery: true };
-	define.finish = function(url) {
+	define.url = function(url) {
 		finishUrl = getAbsUrl(url);
 	}
 	function fetch(mod, url) {
