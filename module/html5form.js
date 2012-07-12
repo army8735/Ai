@@ -10,9 +10,16 @@ define(['html5formcore'], (function() {
 			'time': '时间格式不合法',
 			'color': '颜色格式不合法',
 			'required': '此项必填'
-		};
+		},
+		win = $(window);
 
 	function shake(node) {
+		var st = win.scrollTop(),
+			height = win.height(),
+			ot = node.offset().top;
+		if(ot > st + height || ot < st) {
+			win.scrollTop(ot);
+		}
 		var i = 10,
 			direct = true;
 		setInterval(function() {

@@ -1,3 +1,8 @@
+/**
+ * @url $URL: https://player.svn.intra.tudou.com/svn/static/trunk/js/ai/base/amd.js $
+ * @modified $Author: lxhao $
+ * @version $Rev: 24676 $
+ */
 var require,
 	define;
 
@@ -169,7 +174,7 @@ var require,
 			else {
 				$$.load(url, function() {
 					//延迟模式下onload先于exec，进行2次幂延迟算法等待
-					if(delay)
+					if(delayQueue.length)
 						delayQueue.push(cb);
 					else
 						cb();
@@ -186,6 +191,9 @@ var require,
 							}
 						}
 						recursion();
+						//如果还在延迟排队，执行延迟队列
+						if(delayQueue.length)
+							delayQueue.shift()();
 					}
 					function d2() {
 						//等待到defQueue中有了的时候即可停止延迟，另外当lib[url]有了的时候也可以，因为可能是打包合并的模块文件onload抢先了，此时合并的文件的模块没有存入defQueue，但在define.finish中传入url存入了lib[url]。注意noCache情况的判断。
@@ -194,13 +202,20 @@ var require,
 							cb();
 							if(delayQueue.length)
 								delayQueue.shift()();
-							else
-								delay = false;
 						}
 						else {
 							delay = true;
-							if(delayCount > 4)
+							if(delayCount > 5) {
+								//这里可能有极低几率不准确，因为noCache且ie情况下define没进队列但得到了url属性，因此判断模块是否存在并执行；理论上倘若define还没执行但模块有老的，会出错
+								if(lib[url]) {
+									delayCount = 0;
+									recursion();
+									if(delayQueue.length)
+										delayQueue.shift()();
+									return;
+								}
 								throw new Error('2^ delay is too long to wait:\n' + url);
+							}
 							setTimeout(d2, Math.pow(2, delayCount++) << 4); //2 ^ n * 16的时间等比累加
 						}
 					}
@@ -252,8 +267,10 @@ var require,
 	 */
 	function getAbsUrl(url, depend) {
 		//自动末尾补加.js
-		if(url.indexOf('.js') != url.length - 3)
+		if(!/\.(php|html|srv|jsp|action|asp|do)/.test(url) && url.indexOf('.js') != url.length - 3)
 			url += '.js';
+		if(url.charAt(0) == '/')
+			depend = $$.base();
 		return $$.path(url, depend);
 	}
 	//默认的require虚拟模块
@@ -270,9 +287,8 @@ var require,
 			});
 			return getMod(getAbsUrl(id, mod.uri)).exports;
 		}
-		else {
+		else
 			use.apply(null, Array.prototype.slice.call(arguments));
-		}
 	};
 	define('require', require);
 	//exports和module

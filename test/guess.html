@@ -1,0 +1,40 @@
+<!DOCTYPE html><html>
+<head>
+<meta charset="gbk"/>
+<title>guess</title>
+</head>
+<body>
+<input type="text" maxlength="1"/><br/>
+<input type="text" maxlength="1"/><br/>
+<input type="text" maxlength="1"/><br/>
+<input type="text" maxlength="1"/><br/>
+<input type="button" id="sub" value="确定"/><br/>
+<script src="../Aij.js"></script>
+<script>
+var num = {}, guess = [], i = 0;
+while(i < 4) {
+	var rand = Math.floor(Math.random() * 10);
+	if(num[rand]) continue;
+	num[rand] = 1;
+	i++;
+}
+Object.keys(num).forEach(function(o) {
+	guess.push(parseInt(o));
+});
+console.log(guess);
+var inputs = $('input[type=text]');
+$('#sub').click(function() {
+	var right = 0,
+		sequence = 0;
+	inputs.each(function(i, o) {
+		o = $(o);
+		var v = parseInt(o.val());
+		o.val(v);
+		if(v == guess[i]) right++;
+		else if(guess.indexOf(v) > -1) sequence++;
+	});
+	$(document.body).append(right + 'A' + sequence + 'B<br/>');
+});
+</script>
+</body>
+</html>

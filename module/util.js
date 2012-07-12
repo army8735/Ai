@@ -142,7 +142,7 @@ define(function() {
 		params: function(url) {
 			url = url || location.href;
 			var params = {},
-				result = /[^\s&\?#=\/]+=[^\s&\?#=]+/g.exec(url);
+				result = url.match(/[^\s&?#=\/]+=[^\s&?#=]+/g);
 			if(result){
 				for(var i = 0, l = result.length; i < l; i++){
 					var n = result[i].split("=");

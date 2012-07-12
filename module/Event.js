@@ -8,13 +8,14 @@ define('Event', ['Class'], function(Class) {
 		bind: function() {
 			var self = this,
 				args = Array.prototype.slice.call(arguments, 0),
-				cb = args.pop();
+				cb = args.pop(),
+				evt;
 				cb2 = function() {
 					var as = Array.prototype.slice.call(arguments, 0);
-					as.shift();
+					evt = as.shift();
 					cb.apply(self, as);
 				};
-				args.push(cb2);
+				args.push(cb2.call(evt));
 			this._dispatcher.bind.apply(this._dispatcher, args);
 		}
 	});

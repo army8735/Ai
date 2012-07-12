@@ -63,6 +63,7 @@ var $$ = (function() {
 				}
 				else
 					cb();
+				h.removeChild(s);
 			}
 			if(s.addEventListener)
 				s.onload = ol;
@@ -102,23 +103,21 @@ var $$ = (function() {
 		if(/^https?:\/\//.test(url))
 			return url;
 		depend = depend || baseUrl;
-		var host = /(http:\/\/[^/]+)\/?(.*)/.exec(depend);
-		depend = host[2].split('/');
-		depend.unshift(host[1]);
+		var temp = depend.slice(8).split('/');
+		temp.pop();
+		temp[0] = depend.slice(0, 8) + temp[0];
 		if(url.charAt(0) == '/')
-			return depend[0] + url;
+			return temp.join('/') + url;
 		else if(url.indexOf('../') == 0) {
-			depend.pop();
 			while(url.indexOf('../') == 0) {
 				url = url.slice(3);
-				depend.pop();
+				temp.pop();
 			}
-			return depend.join('/') + '/' + url;
+			return temp.join('/') + '/' + url;
 		}
 		else if(url.indexOf('./') == 0)
 			url = url.slice(2);
-		depend.pop();
-		return depend.join('/') + '/' + url;
+		return temp.join('/') + '/' + url;
 	}
 
 	return {

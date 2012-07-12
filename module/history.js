@@ -1,13 +1,13 @@
-define(['Event', 'Class'], function(Event, Class) {
+define(['module', 'Event'], function(module, Event) {
 	var id = 0,
-		orignal = ('onhashchange' in window) && (document.documentMode === undefined || document.documentMode == 8),
+		orignal = ('onhashchange' in window) && (document.documentMode === undefined || document.documentMode >= 8),
 		cbs = [];
 	if(orignal) {
-		window.onhashchange = function() {
+		$(window).bind('hashchange', function() {
 			cbs.forEach(function(cb) {
 				cb();
 			});
-		}
+		});
 	}
 	var Klass = Event.extend(function(src) {
 		var self = this;
@@ -20,17 +20,21 @@ define(['Event', 'Class'], function(Event, Class) {
 			});
 		else
 			self.iframe = $('<iframe src="' + src + '">');
-		$(document.body).append(this.iframe);
-		Klass.list.push(self);
+		$(document.body).append(self.iframe);
+		Klass.list = Klass.list || [];
+		Klass.list.push(self); //静态属性list，记录可能存在的多个实例
 	}).methods({
 		add: function(url) {
 			if(!orignal){
-				var doc = this.iframe[0].contentWindow.document;
+				var self = this,
+					doc = self.iframe[0].contentWindow.document;
 				doc.open();
 				doc.write([
 					'<html><head><script>',
 						'function l() {',
-							'try{top.window.$$.History.list[' + this.id + '].trigger("hashChange", "' + url + '");}catch(ex){}',
+							'parent.require("' + module.uri + '", function(hashChange) {',
+								'hashChange.list[0].trigger("hashChange", "' + url.replace('\\', '\\\\').replace('"', '\\"') + '");',
+							'});',
 						'}',
 					'</scr',
 					'ipt></head><body onload="l()"></body></html>'
@@ -39,6 +43,5 @@ define(['Event', 'Class'], function(Event, Class) {
 			}
 		}
 	});
-	Klass.list = [];
 	return Klass;
 });

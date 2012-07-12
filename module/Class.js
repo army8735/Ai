@@ -21,6 +21,15 @@ define('Class', function() {
 			});
 			return fn;
 		};
+		fn.prototype.entry = function(k, v) {
+			if(v === undefined)
+				return this[k];
+			else
+				return this[k] = v;
+		};
+		fn.prototype.init = function() {
+			var args = 
+		};
 		return fn;
 	}
 	function klass(cons) {
