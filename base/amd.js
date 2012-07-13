@@ -1,8 +1,3 @@
-/**
- * @url $URL: https://player.svn.intra.tudou.com/svn/static/trunk/js/ai/base/amd.js $
- * @modified $Author: lxhao $
- * @version $Rev: 24676 $
- */
 var require,
 	define;
 

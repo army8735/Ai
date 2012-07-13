@@ -160,7 +160,7 @@
 	function join(url, force) {
 		//join时可能不是绝对路径而是相对根路径，由构建工具生成
 		url = path(url);
-		var key = url.replace(/\.\d+\.js$/, '.js');
+		var key = url.replace(/_\d+\.js$/, '.js');
 		if(force || !lib[key])
 			lib[key] = url;
 	}
@@ -172,6 +172,7 @@
 	 * @param {Boolean} 不缓存，每次必重新加载，可省略
 	 */
 	function load(url, cb, charset, noCache) {
+		cb = cb || function(){};
 		if(charset === true) {
 			noCache = true;
 			charset = null;
@@ -208,7 +209,9 @@
 				}
 				else
 					cb();
-				h.removeChild(s);
+				setTimeout(function() {
+					h.removeChild(s);
+				}, 1);
 			}
 			if(s.addEventListener)
 				s.onload = ol;
@@ -273,12 +276,7 @@
 		base: base,
 		path: path
 	}
-})();/**
- * @url $URL: https://player.svn.intra.tudou.com/svn/static/trunk/js/ai/base/amd.js $
- * @modified $Author: lxhao $
- * @version $Rev: 24676 $
- */
-var require,
+})();var require,
 	define;
 
 (function() {
