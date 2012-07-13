@@ -288,7 +288,6 @@ var require,
 		relation = {},
 		finishUrl,
 		defQueue,
-		delay,
 		delayCount = 0,
 		delayQueue = [],
 		interactive = document.attachEvent && !window['opera'];
@@ -479,7 +478,6 @@ var require,
 								delayQueue.shift()();
 						}
 						else {
-							delay = true;
 							if(delayCount > 5) {
 								//这里可能有极低几率不准确，因为noCache且ie情况下define没进队列但得到了url属性，因此判断模块是否存在并执行；理论上倘若define还没执行但模块有老的，会出错
 								if(lib[url]) {
