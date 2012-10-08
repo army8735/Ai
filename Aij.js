@@ -570,6 +570,8 @@
 		return id ? lib[id] : lib;
 	};
 
+	require.async = require;
+
 })();/*!
  * jQuery JavaScript Library v1.7.2
  * http://jquery.com/

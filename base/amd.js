@@ -292,4 +292,6 @@ var require,
 		return id ? lib[id] : lib;
 	};
 
+	require.async = require;
+
 })();
