@@ -37,7 +37,7 @@ var require,
 		}
 		//在没有定义依赖的情况下，通过factory.toString()方式匹配正则，智能获取依赖列表
 		if(!dependencies && isFunction(factory)) {
-			var res = /(?:^|[^.])\brequire\s*\(\s*(["'])([^"'\s\)]+)\1\s*\)/g.exec(factory.toString());
+			var res = /(?:^|[^.])\brequire\s*(?:\.async\s*)?\(\s*(["'])([^"'\s\)]+)\1\s*\)/g.exec(factory.toString());
 			if(res)
 				dependencies = res.slice(2);
 		}

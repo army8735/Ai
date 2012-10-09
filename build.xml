@@ -41,7 +41,7 @@
 			<path path="${base}/fix.js" />
 			<path path="${base}/lang.js" />
 			<path path="${base}/amd.js" />
-			<path path="${global}/jquery-1.7.2.js" />
+			<path path="${build}/jquery-1.8.2.js" />
 		</concat>
 	</target>
 	
