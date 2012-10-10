@@ -80,7 +80,6 @@ var require,
 	}
 	function fetch(mod, url) {
 		mod.uri = url;
-		mod.id = mod.id || url;
 		lib[url] = mod;
 		finishUrl = null;
 	}
@@ -234,7 +233,7 @@ var require,
 	function checkCyclic(mod, history, list) {
 		if(!mod)
 			return;
-		var id = mod.id;
+		var id = mod.uri;
 		list.push(id);
 		if(history[id])
 			throw new Error('cyclic dependencies:\n' + list.join('\n'));
