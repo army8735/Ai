@@ -228,8 +228,8 @@
 	 * @public 获取映射库
 	 * @return {Object} hashmap
 	 */
-	function map() {
-		return lib;
+	function map(url) {
+		return url ? lib[url] : lib;
 	}
 	/**
 	 * @public 读取/设置全局根路径
@@ -313,11 +313,12 @@
 			factory = dependencies;
 			dependencies = null;
 		}
-		//在没有定义依赖的情况下，通过factory.toString()方式匹配正则，智能获取依赖列表
-		if(!dependencies && isFunction(factory)) {
+		dependencies = dependencies || [];
+		//另外一种依赖写法，通过factory.toString()方式匹配正则，智能获取依赖列表
+		if(isFunction(factory)) {
 			var res = /(?:^|[^.])\brequire\s*(?:\.async\s*)?\(\s*(["'])([^"'\s\)]+)\1\s*\)/g.exec(factory.toString());
 			if(res)
-				dependencies = res.slice(2);
+				dependencies = dependencies.concat(res.slice(2));
 		}
 		var module = {
 			id: id,
@@ -537,7 +538,7 @@
 	 */
 	function getAbsUrl(url, depend) {
 		//自动末尾补加.js
-		if(!/\.(php|html|srv|jsp|action|asp|do)/.test(url) && url.indexOf('.js') != url.length - 3)
+		if(!/\.\w+$/.test(url))
 			url += '.js';
 		if(url.charAt(0) == '/')
 			depend = $$.base();
@@ -560,6 +561,8 @@
 		else
 			use.apply(null, Array.prototype.slice.call(arguments));
 	};
+	require.async = require;
+
 	define('require', require);
 	//exports和module
 	define('exports', {});
@@ -568,7 +571,5 @@
 	$$.mod = function(id) {
 		return id ? lib[id] : lib;
 	};
-
-	require.async = require;
 
 })();

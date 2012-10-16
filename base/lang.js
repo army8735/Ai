@@ -83,8 +83,8 @@ var $$ = (function() {
 	 * @public 获取映射库
 	 * @return {Object} hashmap
 	 */
-	function map() {
-		return lib;
+	function map(url) {
+		return url ? lib[url] : lib;
 	}
 	/**
 	 * @public 读取/设置全局根路径
