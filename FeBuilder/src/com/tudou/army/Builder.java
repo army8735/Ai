@@ -8,23 +8,17 @@ public class Builder {
 			 " * @modified $Author$\n" +
 			 " * @version $Rev$\n";
 	public static String 默认头注释 = "/**" + SVN头 + " */\n";
+	public static HashSet<String> 全局模块;
 	
 	public static void main(String[] args) {
 		//1.css根路径；2.js根路径；3.目标文件；4...全局模块ID
-		HashSet<String> 全局模块 = new HashSet<String>();
+		全局模块 = new HashSet<String>();
 		for (int i = 3; i < args.length; i++) {
 			全局模块.add(args[i]);
 		}
 		File 目标文件 = new File(args[2]);
-		if(!目标文件.exists()) {
-			System.err.println("文件不存在");
-			return;
-		}
-		if(!目标文件.isFile()) {
-			System.err.println("文件不是标准文件");
-			return;
-		}
 		File css根路径 = new File(args[0]);
+		File js根路径 = new File(args[1]);
 		if(!css根路径.exists()) {
 			System.err.println("css根路径不存在");
 			return;
@@ -33,13 +27,29 @@ public class Builder {
 			System.err.println("css根路径不是目录");
 			return;
 		}
-		File js根路径 = new File(args[1]);
 		if(!js根路径.exists()) {
 			System.err.println("js根路径不存在");
 			return;
 		}
 		if(!js根路径.isDirectory()) {
 			System.err.println("js根路径不是目录");
+			return;
+		}
+		构建文件(css根路径, js根路径, 目标文件);
+	}
+	static void 构建文件(File css根路径, File js根路径, File 目标文件) {
+		if(!目标文件.exists()) {
+			System.err.println(目标文件.getAbsolutePath() + "文件不存在");
+			return;
+		}
+		if(目标文件.isDirectory()) {
+			File[] list = 目标文件.listFiles();
+			for(File f : list) {
+				构建文件(css根路径, js根路径, f);
+			}
+			return;
+		}
+		if(!目标文件.isFile() || 目标文件.isHidden()) {
 			return;
 		}
 		String name = 目标文件.getName();
@@ -55,9 +65,6 @@ public class Builder {
 		}
 		else if(name.endsWith(".css") || name.endsWith(".js")) {
 			为文件添加默认头注释(目标文件);
-		}
-		else {
-			System.err.println("不是css/js文件");
 		}
 	}
 	static void 为文件添加默认头注释(File 目标文件) {
