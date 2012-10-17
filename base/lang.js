@@ -24,27 +24,19 @@ var $$ = (function() {
 	 * @param {url} script的url
 	 * @param {Function} 回调
 	 * @param {String} script编码，可省略
-	 * @param {Boolean} 不缓存，每次必重新加载，可省略
 	 */
-	function load(url, cb, charset, noCache) {
+	function load(url, cb, charset) {
 		cb = cb || function(){};
-		if(charset === true) {
-			noCache = true;
-			charset = null;
-		}
 		url = path(url);
-		if(!noCache && state[url] == LOADED) {
+		if(state[url] == LOADED) {
 			cb();
 		}
-		else if(!noCache && state[url] == LOADING) {
+		else if(state[url] == LOADING) {
 			list[url].push(cb);
 		}
 		else {
-			//根据noCache缓存情况设置loading状态
-			if(!noCache) {
-				state[url] = LOADING;
-				list[url] = [cb];
-			}
+			state[url] = LOADING;
+			list[url] = [cb];
 			//创建script
 			var s = document.createElement('script');
 			s.async = true;
@@ -55,15 +47,10 @@ var $$ = (function() {
 			function ol() {
 				s.onload = s.onreadystatechange = null;
 				state[url] = LOADED;
-				//根据noCache参数决定是否缓存记录
-				if(!noCache) {
-					list[url].forEach(function(cb) {
-						cb();
-					});
-					list[url] = [];
-				}
-				else
+				list[url].forEach(function(cb) {
 					cb();
+				});
+				list[url] = [];
 				setTimeout(function() {
 					h.removeChild(s);
 				}, 1);

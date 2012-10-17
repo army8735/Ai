@@ -169,27 +169,19 @@
 	 * @param {url} script的url
 	 * @param {Function} 回调
 	 * @param {String} script编码，可省略
-	 * @param {Boolean} 不缓存，每次必重新加载，可省略
 	 */
-	function load(url, cb, charset, noCache) {
+	function load(url, cb, charset) {
 		cb = cb || function(){};
-		if(charset === true) {
-			noCache = true;
-			charset = null;
-		}
 		url = path(url);
-		if(!noCache && state[url] == LOADED) {
+		if(state[url] == LOADED) {
 			cb();
 		}
-		else if(!noCache && state[url] == LOADING) {
+		else if(state[url] == LOADING) {
 			list[url].push(cb);
 		}
 		else {
-			//根据noCache缓存情况设置loading状态
-			if(!noCache) {
-				state[url] = LOADING;
-				list[url] = [cb];
-			}
+			state[url] = LOADING;
+			list[url] = [cb];
 			//创建script
 			var s = document.createElement('script');
 			s.async = true;
@@ -200,15 +192,10 @@
 			function ol() {
 				s.onload = s.onreadystatechange = null;
 				state[url] = LOADED;
-				//根据noCache参数决定是否缓存记录
-				if(!noCache) {
-					list[url].forEach(function(cb) {
-						cb();
-					});
-					list[url] = [];
-				}
-				else
+				list[url].forEach(function(cb) {
 					cb();
+				});
+				list[url] = [];
 				setTimeout(function() {
 					h.removeChild(s);
 				}, 1);
@@ -377,13 +364,8 @@
 	 * @param {string/array} 模块id或url
 	 * @param {Function} 加载成功后回调
 	 * @param {string} 模块的强制编码，可省略
-	 * @param {Boolean} 是否缓存加载，可省略
 	 */
-	function use(ids, cb, charset, noCache) {
-		if(charset === true) {
-			noCache = true;
-			charset = null;
-		}
+	function use(ids, cb, charset) {
 		defQueue = defQueue || []; //use之前的模块为手动添加在页面script标签的模块或合并在总库中的模块，它们需被排除在外
 		var idList = isString(ids) ? [ids] : ids, wrap = function() {
 			var keys = idList.map(function(v) {
@@ -434,14 +416,13 @@
 			});
 			//如果有依赖，先加载依赖，否则直接回调
 			if(deps.length)
-				use(deps, wrap, charset, noCache);
+				use(deps, wrap, charset);
 			else
 				wrap();
 		};
 		if(isString(ids)) {
 			var url = getAbsUrl(ids);
-			//noCache时每次必重新加载script
-			if(!noCache && (lib[ids] || lib[url]))
+			if(lib[ids] || lib[url])
 				recursion();
 			else {
 				$$.load(url, function() {
@@ -451,8 +432,8 @@
 					else
 						cb();
 					function cb() {
-						//必须判断重复，防止2个use线程加载同一个script同时触发2次callback。有noCache时忽略这个情况，因为每次加载都是新的script。
-						if(noCache || !lib[url]) {
+						//必须判断重复，防止2个use线程加载同一个script同时触发2次callback
+						if(!lib[url]) {
 							if(defQueue.length) {
 								var mod = defQueue.shift();
 								fetch(mod, url);
@@ -468,8 +449,8 @@
 							delayQueue.shift()();
 					}
 					function d2() {
-						//等待到defQueue中有了的时候即可停止延迟，另外当lib[url]有了的时候也可以，因为可能是打包合并的模块文件onload抢先了，此时合并的文件的模块没有存入defQueue，但在define.finish中传入url存入了lib[url]。注意noCache情况的判断。
-						if(defQueue.length || (!noCache && lib[url])) {
+						//等待到defQueue中有了的时候即可停止延迟，另外当lib[url]有了的时候也可以，因为可能是打包合并的模块文件onload抢先了，此时合并的文件的模块没有存入defQueue，但在define.finish中传入url存入了lib[url]
+						if(defQueue.length || lib[url]) {
 							delayCount = 0;
 							cb();
 							if(delayQueue.length)
@@ -477,7 +458,7 @@
 						}
 						else {
 							if(delayCount > 5) {
-								//这里可能有极低几率不准确，因为noCache且ie情况下define没进队列但得到了url属性，因此判断模块是否存在并执行；理论上倘若define还没执行但模块有老的，会出错
+								//这里可能有极低几率不准确，因为ie情况下define没进队列但得到了url属性，因此判断模块是否存在并执行；理论上倘若define还没执行但模块有老的，会出错
 								if(lib[url]) {
 									delayCount = 0;
 									recursion();
@@ -490,7 +471,7 @@
 							setTimeout(d2, Math.pow(2, delayCount++) << 4); //2 ^ n * 16的时间等比累加
 						}
 					}
-				}, charset, noCache);
+				}, charset);
 			}
 		}
 		else {
@@ -499,7 +480,7 @@
 				use(id, function() {
 					if(--remote == 0)
 						recursion();
-				}, charset, noCache);
+				}, charset);
 			});
 		}
 	}
