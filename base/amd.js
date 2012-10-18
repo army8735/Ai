@@ -26,6 +26,10 @@ var require,
 	 * @param {Function/object} 初始化工厂
 	 */
 	define = function(id, dependencies, factory) {
+		if(arguments.length == 1) {
+			factory = id;
+			id = dependencies = null;
+		}
 		if(!isString(id)) {
 			factory = dependencies;
 			dependencies = id;
