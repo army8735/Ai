@@ -51,8 +51,12 @@ public class JsBuilder {
 		String 过滤注释内容 = 内容.substring(头注释.length());
 		LinkedHashSet<File> 导入文件,  构建文件, 依赖文件 = null;
 		boolean isModule = 是否模块(过滤注释内容);
-		//模块文件与普通文件互斥
-		if(isModule) {
+		boolean isTpl = 是否模板(当前文件);
+		//模板、模块文件、普通文件互斥
+		if(isTpl) {
+			//
+		}
+		else if(isModule) {
 			String id = 获取模块ID(过滤注释内容);
 			if((类型 == 依赖 || 类型 == 构建) && 全局模块.contains(id)) {
 				return;
@@ -76,13 +80,25 @@ public class JsBuilder {
 		if(当前文件 != 目标文件) {
 			头注释 = 头注释.replaceAll(" \\$", " ");
 		}
-		结果缓存.append(头注释);
+		if(!isTpl) {
+			结果缓存.append(头注释);
+		}
 		if(isModule) {
 			结果缓存.append("\ndefine.url('");
 			结果缓存.append(获取模块URI(当前文件));
 			结果缓存.append("');");
 		}
+		if(isTpl) {
+			结果缓存.append("define.url('");
+			结果缓存.append(获取模块URI(当前文件));
+			结果缓存.append("');");
+			结果缓存.append("\ndefine('");
+			过滤注释内容 = 过滤注释内容.replaceAll("[\r\n\t]", "");
+		}
 		结果缓存.append(过滤注释内容);
+		if(isTpl) {
+			结果缓存.append("');\n");
+		}
 	}
 	private LinkedHashSet<File> 获取依赖文件(File 当前文件, String 过滤注释内容) {
 		LinkedHashSet<File> 文件列表 = new LinkedHashSet<File>();
@@ -97,7 +113,7 @@ public class JsBuilder {
 			while(m.find()) {
 				s = m.group(2);
 				if(!全局模块.contains(s)) {
-					if(!s.endsWith(".js")) {
+					if(!s.endsWith(".js") && !s.endsWith(".tpl")) {
 						s += ".js";
 					}
 					if(s.charAt(0) == '/') {
@@ -218,6 +234,9 @@ public class JsBuilder {
 			return null;
 		}
 		return null;
+	}
+	private boolean 是否模板(File f) {
+		return f.getName().endsWith(".tpl");
 	}
 
 	private String 获取模块URI(File f) {
