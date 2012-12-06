@@ -42,6 +42,7 @@ public class CssBuilder {
 		}
 		BufferedReader br = null;
 		String s = null;
+		ArrayList<File> al = new ArrayList<File>();
 		try {
 			br = new BufferedReader(new FileReader(当前文件));
 			while((s = br.readLine()) != null) {
@@ -51,10 +52,10 @@ public class CssBuilder {
 				if(m.find()) {
 					s = m.group(1);
 					if(s.charAt(0) == '/') {
-						递归导入文件(new File(根路径, s), 结果缓存);
+						al.add(new File(根路径, s));
 					}
 					else {
-						递归导入文件(new File(当前文件.getParent(), s), 结果缓存);
+						al.add(new File(当前文件.getParent(), s));
 					}
 				}
 				else {
@@ -82,6 +83,10 @@ public class CssBuilder {
 			}
 			br.close();
 			文件列表.add(当前文件);
+			//import的在文件加载完成后才开始加载
+			for(File f: al) {
+				递归导入文件(f, 结果缓存);
+			}
 		} catch (IOException e) {
 			e.printStackTrace();
 		} finally {
