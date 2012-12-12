@@ -56,7 +56,7 @@ var $$ = (function() {
 				}, 1);
 			}
 			if(s.addEventListener)
-				s.onload = ol;
+				s.onload = s.onerror = ol;
 			else {
 				s.onreadystatechange = function() {
 					if(/loaded|complete/.test(this.readyState))

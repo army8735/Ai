@@ -30,14 +30,16 @@ var require,
 			factory = id;
 			id = dependencies = null;
 		}
-		if(!isString(id)) {
-			factory = dependencies;
-			dependencies = id;
-			id = null;
-		}
-		if(!Array.isArray(dependencies)) {
-			factory = dependencies;
-			dependencies = null;
+		else {
+			if(!isString(id)) {
+				factory = dependencies;
+				dependencies = id;
+				id = null;
+			}
+			if(!Array.isArray(dependencies)) {
+				factory = dependencies;
+				dependencies = null;
+			}
 		}
 		dependencies = dependencies || [];
 		//另外一种依赖写法，通过factory.toString()方式匹配正则，智能获取依赖列表
@@ -102,10 +104,12 @@ var require,
 	 * @public 加载使用模块方法
 	 * @param {string/array} 模块id或url
 	 * @param {Function} 加载成功后回调
+	 * @param {array} 加载的链记录
 	 * @param {string} 模块的强制编码，可省略
 	 */
-	function use(ids, cb, charset) {
+	function use(ids, cb, chain, charset) {
 		defQueue = defQueue || []; //use之前的模块为手动添加在页面script标签的模块或合并在总库中的模块，它们需被排除在外
+		chain = chain || [];
 		var idList = isString(ids) ? [ids] : ids, wrap = function() {
 			var keys = idList.map(function(v) {
 				return lib[v] ? v : getAbsUrl(v);
@@ -155,7 +159,7 @@ var require,
 			});
 			//如果有依赖，先加载依赖，否则直接回调
 			if(deps.length)
-				use(deps, wrap, charset);
+				use(deps, wrap, Object.create(chain), charset);
 			else
 				wrap();
 		};
@@ -164,6 +168,7 @@ var require,
 			if(lib[ids] || lib[url])
 				recursion();
 			else {
+				chain.push(url);
 				$$.load(url, function() {
 					//延迟模式下onload先于exec，进行2次幂延迟算法等待
 					if(delayQueue.length)
@@ -205,7 +210,7 @@ var require,
 										delayQueue.shift()();
 									return;
 								}
-								throw new Error('2^ delay is too long to wait:\n' + url);
+								throw new Error('2^ delay is too long to wait:\n' + chain.join(' -> '));
 							}
 							setTimeout(d2, Math.pow(2, delayCount++) << 4); //2 ^ n * 16的时间等比累加
 						}
@@ -219,7 +224,7 @@ var require,
 				use(id, function() {
 					if(--remote == 0)
 						recursion();
-				}, charset);
+				}, Object.create(chain), charset);
 			});
 		}
 	}
