@@ -307,11 +307,9 @@
 			}
 		}
 		dependencies = dependencies || [];
-		//另外一种依赖写法，通过factory.toString()方式匹配正则，智能获取依赖列表
+		//另外一种依赖写法，通过factory.toString()方式匹配，智能获取依赖列表
 		if(isFunction(factory)) {
-			var res = /(?:^|[^.])\brequire\s*(?:\.async\s*)?\(\s*(["'])([^"'\s\)]+)\1\s*\)/g.exec(factory.toString());
-			if(res)
-				dependencies = dependencies.concat(res.slice(2));
+			dependencies = dependencies.concat(getDepedencies(factory.toString()));
 		}
 		var module = {
 			id: id,
@@ -385,7 +383,7 @@
 					var deps = [];
 					mod.exports = {};
 					//有依赖参数为依赖的模块，否则默认为require, exports, module3个默认模块
-					if(mod.dependencies) {
+					if(mod.dependencies && mod.dependencies.length) {
 						mod.dependencies.forEach(function(d) {
 							//使用exports模块用作导出
 							if(d == 'exports')
@@ -536,7 +534,10 @@
 	}
 	//默认的require虚拟模块
 	require = function(id) {
-		if(arguments.length == 1) {
+		if(arguments.length == 0) {
+			return lib;
+		}
+		else if(arguments.length == 1) {
 			if(lib[id])
 				return lib[id].exports;
 			var caller = arguments.callee.caller,
@@ -558,9 +559,110 @@
 	define('exports', {});
 	define('module', {});
 
-	$$.mod = function(id) {
-		return id ? lib[id] : lib;
-	};
+	function getDepedencies(s) {
+		if(s.indexOf('require') == -1) {
+			return [];
+		}
+		var index = start = 0, peek, length = s.length, isReg = true, res = [];
+		while(index < length) {
+			readch();
+			if(isBlank()) {
+			}
+			else if(isQuote()) {
+				dealQuote();
+				isReg = true;
+			}
+			else if(peek == '/') {
+				readch();
+				if(peek == '/') {
+					index = s.indexOf('\n', index);
+					if(index == -1) {
+						index = s.length;
+					}
+					isReg = true;
+				}
+				else if(peek == '*') {
+					index = s.indexOf('*/', index) + 2;
+					isReg = true;
+				}
+				else if(isReg) {
+					dealReg();
+					isReg = false;
+				}
+				else {
+					isReg = true;
+				}
+			}
+			else if(isWord()) {
+				dealWord();
+				isReg = false;
+			}
+			else {
+				isReg = true;
+			}
+		}
+		return res;
+		function readch() {
+			peek = s.charAt(index++);
+		}
+		function isBlank() {
+			return /\s/.test(peek);
+		}
+		function isQuote() {
+			return peek == '"' || peek == "'";
+		}
+		function dealQuote() {
+			var start = index,
+				c = peek;
+			while(index < length) {
+				readch();
+				if(peek == '\\') {
+					index++;
+				}
+				else if(peek == c) {
+					break;
+				}
+			}
+		}
+		function dealReg() {
+			index--;
+			while(index < length) {
+				readch();
+				if(peek == '\\') {
+					index++;
+				}
+				else if(peek == '/') {
+					break;
+				}
+				else if(peek == '[') {
+					while(index < length) {
+						readch();
+						if(peek == '\\') {
+							index++;
+						}
+						else if(peek == ']') {
+							break;
+						}
+					}
+				}
+			}
+		}
+		function isWord() {
+			return /[\w$.]/.test(peek);
+		}
+		function dealWord() {
+			var str = s.slice(index - 1);
+			if(peek == 'r') {
+				var r = /^require(?:\s*\.\s*async)?\s*\(\s*(["'])([^"'\s\)]+)\1\s*/g.exec(str);
+				if(r) {
+					res.push(r[2]);
+					index += r[0].length - 1;
+					return;
+				}
+			}
+			index += /^[\w$.]+\s*/.exec(str)[0].length - 1;
+		}
+	}
 
 })();/*!
  * jQuery JavaScript Library v1.8.3
