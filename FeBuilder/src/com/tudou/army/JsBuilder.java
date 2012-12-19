@@ -132,7 +132,7 @@ public class JsBuilder {
 			while(m.find()) {
 				s = m.group(2);
 				if(!全局模块.contains(s)) {
-					if(!s.endsWith(".js")) {
+					if(!s.endsWith(".js") && !s.endsWith(".tpl")) {
 						s += ".js";
 					}
 					if(s.charAt(0) == '/') {
@@ -161,7 +161,7 @@ public class JsBuilder {
 						continue;
 					}
 					s = m2.group(2);
-					if(!s.endsWith(".js")) {
+					if(!s.endsWith(".js") && !s.endsWith(".tpl")) {
 						s += ".js";
 					}
 					文件列表.add(new File(根路径, s));
