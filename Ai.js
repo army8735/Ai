@@ -561,9 +561,9 @@
 
 	function getDepedencies(s) {
 		if(s.indexOf('require') == -1) {
-			return [];
+			return;
 		}
-		var index = start = 0, peek, length = s.length, isReg = true, res = [];
+		var index = start = 0, peek, length = s.length, isReg = true, modName = false, res = [];
 		while(index < length) {
 			readch();
 			if(isBlank()) {
@@ -623,6 +623,10 @@
 					break;
 				}
 			}
+			if(modName) {
+				res.push(s.slice(start, index - 1));
+				modName = false;
+			}
 		}
 		function dealReg() {
 			index--;
@@ -651,16 +655,9 @@
 			return /[\w$.]/.test(peek);
 		}
 		function dealWord() {
-			var str = s.slice(index - 1);
-			if(peek == 'r') {
-				var r = /^require(?:\s*\.\s*async)?\s*\(\s*(["'])([^"'\s\)]+)\1\s*/g.exec(str);
-				if(r) {
-					res.push(r[2]);
-					index += r[0].length - 1;
-					return;
-				}
-			}
-			index += /^[\w$.]+\s*/.exec(str)[0].length - 1;
+			var r = /^([\w$.\s]+)/.exec(s.slice(index - 1))[1];
+			modName = (/^require(\s*\.\s*async)?\s*$/.test(r));
+			index += r.length - 1;
 		}
 	}
 
