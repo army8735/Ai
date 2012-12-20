@@ -655,9 +655,12 @@
 			return /[\w$.]/.test(peek);
 		}
 		function dealWord() {
-			var r = /^([\w$.\s]+)/.exec(s.slice(index - 1))[1];
-			modName = (/^require(\s*\.\s*async)?\s*$/.test(r));
-			index += r.length - 1;
+			//压缩后的代码会出现较多单个字母变量的情况，进行判断节省正则开销
+			if(/[\w$.]/.test(s.charAt(index))) {
+				var r = /^([\w$.\s]+)/.exec(s.slice(index - 1))[1];
+				modName = (/^require(\s*\.\s*async)?\s*$/.test(r));
+				index += r.length - 1;
+			}
 		}
 	}
 
