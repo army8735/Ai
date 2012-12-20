@@ -598,7 +598,7 @@
 				isReg = false;
 			}
 			else {
-				isReg = true;
+				isReg = peek != ')';
 			}
 		}
 		return res;
