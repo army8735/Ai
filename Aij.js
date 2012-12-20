@@ -560,7 +560,8 @@
 	define('module', {});
 
 	function getDepedencies(s) {
-		if(s.indexOf('require') == -1) {
+		//function(){从第11个字符开始找，可以忽略function(require的情况
+		if(s.indexOf('require', 11) == -1) {
 			return [];
 		}
 		var index = start = 0, peek, length = s.length, isReg = true, modName = false, res = [];
