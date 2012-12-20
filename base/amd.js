@@ -296,7 +296,7 @@ var require,
 
 	function getDepedencies(s) {
 		if(s.indexOf('require') == -1) {
-			return;
+			return [];
 		}
 		var index = start = 0, peek, length = s.length, isReg = true, modName = false, res = [];
 		while(index < length) {
