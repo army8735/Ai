@@ -367,10 +367,10 @@
 	 * @public 加载使用模块方法
 	 * @param {string/array} 模块id或url
 	 * @param {Function} 加载成功后回调
-	 * @param {array} 加载的链记录
 	 * @param {string} 模块的强制编码，可省略
+	 * @param {array} 加载的链记录
 	 */
-	function use(ids, cb, chain, charset) {
+	function use(ids, cb, charset, chain) {
 		defQueue = defQueue || []; //use之前的模块为手动添加在页面script标签的模块或合并在总库中的模块，它们需被排除在外
 		chain = chain || [];
 		var idList = isString(ids) ? [ids] : ids, wrap = function() {
@@ -422,7 +422,7 @@
 			});
 			//如果有依赖，先加载依赖，否则直接回调
 			if(deps.length)
-				use(deps, wrap, Object.create(chain), charset);
+				use(deps, wrap, charset, Object.create(chain));
 			else
 				wrap();
 		};
@@ -487,7 +487,7 @@
 				use(id, function() {
 					if(--remote == 0)
 						recursion();
-				}, Object.create(chain), charset);
+				}, charset, Object.create(chain));
 			});
 		}
 	}
@@ -613,14 +613,20 @@
 		}
 		function dealQuote() {
 			var start = index,
-				c = peek;
-			while(index < length) {
-				readch();
-				if(peek == '\\') {
-					index++;
-				}
-				else if(peek == c) {
-					break;
+				c = peek,
+				end = s.indexOf(c, start);
+			if(s.charAt(end - 1) != '\\') {
+				index = end + 1;
+			}
+			else {
+				while(index < length) {
+					readch();
+					if(peek == '\\') {
+						index++;
+					}
+					else if(peek == c) {
+						break;
+					}
 				}
 			}
 			if(modName) {
@@ -655,12 +661,12 @@
 			return /[\w$.]/.test(peek);
 		}
 		function dealWord() {
-			//压缩后的代码会出现较多单个字母变量的情况，进行判断节省正则开销
 			if(/[\w$.]/.test(s.charAt(index))) {
 				var r = /^([\w$.\s]+)/.exec(s.slice(index - 1))[1];
 				modName = (/^require(\s*\.\s*async)?\s*$/.test(r));
 				index += r.length - 1;
 			}
+			modName = false;
 		}
 	}
 
