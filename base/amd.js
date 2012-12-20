@@ -299,7 +299,7 @@ var require,
 		if(s.indexOf('require', 11) == -1) {
 			return [];
 		}
-		var index = start = 0, peek, length = s.length, isReg = true, modName = false, res = [];
+		var index = start = 11, peek, length = s.length, isReg = true, modName = false, res = [];
 		while(index < length) {
 			readch();
 			if(isBlank()) {
