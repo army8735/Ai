@@ -295,11 +295,10 @@ var require,
 	define('module', {});
 
 	function getDepedencies(s) {
-		//function(){从第11个字符开始找，可以忽略function(require的情况
 		if(s.indexOf('require', 11) == -1) {
 			return [];
 		}
-		var index = start = 11, peek, length = s.length, isReg = true, modName = false, res = [];
+		var index = start = 11, peek, length = s.length, isReg = true, modName = false, parentheseState = false, parentheseStack = [], res = [];
 		while(index < length) {
 			readch();
 			if(isBlank()) {
@@ -333,8 +332,15 @@ var require,
 				dealWord();
 				isReg = false;
 			}
+			else if(peek == '(') {
+				parentheseStack.push(parentheseState);
+				isReg = true;
+			}
+			else if(peek == ')') {
+				isReg = parentheseStack.pop();
+			}
 			else {
-				isReg = peek != ')';
+				isReg = true;
 			}
 		}
 		return res;
@@ -398,11 +404,14 @@ var require,
 		}
 		function dealWord() {
 			if(/[\w$.]/.test(s.charAt(index))) {
-				var r = /^([\w$.\s]+)/.exec(s.slice(index - 1))[1];
+				var r = /^([\w$.\t ]+)/.exec(s.slice(index - 1))[1];
 				modName = (/^require(\s*\.\s*async)?\s*$/.test(r));
 				index += r.length - 1;
+				parentheseState = ['if', 'for', 'while'].indexOf(r) != -1;
 			}
-			modName = false;
+			else {
+				modName = false;
+			}
 		}
 	}
 
