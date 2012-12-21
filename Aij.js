@@ -563,7 +563,7 @@
 		if(s.indexOf('require', 11) == -1) {
 			return [];
 		}
-		var index = start = 11, peek, length = s.length, isReg = true, modName = false, parentheseState = false, parentheseStack = [], res = [];
+		var index = 11, peek, length = s.length, isReg = true, modName = false, parentheseState = false, parentheseStack = [], res = [];
 		while(index < length) {
 			readch();
 			if(isBlank()) {
