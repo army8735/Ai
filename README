@@ -7,34 +7,34 @@ Sorry for only chinese comments...
 ## API
 
 $$.join(url:String = null):String
-ÉèÖÃ/¶ÁÈ¡¼ÓÔØurlµÄÂ·ÓÉÓ³Éä
+è®¾ç½®/è¯»å–åŠ è½½urlçš„è·¯ç”±æ˜ å°„
 
 $$.map(url:String = null):HashMap
-¶ÁÈ¡urlµÄÓ³Éä¹ØÏµ£¬²»´«Îª»ñÈ¡È«²¿Ó³ÉäĞÅÏ¢
+è¯»å–urlçš„æ˜ å°„å…³ç³»ï¼Œä¸ä¼ ä¸ºè·å–å…¨éƒ¨æ˜ å°„ä¿¡æ¯
 
 $$.load(url:String, callback:Function = null, charset:String = null):void
-¼ÓÔØurlµÄscriptÎÄ¼ş£¬³É¹¦/Ê§°Üºó»Øµ÷callback£¬²¢ÇÒ¿ÉÖ¸¶¨ÎÄ¼şµÄ±àÂëcharset
+åŠ è½½urlçš„scriptæ–‡ä»¶ï¼ŒæˆåŠŸ/å¤±è´¥åå›è°ƒcallbackï¼Œå¹¶ä¸”å¯æŒ‡å®šæ–‡ä»¶çš„ç¼–ç charset
 
 $$.head:Object
-document.headµÄ¿ì½İÒıÓÃ
+document.headçš„å¿«æ·å¼•ç”¨
 
 $$.base(url:String = null):String
-ÉèÖÃ/¶ÁÈ¡¼ÓÔØ¸ùÂ·¾¶£¬Ä¬ÈÏÎªµ±Ç°Ò³ÃæµÄurl
+è®¾ç½®/è¯»å–åŠ è½½æ ¹è·¯å¾„ï¼Œé»˜è®¤ä¸ºå½“å‰é¡µé¢çš„url
 
 $$.pase(url:String, depend:String = null):String
-¸ù¾İdepend»ñÈ¡urlÏà¶ÔÓÚÆäµÄ¾ø¶ÔÂ·¾¶Öµ£¬Ê¡ÂÔdependÎªÏà¶Ô$$.base()µÄÖµ
+æ ¹æ®dependè·å–urlç›¸å¯¹äºå…¶çš„ç»å¯¹è·¯å¾„å€¼ï¼Œçœç•¥dependä¸ºç›¸å¯¹$$.base()çš„å€¼
 
 define(id:String = null, dependencies:Array<String> = null, factory:Function/Object):void
-CommonJS/AMD±ê×¼¶¨ÒåÄ£¿é½Ó¿Ú
+CommonJS/AMDæ ‡å‡†å®šä¹‰æ¨¡å—æ¥å£
 
 require(mod:String):Object
-CommonJS/AMD±ê×¼»ñÈ¡Ä£¿é½Ó¿Ú
+CommonJS/AMDæ ‡å‡†è·å–æ¨¡å—æ¥å£
 
 require(mod:String, callback:Function, charset:String = null):void
-CommonJS/AMD±ê×¼Ê¹ÓÃÄ£¿é½Ó¿Ú£¬Ôö¼ÓÁËµÚ3¸öcharset²ÎÊı¿ÉÑ¡±àÂë
+CommonJS/AMDæ ‡å‡†ä½¿ç”¨æ¨¡å—æ¥å£ï¼Œå¢åŠ äº†ç¬¬3ä¸ªcharsetå‚æ•°å¯é€‰ç¼–ç 
 
 require():HashMap
-»ñÈ¡È«²¿Ä£¿éĞÅÏ¢
+è·å–å…¨éƒ¨æ¨¡å—ä¿¡æ¯
 
 
 ## License
