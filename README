@@ -21,7 +21,7 @@ document.head的快捷引用
 $$.base(url:String = null):String
 设置/读取加载根路径，默认为当前页面的url
 
-$$.pase(url:String, depend:String = null):String
+$$.path(url:String, depend:String = null):String
 根据depend获取url相对于其的绝对路径值，省略depend为相对$$.base()的值
 
 define(id:String = null, dependencies:Array<String> = null, factory:Function/Object):void
