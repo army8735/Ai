@@ -9,15 +9,24 @@ var $$ = (function() {
 	/**
 	 * @public 设置script的url的映射关系，为版本自动化做准备
 	 * @note url会类似xxx.8735.js形式，为版本控制发布工具产生，其中数字为版本号，将去除版本号的正确url对应到自身上
-	 * @param {url} script的url
-	 * @param {boolean} 是否强制覆盖
+	 * @param {url} 需要映射的url
+	 * @param {url} 映射的结果
+	 * @param {boolean} 是否强制覆盖，可选
 	 */
-	function join(url, force) {
-		//join时可能不是绝对路径而是相对根路径，由构建工具生成
-		url = path(url);
-		var key = url.replace(/_\d+\.js$/, '.js');
-		if(force || !lib[key])
-			lib[key] = url;
+	function join(key, url, force) {
+		if(arguments.length == 0) {
+			return lib;
+		}
+		else if(arguments.length == 1) {
+			return lib[key];
+		}
+		else {
+			//join时可能不是绝对路径而是相对根路径，由构建工具生成
+			url = path(url);
+			if(force || !lib[key]) {
+				lib[key] = url;
+			}
+		}
 	}
 	/**
 	 * @public 可并行加载script文件，且仅加载一次
@@ -67,13 +76,6 @@ var $$ = (function() {
 		}
 	}
 	/**
-	 * @public 获取映射库
-	 * @return {Object} hashmap
-	 */
-	function map(url) {
-		return url ? lib[url] : lib;
-	}
-	/**
 	 * @public 读取/设置全局根路径
 	 * @param {String} 设置的路径
 	 * @return {String} 根路径
@@ -113,7 +115,6 @@ var $$ = (function() {
 	return {
 		join: join,
 		load: load,
-		map: map,
 		head: h,
 		base: base,
 		path: path
