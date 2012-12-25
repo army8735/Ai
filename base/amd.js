@@ -325,6 +325,7 @@ var require,
 					isReg = false;
 				}
 				else {
+					index--;
 					isReg = true;
 				}
 			}

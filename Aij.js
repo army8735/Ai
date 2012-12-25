@@ -591,6 +591,7 @@
 					isReg = false;
 				}
 				else {
+					index--;
 					isReg = true;
 				}
 			}
