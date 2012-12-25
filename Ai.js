@@ -143,13 +143,14 @@
 		return fBound;
 	});
 
+	document.head = document.head || document.getElementsByTagName('head')[0];
+
 })();var $$ = (function() {
 	var lib = {},
 		state = {},
 		list = {},
 		LOADING = 1,
 		LOADED = 2,
-		h = document.head || document.getElementsByTagName('head')[0],
 		baseUrl = location.href.replace(/\/[^/]*$/, '/');
 	/**
 	 * @public 设置script的url的映射关系，为版本自动化做准备
@@ -206,7 +207,7 @@
 				});
 				list[url] = [];
 				setTimeout(function() {
-					h.removeChild(s);
+					document.head.removeChild(s);
 				}, 1);
 			}
 			if(s.addEventListener)
@@ -217,7 +218,7 @@
 						ol();
 				};
 			}
-			h.appendChild(s);
+			document.head.appendChild(s);
 		}
 	}
 	/**
@@ -260,11 +261,11 @@
 	return {
 		join: join,
 		load: load,
-		head: h,
 		base: base,
 		path: path
 	}
-})();var require,
+})();
+var require,
 	define;
 
 (function() {
@@ -330,7 +331,7 @@
 		}
 		//ie下利用interactive特性降低并发情况下非一致性错误几率
 		if(interactive) {
-			var s = $$.head.getElementsByTagName('script'),
+			var s = document.head.getElementsByTagName('script'),
 				i = 0,
 				len = s.length;
 			for(; i < len; i++) {

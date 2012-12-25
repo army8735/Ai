@@ -4,7 +4,6 @@ var $$ = (function() {
 		list = {},
 		LOADING = 1,
 		LOADED = 2,
-		h = document.head || document.getElementsByTagName('head')[0],
 		baseUrl = location.href.replace(/\/[^/]*$/, '/');
 	/**
 	 * @public 设置script的url的映射关系，为版本自动化做准备
@@ -61,7 +60,7 @@ var $$ = (function() {
 				});
 				list[url] = [];
 				setTimeout(function() {
-					h.removeChild(s);
+					document.head.removeChild(s);
 				}, 1);
 			}
 			if(s.addEventListener)
@@ -72,7 +71,7 @@ var $$ = (function() {
 						ol();
 				};
 			}
-			h.appendChild(s);
+			document.head.appendChild(s);
 		}
 	}
 	/**
@@ -115,7 +114,6 @@ var $$ = (function() {
 	return {
 		join: join,
 		load: load,
-		head: h,
 		base: base,
 		path: path
 	}

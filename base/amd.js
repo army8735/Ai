@@ -64,7 +64,7 @@ var require,
 		}
 		//ie下利用interactive特性降低并发情况下非一致性错误几率
 		if(interactive) {
-			var s = $$.head.getElementsByTagName('script'),
+			var s = document.head.getElementsByTagName('script'),
 				i = 0,
 				len = s.length;
 			for(; i < len; i++) {
