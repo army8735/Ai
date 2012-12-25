@@ -12,9 +12,6 @@ $$.join(key:String, url:String = null, force:Boolean = false):String
 $$.load(url:String, callback:Function = null, charset:String = null):void
 加载url的script文件，成功/失败后回调callback，并且可指定文件的编码charset
 
-$$.head:Object
-document.head的快捷引用
-
 $$.base(url:String = null):String
 设置/读取加载根路径，默认为当前页面的url
 
