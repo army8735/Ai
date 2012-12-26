@@ -331,7 +331,6 @@ var require,
 			}
 			else if(isWord()) {
 				dealWord();
-				isReg = false;
 			}
 			else if(peek == '(') {
 				parentheseStack.push(parentheseState);
@@ -405,13 +404,15 @@ var require,
 		}
 		function dealWord() {
 			if(/[\w$.]/.test(s.charAt(index))) {
-				var r = /^([\w$.\t ]+)/.exec(s.slice(index - 1))[1];
-				modName = (/^require(\s*\.\s*async)?\s*$/.test(r));
+				var r = /^[\w$.]+/.exec(s.slice(index - 1))[0];
+				modName = (/^require(\s*\.\s*async)?$/.test(r));
 				index += r.length - 1;
 				parentheseState = ['if', 'for', 'while'].indexOf(r) != -1;
+				isReg = ['else', 'in', 'return', 'typeof', 'delete'].indexOf(r) != -1;
 			}
 			else {
 				modName = false;
+				isReg = false;
 			}
 		}
 	}
