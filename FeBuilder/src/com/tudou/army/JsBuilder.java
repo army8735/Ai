@@ -172,7 +172,7 @@ public class JsBuilder {
 	}
 	private LinkedHashSet<File> 获取头注释导入文件(File 当前文件, String 注释) {
 		LinkedHashSet<File> 文件列表 = new LinkedHashSet<File>();
-		Pattern p = Pattern.compile("@import\\s+(.+)(.\\w+)?");
+		Pattern p = Pattern.compile("@import\\s+(.+)(\\.\\w+)?");
 		Matcher m = p.matcher(注释);
 		while(m.find()) {
 			String s = m.group(1);
