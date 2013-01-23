@@ -172,14 +172,11 @@ public class JsBuilder {
 	}
 	private LinkedHashSet<File> 获取头注释导入文件(File 当前文件, String 注释) {
 		LinkedHashSet<File> 文件列表 = new LinkedHashSet<File>();
-		Pattern p = Pattern.compile("@import\\s+(.+)(.js)?");
+		Pattern p = Pattern.compile("@import\\s+(.+)(.\\w+)?");
 		Matcher m = p.matcher(注释);
 		while(m.find()) {
 			String s = m.group(1);
 			File f = null;
-			if(s.endsWith(".js")) {
-				s = s.substring(0, s.length() - 3);
-			}
 			if(s.endsWith("*")) {
 				s = s.substring(0, s.length() - 1);
 				if(s.startsWith("/")) {
@@ -190,13 +187,15 @@ public class JsBuilder {
 				}
 				File[] list = f.listFiles();
 				for(File file : list) {
-					if(file.getAbsolutePath().endsWith(".js") || file.getAbsolutePath().endsWith(".tpl")) {
+					if(file.getName().endsWith(".js") || file.getName().endsWith(".tpl")) {
 						文件列表.add(file);
 					}
 				}
 			}
 			else {
-				s += ".js";
+				if(m.group(2) == null) {
+					s += ".js";
+				}
 				if(s.startsWith("/")) {
 					f = new File(根路径, s);
 				}
