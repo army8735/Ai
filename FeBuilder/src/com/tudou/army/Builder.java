@@ -11,14 +11,30 @@ public class Builder {
 	public static HashSet<String> 全局模块;
 	
 	public static void main(String[] args) {
-		//1.css根路径；2.js根路径；3.目标文件；4...全局模块ID
+		File css根路径 = null;
+		File js根路径 = null;
+		File 目标文件 = null;
 		全局模块 = new HashSet<String>();
-		for (int i = 3; i < args.length; i++) {
-			全局模块.add(args[i]);
+		//从args里获取配置
+		for(String arg : args) {
+			if(arg.startsWith("cssroot=")) {
+				css根路径 = new File(arg.substring(8));
+			}
+			else if(arg.startsWith("jsroot=")) {
+				js根路径 = new File(arg.substring(7));
+			}
+			else if(arg.startsWith("in=")) {
+				目标文件 = new File(arg.substring(3));
+			}
+			else if(arg.startsWith("ignore=")) {
+				for(String id : arg.split("\\|")) {
+					全局模块.add(id);
+				}
+			}
 		}
-		File 目标文件 = new File(args[2]);
-		File css根路径 = new File(args[0]);
-		File js根路径 = new File(args[1]);
+		if(css根路径 == null) {
+			System.err.println("css根路径没配置");
+		}
 		if(!css根路径.exists()) {
 			System.err.println("css根路径不存在");
 			return;
@@ -27,6 +43,9 @@ public class Builder {
 			System.err.println("css根路径不是目录");
 			return;
 		}
+		if(js根路径 == null) {
+			System.err.println("js根路径没配置");
+		}
 		if(!js根路径.exists()) {
 			System.err.println("js根路径不存在");
 			return;
@@ -34,6 +53,9 @@ public class Builder {
 		if(!js根路径.isDirectory()) {
 			System.err.println("js根路径不是目录");
 			return;
+		}
+		if(目标文件 == null) {
+			System.err.println("目标文件没配置");
 		}
 		构建文件(css根路径, js根路径, 目标文件);
 	}
@@ -50,6 +72,7 @@ public class Builder {
 			return;
 		}
 		if(!目标文件.isFile() || 目标文件.isHidden()) {
+			System.err.println("目标文件异常");
 			return;
 		}
 		String name = 目标文件.getName();
