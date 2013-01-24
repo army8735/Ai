@@ -28,7 +28,7 @@ public class Builder {
 				目标文件 = new File(arg.substring(3));
 			}
 			else if(arg.startsWith("ignore=")) {
-				for(String id : arg.split("\\|")) {
+				for(String id : arg.substring(7).split("\\|")) {
 					全局模块.add(id);
 				}
 			}
