@@ -14,6 +14,7 @@ public class Builder {
 		File css根路径 = null;
 		File js根路径 = null;
 		File 目标文件 = null;
+		Boolean 是否压缩 = false;
 		全局模块 = new HashSet<String>();
 		//从args里获取配置
 		for(String arg : args) {
@@ -31,35 +32,38 @@ public class Builder {
 					全局模块.add(id);
 				}
 			}
+			else if(arg.startsWith("compress=")) {
+				是否压缩 = (arg.equals("compress=true") || arg.equals("compress=1"));
+			}
 		}
 		if(css根路径 == null) {
 			System.err.println("css根路径没配置");
 		}
 		if(!css根路径.exists()) {
-			System.err.println("css根路径不存在");
+			System.err.println("css根路径不存在: " + css根路径);
 			return;
 		}
 		if(!css根路径.isDirectory()) {
-			System.err.println("css根路径不是目录");
+			System.err.println("css根路径不是目录: " + css根路径);
 			return;
 		}
 		if(js根路径 == null) {
 			System.err.println("js根路径没配置");
 		}
 		if(!js根路径.exists()) {
-			System.err.println("js根路径不存在");
+			System.err.println("js根路径不存在: " + js根路径);
 			return;
 		}
 		if(!js根路径.isDirectory()) {
-			System.err.println("js根路径不是目录");
+			System.err.println("js根路径不是目录: " + js根路径);
 			return;
 		}
 		if(目标文件 == null) {
 			System.err.println("目标文件没配置");
 		}
-		构建文件(css根路径, js根路径, 目标文件);
+		构建文件(css根路径, js根路径, 目标文件, 是否压缩);
 	}
-	static void 构建文件(File css根路径, File js根路径, File 目标文件) {
+	static void 构建文件(File css根路径, File js根路径, File 目标文件, Boolean 是否压缩) {
 		if(!目标文件.exists()) {
 			System.err.println(目标文件.getAbsolutePath() + "文件不存在");
 			return;
@@ -67,7 +71,7 @@ public class Builder {
 		if(目标文件.isDirectory()) {
 			File[] list = 目标文件.listFiles();
 			for(File f : list) {
-				构建文件(css根路径, js根路径, f);
+				构建文件(css根路径, js根路径, f, 是否压缩);
 			}
 			return;
 		}
@@ -78,12 +82,12 @@ public class Builder {
 		String name = 目标文件.getName();
 		if(name.endsWith("_src.css")) {
 			为文件添加默认头注释(目标文件);
-			CssBuilder cssBuilder = new CssBuilder(css根路径, 目标文件);
+			CssBuilder cssBuilder = new CssBuilder(css根路径, 目标文件, 是否压缩);
 			cssBuilder.运行();
 		}
 		else if(name.endsWith("_src.js")) {
 			为文件添加默认头注释(目标文件);
-			JsBuilder jsBuilder = new JsBuilder(js根路径, 目标文件, 全局模块);
+			JsBuilder jsBuilder = new JsBuilder(js根路径, 目标文件, 全局模块, 是否压缩);
 			jsBuilder.运行();
 		}
 		else if(name.endsWith(".css") || name.endsWith(".js")) {

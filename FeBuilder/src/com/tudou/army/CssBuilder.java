@@ -3,18 +3,24 @@ package com.tudou.army;
 import java.io.*;
 import java.util.*;
 import java.util.regex.*;
+import com.yahoo.platform.yui.compressor.YUICompressor;
 
 public class CssBuilder {
 	private File 根路径;
 	private File 目标文件;
 	private File 合并文件;
 	private LinkedHashSet<File> 文件列表;
+	private Boolean 是否压缩;
+	private File 压缩文件;
 	
-	public CssBuilder(File 根路径, File 目标文件) {
+	public CssBuilder(File 根路径, File 目标文件, Boolean 是否压缩) {
 		this.根路径 = 根路径;
 		this.目标文件 = 目标文件;
+		this.是否压缩 = 是否压缩;
+		是否压缩 = false;
 		String name = 目标文件.getName();
 		合并文件 = new File(目标文件.getParent(), name.substring(0, name.length() - 8) + ".css");
+		压缩文件 = new File(目标文件.getParent(), name.substring(0, name.length() - 8) + ".min.css");
 		if(!合并文件.exists()) {
 			try {
 				合并文件.createNewFile();
@@ -110,6 +116,13 @@ public class CssBuilder {
 					//
 				}
 			}
+		}
+		if(是否压缩) {
+			String[] args = new String[3]; 
+			args[0] = 合并文件.getAbsolutePath();
+			args[1] = "-o";
+			args[2] = 压缩文件.getAbsolutePath();
+			YUICompressor.parse(args);
 		}
 	}
 }

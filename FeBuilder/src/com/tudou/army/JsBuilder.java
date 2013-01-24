@@ -4,24 +4,30 @@ import java.io.*;
 import java.util.*;
 import java.util.regex.*;
 
+import com.google.javascript.jscomp.CommandLineRunner;
+
 public class JsBuilder {
 	private File 根路径;
 	private File 目标文件;
 	private File 合并文件;
 	private HashSet<String> 全局模块;
 	private LinkedHashSet<File> 文件列表;
+	private Boolean 是否压缩;
+	private File 压缩文件;
 	
 	static final int 默认 = 0;
 	static final int 导入 = 1;
 	static final int 构建 = 2;
 	static final int 依赖 = 3;
 
-	public JsBuilder(File 根路径, File 目标文件, HashSet<String> 全局模块) {
+	public JsBuilder(File 根路径, File 目标文件, HashSet<String> 全局模块, Boolean 是否压缩) {
 		this.根路径 = 根路径;
 		this.目标文件 = 目标文件;
 		this.全局模块 = 全局模块;
+		this.是否压缩 = 是否压缩;
 		String name = 目标文件.getName();
 		合并文件 = new File(目标文件.getParent(), name.substring(0, name.length() - 7) + ".js");
+		压缩文件 = new File(目标文件.getParent(), name.substring(0, name.length() - 8) + ".min.js");
 		if(!合并文件.exists()) {
 			try {
 				合并文件.createNewFile();
@@ -287,6 +293,18 @@ public class JsBuilder {
 				} catch(IOException e) {
 					//
 				}
+			}
+		}
+		if(是否压缩) {
+			String[] input = new String[3];
+			input[0] = "--js=" + 合并文件.getAbsolutePath();
+			input[1] = "--charset=gbk";
+			input[2] = "--js_output_file=" + 压缩文件.getAbsolutePath();
+
+			CommandLineRunner runner = new CommandLineRunner(input);
+			if (runner.shouldRunCompiler())
+			{
+				runner.run();
 			}
 		}
 	}
