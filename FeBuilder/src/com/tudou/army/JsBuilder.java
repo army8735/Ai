@@ -178,7 +178,7 @@ public class JsBuilder {
 	}
 	private LinkedHashSet<File> 获取头注释导入文件(File 当前文件, String 注释) {
 		LinkedHashSet<File> 文件列表 = new LinkedHashSet<File>();
-		Pattern p = Pattern.compile("@import\\s+(.+)(\\.\\w+)?");
+		Pattern p = Pattern.compile("@import\\s+(.+)");
 		Matcher m = p.matcher(注释);
 		while(m.find()) {
 			String s = m.group(1);
@@ -199,9 +199,6 @@ public class JsBuilder {
 				}
 			}
 			else {
-				if(m.group(2) == null) {
-					s += ".js";
-				}
 				if(s.startsWith("/")) {
 					f = new File(根路径, s);
 				}
