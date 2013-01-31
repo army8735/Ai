@@ -33,6 +33,7 @@ public class JsBuilder {
 				合并文件.createNewFile();
 			} catch (IOException e) {
 				e.printStackTrace();
+				System.exit(1);
 			}
 		}
 		文件列表 = new LinkedHashSet<File>();
@@ -224,6 +225,7 @@ public class JsBuilder {
 			return sb.toString();
 		} catch(IOException e) {
 			e.printStackTrace();
+			System.exit(1);
 		} finally {
 			if(br != null) {
 				try {
@@ -283,6 +285,7 @@ public class JsBuilder {
 			bw.close();
 		} catch (IOException e) {
 			e.printStackTrace();
+			System.exit(1);
 		} finally {
 			if(bw != null) {
 				try {

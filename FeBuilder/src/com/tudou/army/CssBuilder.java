@@ -26,6 +26,7 @@ public class CssBuilder {
 				合并文件.createNewFile();
 			} catch (IOException e) {
 				e.printStackTrace();
+				System.exit(1);
 			}
 		}
 		文件列表 = new LinkedHashSet<File>();
@@ -90,6 +91,7 @@ public class CssBuilder {
 			文件列表.add(当前文件);
 		} catch (IOException e) {
 			e.printStackTrace();
+			System.exit(1);
 		} finally {
 			if(br != null) {
 				try {
@@ -108,6 +110,7 @@ public class CssBuilder {
 			bw.close();
 		} catch (IOException e) {
 			e.printStackTrace();
+			System.exit(1);
 		} finally {
 			if(bw != null) {
 				try {

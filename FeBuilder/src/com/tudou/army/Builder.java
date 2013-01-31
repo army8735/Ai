@@ -126,6 +126,7 @@ public class Builder {
 			}
 		} catch(IOException e) {
 			e.printStackTrace();
+			System.exit(1);
 		} finally {
 			if(br != null) {
 				try {
