@@ -502,7 +502,7 @@ var require,
 	function checkCyclic(mod, history, list) {
 		if(!mod)
 			return;
-		var id = mod.uri;
+		var id = mod.uri || mod.id;
 		list.push(id);
 		if(history[id])
 			throw new Error('cyclic dependencies:\n' + list.join('\n'));
