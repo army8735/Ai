@@ -332,9 +332,8 @@ var require,
 		//ie下利用interactive特性降低并发情况下非一致性错误几率
 		if(interactive) {
 			var s = document.head.getElementsByTagName('script'),
-				i = 0,
-				len = s.length;
-			for(; i < len; i++) {
+				i = s.length - 1;
+			for(; i >= 0; i--) {
 				if(s[i].readyState == 'interactive') {
 					fetch(module, s[i].hasAttribute ? s[i].src : s[i].getAttribute('src', 4));
 					return;
