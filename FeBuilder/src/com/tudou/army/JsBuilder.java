@@ -296,10 +296,11 @@ public class JsBuilder {
 			}
 		}
 		if(是否压缩) {
-			String[] input = new String[3];
+			String[] input = new String[4];
 			input[0] = "--js=" + 合并文件.getAbsolutePath();
 			input[1] = "--charset=gbk";
 			input[2] = "--js_output_file=" + 压缩文件.getAbsolutePath();
+			input[3] = "--warning_level=QUIET";
 
 			CommandLineRunner runner = new CommandLineRunner(input);
 			if (runner.shouldRunCompiler())

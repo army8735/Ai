@@ -62,6 +62,7 @@ public class Builder {
 			System.err.println("目标文件没配置");
 		}
 		构建文件(css根路径, js根路径, 目标文件, 是否压缩);
+		System.exit(1);
 	}
 	static void 构建文件(File css根路径, File js根路径, File 目标文件, Boolean 是否压缩) {
 		if(!目标文件.exists()) {
