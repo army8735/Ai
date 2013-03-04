@@ -40,11 +40,17 @@ need jre1.6+
 java -jar FeBuilder.jar
 
 jsroot= js域名根目录
+
 cssroot= css域名根目录
+
 in= 构建或压缩的文件路径
+
 compress= true为构建后压缩
+
 onlycompress= true为仅压缩
+
 charset= 文件编码默认utf-8
+
 ignore= 构建忽略的全局模块id
 
 
