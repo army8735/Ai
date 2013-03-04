@@ -33,7 +33,7 @@ require():HashMap
 define.url(url:String):void
 设定下一个模块的uri，扩展接口
 
-## FeBuilder.jar
+## FeBuilder
 
 need jre1.6+
 
@@ -52,6 +52,13 @@ onlycompress= true为仅压缩
 charset= 文件编码默认utf-8
 
 ignore= 构建忽略的全局模块id
+
+
+## GUIBuilder
+
+need Adobe air2+
+
+a GUI tool base on FeBuilder
 
 
 ## License
