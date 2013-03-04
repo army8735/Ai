@@ -15,6 +15,7 @@ package
 	import flash.net.FileFilter;
 	import flash.net.URLRequest;
 	import flash.net.navigateToURL;
+	import fl.containers.ScrollPane;
 	
 	public class GUIBuilder extends Sprite
 	{
@@ -24,6 +25,7 @@ package
 		private var 消息框:MsgBox;
 		private var 配置:Config;
 		private var 按钮:Btns;
+		private var 滚动条:ScrollPane;
 		
 		public function GUIBuilder()
 		{
@@ -46,6 +48,11 @@ package
 			addChild(配置);
 			addChild(消息框);
 			
+			滚动条 = new ScrollPane();
+			滚动条.source = 文件列表;
+			滚动条.scrollDrag = true;
+			addChild(滚动条);
+			
 			stage.addEventListener(Event.RESIZE, 重置);
 			重置();
 			
@@ -62,6 +69,7 @@ package
 				var file:File = File.desktopDirectory;
 				file.addEventListener(FileListEvent.SELECT_MULTIPLE, function(event:FileListEvent):void {
 					文件列表.添加多文件(event.files);
+					滚动条.update();
 				});
 				file.browseForOpenMultiple("选择ui文件", [new FileFilter("css和js(*.css;*.js)", "*.css;*.js")]);
 			});
@@ -99,6 +107,10 @@ package
 			配置.重置();
 			消息框.重置();
 			按钮.重置();
+			
+//			滚动条.x = stage.stageWidth - 20;
+			滚动条.width = stage.stageWidth;
+			滚动条.height = (stage.stageHeight >> 1) - 10;
 		}
 		private function 拖动进入(event:NativeDragEvent):void {
 			if(event.clipboard.hasFormat(ClipboardFormats.FILE_LIST_FORMAT)) {
@@ -108,6 +120,7 @@ package
 		private function 拖放(event:NativeDragEvent):void {
 			var files:Array = event.clipboard.getData(ClipboardFormats.FILE_LIST_FORMAT) as Array;
 			文件列表.添加多文件(files);
+			滚动条.update();
 		}
 	}
 }

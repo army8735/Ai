@@ -28,7 +28,7 @@ package
 		
 		public function 添加(file:File):void {
 			if(!哈希[file.url]) {
-				var uiFile:UIFile = new UIFile(this, file, stage.stageWidth, 列表.length % 2 == 1);
+				var uiFile:UIFile = new UIFile(this, file, stage.stageWidth - 20, 列表.length % 2 == 1);
 				uiFile.y = 列表.length * UIFile.H;
 				addChild(uiFile);
 				列表.push(uiFile);
@@ -144,7 +144,7 @@ package
 		public function 重置():void {
 			graphics.clear();
 			graphics.beginFill(0xF9F9F9);
-			graphics.drawRect(0, 0, stage.stageWidth, stage.stageHeight >> 1);
+			graphics.drawRect(0, 0, stage.stageWidth - 20, stage.stageHeight >> 1);
 			graphics.endFill();
 		}
 	}
