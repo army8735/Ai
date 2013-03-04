@@ -3,10 +3,10 @@ package
 	import flash.display.Sprite;
 	import flash.events.MouseEvent;
 	import flash.filesystem.File;
+	import flash.filesystem.FileMode;
 	import flash.filesystem.FileStream;
 	import flash.text.TextField;
 	import flash.text.TextFormat;
-	import flash.filesystem.FileMode;
 	
 	public class Config extends Sprite
 	{
@@ -20,6 +20,7 @@ package
 		private var css根目录:ConfigItem;
 		private var js根目录:ConfigItem;
 		private var ignore:ConfigItem;
+		private var 文件编码:ConfigItem;
 		private var 消息框:MsgBox;
 		
 		public function Config(消息框:MsgBox)
@@ -88,6 +89,8 @@ package
 			addChild(js根目录);
 			ignore = new ConfigItem("忽略模块id");
 			addChild(ignore);
+			文件编码 = new ConfigItem("编码");
+			addChild(文件编码);
 			
 			初始化();
 			
@@ -102,6 +105,7 @@ package
 				v.push("css=" + css根目录.路径);
 				v.push("js=" + js根目录.路径);
 				v.push("ignore=" + ignore.路径);
+				v.push("charset=" + 文件编码.路径);
 				var 存储文件:File = File.applicationStorageDirectory.resolvePath("config.txt");
 				var 文件流:FileStream = new FileStream();
 				文件流.open(存储文件, FileMode.WRITE);
@@ -156,6 +160,9 @@ package
 				else if(s.indexOf("ignore=") == 0) {
 					ignore.路径 = s.slice(7);
 				}
+				else if(s.indexOf("charset=") == 0) {
+					文件编码.路径 = s.slice(8);
+				}
 			});
 			文件流.close();
 			if(!检测()) {
@@ -179,6 +186,9 @@ package
 		public function get 全局id():String {
 			return ignore.路径;
 		}
+		public function get 编码():String {
+			return 文件编码.路径;
+		}
 		public function 重置():void {
 			蒙层.graphics.clear();
 			蒙层.graphics.beginFill(0);
@@ -189,7 +199,7 @@ package
 			说明.x = 背景.x + 15;
 			说明.y = 背景.y + 15;
 			java程序.x = 说明.x + 20;
-			java程序.y = 说明.y + 50;
+			java程序.y = 说明.y + 40;
 			fe包.x = 说明.x + 20;
 			fe包.y = java程序.y + 30;
 			css根目录.x = 说明.x + 20;
@@ -198,8 +208,10 @@ package
 			js根目录.y = css根目录.y + 30;
 			ignore.x = 说明.x + 20;
 			ignore.y = js根目录.y + 30;
+			文件编码.x = 说明.x + 20;
+			文件编码.y = ignore.y + 30;
 			保存.x = 说明.x + 200;
-			保存.y = 背景.y + 背景.height - 60;
+			保存.y = 背景.y + 背景.height - 50;
 			关闭.x = 保存.x + 50;
 			关闭.y = 保存.y;
 		}

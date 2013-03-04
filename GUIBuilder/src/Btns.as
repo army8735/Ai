@@ -24,7 +24,7 @@ package
 			打包 = new Btn("打包");
 			打包.x = 120;
 			打包.addEventListener(MouseEvent.CLICK, function(event:MouseEvent):void {
-				文件列表.构建();
+				文件列表.构建(false);
 			});
 			addChild(打包);
 			

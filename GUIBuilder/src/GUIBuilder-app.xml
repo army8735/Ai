@@ -120,6 +120,7 @@
 	<!-- (i.e., to only mobile devices) then add this element and list -->
 	<!-- only the profiles which your application does support. -->
 	<!-- <supportedProfiles>desktop extendedDesktop mobileDevice extendedMobileDevice</supportedProfiles> -->
+	<supportedProfiles>extendedDesktop</supportedProfiles>
 
 	<!-- Languages supported by application -->
 	<!-- Only these languages can be specified -->
@@ -243,5 +244,4 @@
         <!-- <colorDepth></colorDepth> -->
     <!-- </android> -->
 	<!-- End of the schema for adding the android specific tags in AndroidManifest.xml file -->
-	<supportedProfiles>desktop</supportedProfiles>
 </application>

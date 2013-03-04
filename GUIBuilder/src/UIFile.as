@@ -89,7 +89,7 @@ package
 			打包.addEventListener(Event.SELECT, function(event:Event):void {
 				文件列表.构建单个(self, false);
 			});
-			构建.addEventListener(Event.SELECT, function(event:Event):void {
+			压缩.addEventListener(Event.SELECT, function(event:Event):void {
 				文件列表.压缩单个(self);
 			});
 			删除.addEventListener(Event.SELECT, function(event:Event):void {

@@ -16,6 +16,7 @@ public class Builder {
 		File 目标文件 = null;
 		Boolean 是否压缩 = false;
 		Boolean 仅压缩 = false;
+		String 编码 = null;
 		全局模块 = new HashSet<String>();
 		//从args里获取配置
 		for(String arg : args) {
@@ -38,6 +39,9 @@ public class Builder {
 			}
 			else if(arg.startsWith("onlycompress=")) {
 				仅压缩 = (arg.equals("onlycompress=true") || arg.equals("onlycompress=1"));
+			}
+			else if(arg.startsWith("charset=")) {
+				编码 = arg.substring(8);
 			}
 		}
 		if(css根路径 == null) {
@@ -65,10 +69,10 @@ public class Builder {
 		if(目标文件 == null) {
 			System.err.println("目标文件没配置");
 		}
-		构建文件(css根路径, js根路径, 目标文件, 是否压缩, 仅压缩);
+		构建文件(css根路径, js根路径, 目标文件, 是否压缩, 仅压缩, 编码);
 		System.exit(1);
 	}
-	static void 构建文件(File css根路径, File js根路径, File 目标文件, Boolean 是否压缩, Boolean 仅压缩) {
+	static void 构建文件(File css根路径, File js根路径, File 目标文件, Boolean 是否压缩, Boolean 仅压缩, String 编码) {
 		if(!目标文件.exists()) {
 			System.err.println(目标文件.getAbsolutePath() + "文件不存在");
 			return;
@@ -76,7 +80,7 @@ public class Builder {
 		if(目标文件.isDirectory()) {
 			File[] list = 目标文件.listFiles();
 			for(File f : list) {
-				构建文件(css根路径, js根路径, f, 是否压缩, 仅压缩);
+				构建文件(css根路径, js根路径, f, 是否压缩, 仅压缩, 编码);
 			}
 			return;
 		}
@@ -88,21 +92,21 @@ public class Builder {
 		if(仅压缩) {
 			为文件添加默认头注释(目标文件);
 			if(文件名.endsWith(".css")) {
-				CssBuilder.压缩(目标文件);
+				CssBuilder.压缩(目标文件, 编码);
 			}
 			else if(文件名.endsWith(".js")) {
-				JsBuilder.压缩(目标文件);
+				JsBuilder.压缩(目标文件, 编码);
 			}
 		}
 		else {
 			if(文件名.endsWith("_src.css")) {
 				为文件添加默认头注释(目标文件);
-				CssBuilder cssBuilder = new CssBuilder(css根路径, 目标文件, 是否压缩);
+				CssBuilder cssBuilder = new CssBuilder(css根路径, 目标文件, 是否压缩, 编码);
 				cssBuilder.构建();
 			}
 			else if(文件名.endsWith("_src.js")) {
 				为文件添加默认头注释(目标文件);
-				JsBuilder jsBuilder = new JsBuilder(js根路径, 目标文件, 全局模块, 是否压缩);
+				JsBuilder jsBuilder = new JsBuilder(js根路径, 目标文件, 全局模块, 是否压缩, 编码);
 				jsBuilder.构建();
 			}
 			else if(文件名.endsWith(".css") || 文件名.endsWith(".js")) {

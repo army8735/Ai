@@ -56,6 +56,7 @@ package
 				nativeProcessStartupInfo = new NativeProcessStartupInfo();
 				nativeProcessStartupInfo.executable = java;
 			}
+			控制台.清空();
 			trace('buid');
 			var process:NativeProcess = new NativeProcess();
 			var v:Vector.<String> = new Vector.<String>();
@@ -100,6 +101,7 @@ package
 				nativeProcessStartupInfo = new NativeProcessStartupInfo();
 				nativeProcessStartupInfo.executable = java;
 			}
+			控制台.清空();
 			trace('buid');
 			var process:NativeProcess = new NativeProcess();
 			var v:Vector.<String> = new Vector.<String>();
@@ -109,6 +111,7 @@ package
 			v.push("jsroot=" + 配置.js);
 			v.push("in=" + 文件.路径);
 			v.push("ignore=" + 配置.全局id.replace(/\s+/g, "|"));
+			v.push("charset=" + 配置.编码.replace(/^\s+/g, "").replace(/\s+$/g, ""));
 			v.push("onlycompress=true");
 			trace(v);
 			nativeProcessStartupInfo.arguments = v;

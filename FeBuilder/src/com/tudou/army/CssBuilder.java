@@ -12,12 +12,13 @@ public class CssBuilder {
 	private LinkedHashSet<File> 文件列表;
 	private Boolean 是否压缩;
 	private File 压缩文件;
+	private String 编码;
 	
-	public CssBuilder(File 根路径, File 目标文件, Boolean 是否压缩) {
+	public CssBuilder(File 根路径, File 目标文件, Boolean 是否压缩, String 编码) {System.out.println(编码);
 		this.根路径 = 根路径;
 		this.目标文件 = 目标文件;
 		this.是否压缩 = 是否压缩;
-		是否压缩 = false;
+		this.编码 = 编码;
 		String name = 目标文件.getName();
 		合并文件 = new File(目标文件.getParent(), name.substring(0, name.length() - 8) + ".css");
 		压缩文件 = new File(目标文件.getParent(), name.substring(0, name.length() - 8) + ".min.css");
@@ -31,6 +32,15 @@ public class CssBuilder {
 		}
 		文件列表 = new LinkedHashSet<File>();
 	}
+	public CssBuilder(File 根路径, File 目标文件, Boolean 是否压缩) {
+		this(根路径, 目标文件, 是否压缩, "utf-8");
+	}
+	public CssBuilder(File 根路径, File 目标文件) {
+		this(根路径, 目标文件, false, "utf-8");
+	}
+	public CssBuilder(File 根路径, File 目标文件, String 编码) {
+		this(根路径, 目标文件, false, 编码);
+	}
 	public void 构建() {
 		StringBuilder 结果缓存 = new StringBuilder();
 		递归导入文件(目标文件, 结果缓存);
@@ -42,10 +52,17 @@ public class CssBuilder {
 		System.out.println("---Output:");
 		System.out.println(合并文件);
 		if(是否压缩) {
-			String[] args = new String[3]; 
+			String[] args = new String[5]; 
 			args[0] = 合并文件.getAbsolutePath();
 			args[1] = "-o";
 			args[2] = 压缩文件.getAbsolutePath();
+			args[3] = "--charset";
+			if(编码 != null && !编码.equals("")) {
+				args[4] = 编码;
+			}
+			else {
+				args[4] = "utf-8";
+			}
 			YUICompressor.parse(args);
 			System.out.println("---Compress:");
 			System.out.println(压缩文件);
@@ -131,6 +148,9 @@ public class CssBuilder {
 		}
 	}
 	public static void 压缩(File 文件) {
+		压缩(文件, null);
+	}
+	public static void 压缩(File 文件, String 编码) {
 		String 文件名 = 文件.getName();
 		File 合并文件 = 文件;
 		File 压缩文件 = null;
@@ -147,12 +167,19 @@ public class CssBuilder {
 		else {
 			压缩文件 = new File(文件.getParent(), 文件名.substring(0, 文件名.length() - 3) + ".min.css");
 		}
+		String[] args = new String[5]; 
+		args[0] = 合并文件.getAbsolutePath();
+		args[1] = "-o=";
+		args[2] = 压缩文件.getAbsolutePath();
+		args[3] = "--charset";
+		if(编码 != null && !编码.equals("")) {
+			args[4] = 编码;
+		}
+		else {
+			args[4] = "utf-8";
+		}
+		YUICompressor.parse(args);
 		System.out.println("---Compress:");
 		System.out.println(压缩文件);
-		String[] args = new String[3]; 
-		args[0] = 合并文件.getAbsolutePath();
-		args[1] = "-o";
-		args[2] = 压缩文件.getAbsolutePath();
-		YUICompressor.parse(args);
 	}
 }

@@ -3,7 +3,6 @@ package com.tudou.army;
 import java.io.*;
 import java.util.*;
 import java.util.regex.*;
-
 import com.google.javascript.jscomp.CommandLineRunner;
 
 public class JsBuilder {
@@ -14,17 +13,19 @@ public class JsBuilder {
 	private LinkedHashSet<File> 文件列表;
 	private Boolean 是否压缩;
 	private File 压缩文件;
+	private String 编码;
 	
 	static final int 默认 = 0;
 	static final int 导入 = 1;
 	static final int 构建 = 2;
 	static final int 依赖 = 3;
 
-	public JsBuilder(File 根路径, File 目标文件, HashSet<String> 全局模块, Boolean 是否压缩) {
+	public JsBuilder(File 根路径, File 目标文件, HashSet<String> 全局模块, Boolean 是否压缩, String 编码) {
 		this.根路径 = 根路径;
 		this.目标文件 = 目标文件;
 		this.全局模块 = 全局模块;
 		this.是否压缩 = 是否压缩;
+		this.编码 = 编码;
 		String name = 目标文件.getName();
 		合并文件 = new File(目标文件.getParent(), name.substring(0, name.length() - 7) + ".js");
 		压缩文件 = new File(目标文件.getParent(), name.substring(0, name.length() - 7) + ".min.js");
@@ -37,6 +38,24 @@ public class JsBuilder {
 			}
 		}
 		文件列表 = new LinkedHashSet<File>();
+	}
+	public JsBuilder(File 根路径, File 目标文件, HashSet<String> 全局模块, Boolean 是否压缩) {
+		this(根路径, 目标文件, 全局模块, 是否压缩, "utf-8");
+	}
+	public JsBuilder(File 根路径, File 目标文件, HashSet<String> 全局模块) {
+		this(根路径, 目标文件, 全局模块, false, "utf-8");
+	}
+	public JsBuilder(File 根路径, File 目标文件) {
+		this(根路径, 目标文件, new HashSet<String>(), false, "utf-8");
+	}
+	public JsBuilder(File 根路径, File 目标文件, Boolean 是否压缩) {
+		this(根路径, 目标文件, new HashSet<String>(), 是否压缩, "utf-8");
+	}
+	public JsBuilder(File 根路径, File 目标文件, Boolean 是否压缩, String 编码) {
+		this(根路径, 目标文件, new HashSet<String>(), 是否压缩, 编码);
+	}
+	public JsBuilder(File 根路径, File 目标文件, String 编码) {
+		this(根路径, 目标文件, new HashSet<String>(), false, 编码);
 	}
 	public void 构建() {
 		StringBuilder 结果缓存 = new StringBuilder();
@@ -51,10 +70,14 @@ public class JsBuilder {
 		if(是否压缩) {
 			String[] input = new String[4];
 			input[0] = "--js=" + 合并文件.getAbsolutePath();
-			input[1] = "--charset=gbk";
-			input[2] = "--js_output_file=" + 压缩文件.getAbsolutePath();
-			input[3] = "--warning_level=QUIET";
-
+			input[1] = "--js_output_file=" + 压缩文件.getAbsolutePath();
+			input[2] = "--warning_level=QUIET";
+			if(编码 != null && !编码.equals("")) {
+				input[3] = "--charset=" + 编码;
+			}
+			else {
+				input[3] = "--charset=utf-8";
+			}
 			CommandLineRunner runner = new CommandLineRunner(input);
 			if (runner.shouldRunCompiler())
 			{
@@ -312,6 +335,9 @@ public class JsBuilder {
 		}
 	}
 	public static void 压缩(File 文件) {
+		压缩(文件, null);
+	}
+	public static void 压缩(File 文件, String 编码) {
 		String 文件名 = 文件.getName();
 		File 合并文件 = 文件;
 		File 压缩文件 = null;
@@ -328,18 +354,22 @@ public class JsBuilder {
 		else {
 			压缩文件 = new File(文件.getParent(), 文件名.substring(0, 文件名.length() - 3) + ".min.js");
 		}
-		System.out.println("---Compress:");
-		System.out.println(压缩文件);
 		String[] input = new String[4];
 		input[0] = "--js=" + 合并文件.getAbsolutePath();
-		input[1] = "--charset=gbk";
-		input[2] = "--js_output_file=" + 压缩文件.getAbsolutePath();
-		input[3] = "--warning_level=QUIET";
-
+		input[1] = "--js_output_file=" + 压缩文件.getAbsolutePath();
+		input[2] = "--warning_level=QUIET";
+		if(编码 != null && !编码.equals("")) {
+			input[3] = "--charset=" + 编码;
+		}
+		else {
+			input[3] = "--charset=utf-8";
+		}
 		CommandLineRunner runner = new CommandLineRunner(input);
 		if (runner.shouldRunCompiler())
 		{
 			runner.run();
 		}
+		System.out.println("---Compress:");
+		System.out.println(压缩文件);
 	}
 }

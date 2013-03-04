@@ -48,5 +48,8 @@ package
 			文本框.setTextFormat(错误样式, 文本框.text.length - s.length, 文本框.text.length);
 			文本框.scrollV = 文本框.numLines;
 		}
+		public function 清空():void {
+			文本框.text = "";
+		}
 	}
 }
