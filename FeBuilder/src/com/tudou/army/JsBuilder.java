@@ -27,7 +27,7 @@ public class JsBuilder {
 		this.是否压缩 = 是否压缩;
 		String name = 目标文件.getName();
 		合并文件 = new File(目标文件.getParent(), name.substring(0, name.length() - 7) + ".js");
-		压缩文件 = new File(目标文件.getParent(), name.substring(0, name.length() - 8) + ".min.js");
+		压缩文件 = new File(目标文件.getParent(), name.substring(0, name.length() - 7) + ".min.js");
 		if(!合并文件.exists()) {
 			try {
 				合并文件.createNewFile();
@@ -38,7 +38,7 @@ public class JsBuilder {
 		}
 		文件列表 = new LinkedHashSet<File>();
 	}
-	public void 运行() {
+	public void 构建() {
 		StringBuilder 结果缓存 = new StringBuilder();
 		递归导入文件(目标文件, 结果缓存, 默认);
 		System.out.println("---Input:");
@@ -307,6 +307,37 @@ public class JsBuilder {
 			{
 				runner.run();
 			}
+		}
+	}
+	public static void 压缩(File 文件) {
+		String 文件名 = 文件.getName();
+		File 合并文件 = 文件;
+		File 压缩文件 = null;
+		if(文件名.endsWith("_src.js")) {
+			合并文件 = new File(文件.getParent(), 文件名.substring(0, 文件名.length() - 7) + ".js");
+			if(合并文件.exists()) {
+				压缩文件 = new File(文件.getParent(), 文件名.substring(0, 文件名.length() - 7) + ".min.js");
+			}
+			else {
+				合并文件 = 文件;
+				压缩文件 = new File(文件.getParent(), 文件名.substring(0, 文件名.length() - 7) + ".min.js");
+			}
+		}
+		else {
+			压缩文件 = new File(文件.getParent(), 文件名.substring(0, 文件名.length() - 3) + ".min.js");
+		}
+		System.out.println("---Compress:");
+		System.out.println(压缩文件);
+		String[] input = new String[4];
+		input[0] = "--js=" + 合并文件.getAbsolutePath();
+		input[1] = "--charset=gbk";
+		input[2] = "--js_output_file=" + 压缩文件.getAbsolutePath();
+		input[3] = "--warning_level=QUIET";
+
+		CommandLineRunner runner = new CommandLineRunner(input);
+		if (runner.shouldRunCompiler())
+		{
+			runner.run();
 		}
 	}
 }

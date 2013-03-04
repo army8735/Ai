@@ -31,6 +31,7 @@ package
 			压缩 = new Btn("压缩");
 			压缩.x = 220;
 			压缩.addEventListener(MouseEvent.CLICK, function(event:MouseEvent):void {
+				文件列表.压缩();
 			});
 			addChild(压缩);
 		}

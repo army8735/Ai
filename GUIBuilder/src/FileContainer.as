@@ -93,9 +93,42 @@ package
 			});
 		}
 		public function 压缩单个(文件:UIFile):void {
-			//todo
+			if(java == null) {
+				java = new File(配置.java);
+				trace(java.nativePath);
+				NativeApplication.nativeApplication.autoExit = true;
+				nativeProcessStartupInfo = new NativeProcessStartupInfo();
+				nativeProcessStartupInfo.executable = java;
+			}
+			trace('buid');
+			var process:NativeProcess = new NativeProcess();
+			var v:Vector.<String> = new Vector.<String>();
+			v.push("-jar");
+			v.push(配置.fe);
+			v.push("cssroot=" + 配置.css);
+			v.push("jsroot=" + 配置.js);
+			v.push("in=" + 文件.路径);
+			v.push("ignore=" + 配置.全局id.replace(/\s+/g, "|"));
+			v.push("onlycompress=true");
+			trace(v);
+			nativeProcessStartupInfo.arguments = v;
+			var i:int = 0;
+			process.addEventListener(ProgressEvent.STANDARD_OUTPUT_DATA, function(event:ProgressEvent):void {
+				var s:String = process.standardOutput.readMultiByte(process.standardOutput.bytesAvailable, "gbk");
+				s = s.replace(/\r\n/g, "\n");
+				trace(s);
+				控制台.追加(s);
+			});
+			process.addEventListener(ProgressEvent.STANDARD_ERROR_DATA, function(event:ProgressEvent):void {
+				var s:String = process.standardError.readMultiByte(process.standardError.bytesAvailable, "gbk");
+				s = s.replace(/\r\n/g, "\n");
+				trace(s);
+				控制台.追加错误(s);
+			});
+			process.start(nativeProcessStartupInfo);
 		}
-		public function 删除单个(文件:UIFile):void {trace(文件.路径);
+		public function 删除单个(文件:UIFile):void {
+			trace(文件.路径);
 			delete 哈希[文件.原始文件.url];
 			var i:int = 列表.indexOf(文件);
 			列表.splice(i, 1);

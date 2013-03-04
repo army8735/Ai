@@ -3,6 +3,8 @@ package com.tudou.army;
 import java.io.*;
 import java.util.*;
 import java.util.regex.*;
+
+import com.google.javascript.jscomp.CommandLineRunner;
 import com.yahoo.platform.yui.compressor.YUICompressor;
 
 public class CssBuilder {
@@ -31,7 +33,7 @@ public class CssBuilder {
 		}
 		文件列表 = new LinkedHashSet<File>();
 	}
-	public void 运行() {
+	public void 构建() {
 		StringBuilder 结果缓存 = new StringBuilder();
 		递归导入文件(目标文件, 结果缓存);
 		System.out.println("---Input:");
@@ -127,5 +129,30 @@ public class CssBuilder {
 			args[2] = 压缩文件.getAbsolutePath();
 			YUICompressor.parse(args);
 		}
+	}
+	public static void 压缩(File 文件) {
+		String 文件名 = 文件.getName();
+		File 合并文件 = 文件;
+		File 压缩文件 = null;
+		if(文件名.endsWith("_src.css")) {
+			合并文件 = new File(文件.getParent(), 文件名.substring(0, 文件名.length() - 8) + ".css");
+			if(合并文件.exists()) {
+				压缩文件 = new File(文件.getParent(), 文件名.substring(0, 文件名.length() - 8) + ".min.css");
+			}
+			else {
+				合并文件 = 文件;
+				压缩文件 = new File(文件.getParent(), 文件名.substring(0, 文件名.length() - 8) + ".min.css");
+			}
+		}
+		else {
+			压缩文件 = new File(文件.getParent(), 文件名.substring(0, 文件名.length() - 3) + ".min.css");
+		}
+		System.out.println("---Compress:");
+		System.out.println(压缩文件);
+		String[] args = new String[3]; 
+		args[0] = 合并文件.getAbsolutePath();
+		args[1] = "-o";
+		args[2] = 压缩文件.getAbsolutePath();
+		YUICompressor.parse(args);
 	}
 }

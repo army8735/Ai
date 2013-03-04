@@ -243,5 +243,5 @@
         <!-- <colorDepth></colorDepth> -->
     <!-- </android> -->
 	<!-- End of the schema for adding the android specific tags in AndroidManifest.xml file -->
-	<supportedProfiles>extendedDesktop</supportedProfiles>
+	<supportedProfiles>desktop</supportedProfiles>
 </application>
