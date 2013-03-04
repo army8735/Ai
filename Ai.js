@@ -145,7 +145,8 @@
 
 	document.head = document.head || document.getElementsByTagName('head')[0];
 
-})();var $$ = (function() {
+})();
+var $$ = (function() {
 	var lib = {},
 		state = {},
 		list = {},
@@ -153,11 +154,11 @@
 		LOADED = 2,
 		baseUrl = location.href.replace(/\/[^/]*$/, '/');
 	/**
-	 * @public 设置script的url的映射关系，为版本自动化做准备
+	 * @public 设置script的url的映射关系，为版本自动化做准�?
 	 * @note url会类似xxx.8735.js形式，为版本控制发布工具产生，其中数字为版本号，将去除版本号的正确url对应到自身上
-	 * @param {url} 需要映射的url
-	 * @param {url} 映射的结果
-	 * @param {boolean} 是否强制覆盖，可选
+	 * @param {url} �?��映射的url
+	 * @param {url} 映射的结�?
+	 * @param {boolean} 是否强制覆盖，可�?
 	 */
 	function join(key, url, force) {
 		if(arguments.length == 0) {
@@ -167,7 +168,7 @@
 			return lib[key];
 		}
 		else {
-			//join时可能不是绝对路径而是相对根路径，由构建工具生成
+			//join时可能不是绝对路径�?是相对根路径，由构建工具生成
 			url = path(url);
 			if(force || !lib[key]) {
 				lib[key] = url;
@@ -175,7 +176,7 @@
 		}
 	}
 	/**
-	 * @public 可并行加载script文件，且仅加载一次
+	 * @public 可并行加载script文件，且仅加载一�?
 	 * @param {url} script的url
 	 * @param {Function} 回调
 	 * @param {String} script编码，可省略
@@ -197,7 +198,7 @@
 			s.async = true;
 			if(charset)
 				s.charset = charset;
-			//版本自动化
+			//版本自动�?
 			s.src = lib[url] || url;
 			function ol() {
 				s.onload = s.onreadystatechange = null;
@@ -222,9 +223,9 @@
 		}
 	}
 	/**
-	 * @public 读取/设置全局根路径
-	 * @param {String} 设置的路径
-	 * @return {String} 根路径
+	 * @public 读取/设置全局根路�?
+	 * @param {String} 设置的路�?
+	 * @return {String} 根路�?
 	 */
 	function base(url) {
 		if(url)
@@ -233,9 +234,9 @@
 	}
 	/**
 	 * @public 获取绝对路径
-	 * @param {string} url 需要转换的url
+	 * @param {string} url �?��转换的url
 	 * @param {string} 依赖的url
-	 * @return {String} 转换的结果
+	 * @return {String} 转换的结�?
 	 */
 	function path(url, depend) {
 		if(/^https?:\/\//.test(url))
@@ -289,8 +290,8 @@ var require,
 	/**
 	 * @public amd定义接口
 	 * @param {string} 模块id，可选，省略为script文件url
-	 * @param {array} 依赖模块id，可选
-	 * @param {Function/object} 初始化工厂
+	 * @param {array} 依赖模块id，可�?
+	 * @param {Function/object} 初始化工�?
 	 */
 	define = function(id, dependencies, factory) {
 		if(arguments.length == 1) {
@@ -309,7 +310,7 @@ var require,
 			}
 		}
 		dependencies = dependencies || [];
-		//另外一种依赖写法，通过factory.toString()方式匹配，智能获取依赖列表
+		//另外�?��依赖写法，�?过factory.toString()方式匹配，智能获取依赖列�?
 		if(isFunction(factory)) {
 			dependencies = dependencies.concat(getDepedencies(factory.toString()));
 		}
@@ -324,12 +325,12 @@ var require,
 		//记录factory和module的hash对应关系
 		if(isFunction(factory))
 			record(factory, module);
-		//构建工具合并的模块先声明了url，可以直接跳过以后所有逻辑
+		//构建工具合并的模块先声明了url，可以直接跳过以后所有�?�?
 		if(finishUrl) {
 			fetch(module, finishUrl);
 			return;
 		}
-		//ie下利用interactive特性降低并发情况下非一致性错误几率
+		//ie下利用interactive特�?降低并发情况下非�?��性错误几�?
 		if(interactive) {
 			var s = document.head.getElementsByTagName('script'),
 				i = s.length - 1;
@@ -340,7 +341,7 @@ var require,
 				}
 			}
 		}
-		//走正常逻辑，存入def队列
+		//走正常�?辑，存入def队列
 		if(defQueue)
 			defQueue.push(module);
 		finishUrl = null;
@@ -367,12 +368,12 @@ var require,
 	/**
 	 * @public 加载使用模块方法
 	 * @param {string/array} 模块id或url
-	 * @param {Function} 加载成功后回调
-	 * @param {string} 模块的强制编码，可省略
+	 * @param {Function} 加载成功后回�?
+	 * @param {string} 模块的强制编码，可省�?
 	 * @param {array} 加载的链记录
 	 */
 	function use(ids, cb, charset, chain) {
-		defQueue = defQueue || []; //use之前的模块为手动添加在页面script标签的模块或合并在总库中的模块，它们需被排除在外
+		defQueue = defQueue || []; //use之前的模块为手动添加在页面script标签的模块或合并在�?库中的模块，它们�?��排除在外
 		chain = chain || [];
 		var idList = isString(ids) ? [ids] : ids, wrap = function() {
 			var keys = idList.map(function(v) {
@@ -383,7 +384,7 @@ var require,
 				if(!mod.exports) {
 					var deps = [];
 					mod.exports = {};
-					//有依赖参数为依赖的模块，否则默认为require, exports, module3个默认模块
+					//有依赖参数为依赖的模块，否则默认为require, exports, module3个默认模�?
 					if(mod.dependencies && mod.dependencies.length) {
 						mod.dependencies.forEach(function(d) {
 							//使用exports模块用作导出
@@ -413,7 +414,7 @@ var require,
 			urls.forEach(function(url) {
 				var mod = getMod(url),
 					d = mod.dependencies;
-				//尚未初始化的模块检测循环依赖和统计依赖
+				//尚未初始化的模块�?��循环依赖和统计依�?
 				if(!mod.exports) {
 					checkCyclic(mod, {}, []);
 					d && d.forEach(function(id) {
@@ -434,13 +435,13 @@ var require,
 			else {
 				chain.push(url);
 				$$.load(url, function() {
-					//延迟模式下onload先于exec，进行2次幂延迟算法等待
+					//延迟模式下onload先于exec，进�?次幂延迟算法等待
 					if(delayQueue.length)
 						delayQueue.push(cb);
 					else
 						cb();
 					function cb() {
-						//必须判断重复，防止2个use线程加载同一个script同时触发2次callback
+						//必须判断重复，防�?个use线程加载同一个script同时触发2次callback
 						if(!lib[url]) {
 							if(defQueue.length) {
 								var mod = defQueue.shift();
@@ -452,12 +453,12 @@ var require,
 							}
 						}
 						recursion();
-						//如果还在延迟排队，执行延迟队列
+						//如果还在延迟排队，执行延迟队�?
 						if(delayQueue.length)
 							delayQueue.shift()();
 					}
 					function d2() {
-						//等待到defQueue中有了的时候即可停止延迟，另外当lib[url]有了的时候也可以，因为可能是打包合并的模块文件onload抢先了，此时合并的文件的模块没有存入defQueue，但在define.finish中传入url存入了lib[url]
+						//等待到defQueue中有了的时�?即可停止延迟，另外当lib[url]有了的时候也可以，因为可能是打包合并的模块文件onload抢先了，此时合并的文件的模块没有存入defQueue，但在define.finish中传入url存入了lib[url]
 						if(defQueue.length || lib[url]) {
 							delayCount = 0;
 							cb();
@@ -466,7 +467,7 @@ var require,
 						}
 						else {
 							if(delayCount > 5) {
-								//这里可能有极低几率不准确，因为ie情况下define没进队列但得到了url属性，因此判断模块是否存在并执行；理论上倘若define还没执行但模块有老的，会出错
+								//这里可能有极低几率不准确，因为ie情况下define没进队列但得到了url属�?，因此判断模块是否存在并执行；理论上倘若define还没执行但模块有老的，会出错
 								if(lib[url]) {
 									delayCount = 0;
 									recursion();
@@ -476,7 +477,7 @@ var require,
 								}
 								throw new Error('2^ delay is too long to wait:\n' + chain.join(' -> '));
 							}
-							setTimeout(d2, Math.pow(2, delayCount++) << 4); //2 ^ n * 16的时间等比累加
+							setTimeout(d2, Math.pow(2, delayCount++) << 4); //2 ^ n * 16的时间等比累�?
 						}
 					}
 				}, charset);
@@ -493,7 +494,7 @@ var require,
 		}
 	}
 	/**
-	 * private 检测循环依赖
+	 * private �?��循环依赖
 	 * @param {object} 模块
 	 * @param {hashmap} 历史记录
 	 * @param {array} 依赖顺序
@@ -522,7 +523,7 @@ var require,
 	}
 	/**
 	 * 根据依赖script的url获取绝对路径
-	 * @param {string} url 需要转换的url
+	 * @param {string} url �?��转换的url
 	 * @param {string} 依赖的url
 	 */
 	function getAbsUrl(url, depend) {
@@ -684,3 +685,8 @@ var require,
 	}
 
 })();
+/**
+ * @import base/fix.js
+ * @import base/lang.js
+ * @import base/amd.js
+ */

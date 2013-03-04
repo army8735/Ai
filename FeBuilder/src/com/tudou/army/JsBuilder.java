@@ -48,6 +48,21 @@ public class JsBuilder {
 		输出(结果缓存);
 		System.out.println("---Output:");
 		System.out.println(合并文件);
+		if(是否压缩) {
+			String[] input = new String[4];
+			input[0] = "--js=" + 合并文件.getAbsolutePath();
+			input[1] = "--charset=gbk";
+			input[2] = "--js_output_file=" + 压缩文件.getAbsolutePath();
+			input[3] = "--warning_level=QUIET";
+
+			CommandLineRunner runner = new CommandLineRunner(input);
+			if (runner.shouldRunCompiler())
+			{
+				runner.run();
+			}
+			System.out.println("---Compress:");
+			System.out.println(压缩文件);
+		}
 	}
 	private void 递归导入文件(File 当前文件, StringBuilder 结果缓存, int 类型) {
 		if(文件列表.contains(当前文件)) {
@@ -293,19 +308,6 @@ public class JsBuilder {
 				} catch(IOException e) {
 					//
 				}
-			}
-		}
-		if(是否压缩) {
-			String[] input = new String[4];
-			input[0] = "--js=" + 合并文件.getAbsolutePath();
-			input[1] = "--charset=gbk";
-			input[2] = "--js_output_file=" + 压缩文件.getAbsolutePath();
-			input[3] = "--warning_level=QUIET";
-
-			CommandLineRunner runner = new CommandLineRunner(input);
-			if (runner.shouldRunCompiler())
-			{
-				runner.run();
 			}
 		}
 	}

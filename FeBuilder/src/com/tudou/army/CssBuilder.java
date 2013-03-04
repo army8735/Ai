@@ -3,8 +3,6 @@ package com.tudou.army;
 import java.io.*;
 import java.util.*;
 import java.util.regex.*;
-
-import com.google.javascript.jscomp.CommandLineRunner;
 import com.yahoo.platform.yui.compressor.YUICompressor;
 
 public class CssBuilder {
@@ -43,6 +41,15 @@ public class CssBuilder {
 		输出(结果缓存);
 		System.out.println("---Output:");
 		System.out.println(合并文件);
+		if(是否压缩) {
+			String[] args = new String[3]; 
+			args[0] = 合并文件.getAbsolutePath();
+			args[1] = "-o";
+			args[2] = 压缩文件.getAbsolutePath();
+			YUICompressor.parse(args);
+			System.out.println("---Compress:");
+			System.out.println(压缩文件);
+		}
 	}
 	private void 递归导入文件(File 当前文件, StringBuilder 结果缓存) {
 		if(文件列表.contains(当前文件)) {
@@ -121,13 +128,6 @@ public class CssBuilder {
 					//
 				}
 			}
-		}
-		if(是否压缩) {
-			String[] args = new String[3]; 
-			args[0] = 合并文件.getAbsolutePath();
-			args[1] = "-o";
-			args[2] = 压缩文件.getAbsolutePath();
-			YUICompressor.parse(args);
 		}
 	}
 	public static void 压缩(File 文件) {
