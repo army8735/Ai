@@ -38,9 +38,10 @@ package
 			初始化菜单();
 			
 			消息框 = new MsgBox();
+			滚动条 = new ScrollPane();
 			配置 = new Config(消息框);
 			控制台 = new MsgField();
-			文件列表 = new FileContainer(控制台, 消息框, 配置);
+			文件列表 = new FileContainer(控制台, 消息框, 配置, 滚动条);
 			按钮 = new Btns(文件列表);
 			addChild(文件列表);
 			addChild(控制台);
@@ -48,7 +49,6 @@ package
 			addChild(配置);
 			addChild(消息框);
 			
-			滚动条 = new ScrollPane();
 			滚动条.source = 文件列表;
 			滚动条.scrollDrag = true;
 			addChild(滚动条);
@@ -108,7 +108,6 @@ package
 			消息框.重置();
 			按钮.重置();
 			
-//			滚动条.x = stage.stageWidth - 20;
 			滚动条.width = stage.stageWidth;
 			滚动条.height = (stage.stageHeight >> 1) - 10;
 		}

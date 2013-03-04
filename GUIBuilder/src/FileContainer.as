@@ -6,6 +6,7 @@ package
 	import flash.display.Sprite;
 	import flash.events.ProgressEvent;
 	import flash.filesystem.File;
+	import fl.containers.ScrollPane;
 	
 	public class FileContainer extends Sprite
 	{
@@ -14,14 +15,16 @@ package
 		private var 控制台:MsgField;
 		private var 消息框:MsgBox;
 		private var 配置:Config;
+		private var 滚动条:ScrollPane;
 		private var java:File;
 		private var nativeProcessStartupInfo:NativeProcessStartupInfo;
 		
-		public function FileContainer(控制台:MsgField, 消息框:MsgBox, 配置:Config)
+		public function FileContainer(控制台:MsgField, 消息框:MsgBox, 配置:Config, 滚动条:ScrollPane)
 		{
 			this.控制台 = 控制台;
 			this.消息框 = 消息框;
 			this.配置 = 配置;
+			this.滚动条 = 滚动条;
 			列表 = new Vector.<UIFile>();
 			哈希 = new Object();
 		}
@@ -140,6 +143,7 @@ package
 				列表[i].y -= UIFile.H;
 			}
 			removeChild(文件);
+			滚动条.update();
 		}
 		public function 重置():void {
 			graphics.clear();
