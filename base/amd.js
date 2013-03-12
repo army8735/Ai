@@ -42,15 +42,15 @@ var require,
 			}
 		}
 		dependencies = dependencies || [];
-		//另外一种依赖写法，通过factory.toString()方式匹配，智能获取依赖列表
-		if(isFunction(factory)) {
-			dependencies = dependencies.concat(getDepedencies(factory.toString()));
-		}
 		var module = {
 			id: id,
 			dependencies: dependencies,
 			factory: factory
 		};
+		//另外一种依赖写法，通过factory.toString()方式匹配，智能获取依赖列表
+		if(isFunction(factory)) {
+			module.rdep = getDepedencies(factory.toString());
+		}
 		//具名模块
 		if(id)
 			lib[id] = module;
@@ -135,6 +135,7 @@ var require,
 						deps = [require, mod.exports, mod];
 					mod.exports = isFunction(mod.factory) ? (mod.factory.apply(null, deps) || mod.exports) : (mod.factory || {});
 					delete mod.factory;
+					delete mod.rdep;
 				}
 				mods.push(mod.exports);
 			});
@@ -149,9 +150,14 @@ var require,
 				//尚未初始化的模块检测循环依赖和统计依赖
 				if(!mod.exports) {
 					checkCyclic(mod, {}, []);
-					d && d.forEach(function(id) {
+					d.forEach(function(id) {
 						deps.push(lib[id] ? id : getAbsUrl(id, mod.uri));
 					});
+					if(mod.rdep) {
+						mod.rdep.forEach(function(id) {
+							deps.push(lib[id] ? id : getAbsUrl(id, mod.uri));
+						});
+					}
 				}
 			});
 			//如果有依赖，先加载依赖，否则直接回调
