@@ -2,20 +2,6 @@
 
 	//补充ECMAScript5里的方法
 	var arrayMethod = Array.prototype;
-	if(!arrayMethod.filter) {
-		arrayMethod.filter = function(fn, sc){
-			var r = [], val;
-			for(var i = 0, l = this.length >>> 0; i < l; i++) {
-				if(i in this) {
-					val = this[i];
-					if(fn.call(sc, val, i, this)) {
-						r.push(val);
-					}
-				}
-			}
-			return r;
-		};
-	}
 	if(!arrayMethod.forEach) {
 		arrayMethod.forEach = function(fn, sc){
 			for(var i = 0, l = this.length >>> 0; i < l; i++){
@@ -52,66 +38,8 @@
 			return -1;
 		};
 	}
-	if(!arrayMethod.every) {
-		arrayMethod.every = function(fn, context) {
-			for(var i = 0, len = this.length >>> 0; i < len; i++) {
-				if(i in this && !fn.call(context, this[i], i, this)) {
-					return false;
-				}
-			}
-			return true;
-		}
-	}
-	if(!arrayMethod.some) {
-		arrayMethod.some = function(fn, context) {
-			for(var i = 0, len = this.length >>> 0; i < len; i++) {
-				if(i in this && fn.call(context, this[i], i, this)) {
-					return true;
-				}
-			}
-			return false;
-		}
-	}
-	if(!arrayMethod.reduce) {
-		arrayMethod.reduce = function (fn /*, initial*/) {
-			var len = this.length >>> 0, i = 0, result;
-
-			if(arguments.length > 1) {
-				result = arguments[1];
-			}
-			else {
-				do {
-					if(i in this) {
-						result = this[i++];
-						break;
-					}
-					// if array contains no values, no initial value to return
-					if(++i >= len) {
-						throw new TypeError('reduce of empty array with on initial value');
-					}
-				}
-				while(true);
-			}
-
-			for(; i < len; i++) {
-				if (i in this) {
-					result = fn.call(null, result, this[i], i, this);
-				}
-			}
-
-			return result;
-		}
-	}
-	if(!String.prototype.trim) {
-		String.prototype.trim = function() {
-			return String(this).replace(/^\s+/, '').replace(/\s+$/, '');
-		};
-	}
 	Array.isArray || (Array.isArray = function(obj) {
 		return Object.prototype.toString.call(obj) === '[object Array]';
-	});
-	Date.now || (Date.now = function () {
-		return +new Date;
 	});
 	Object.keys || (Object.keys = function(o) {
 		var ret=[],p;
@@ -124,23 +52,6 @@
 		function F() {}
 		F.prototype = o;
 		return new F();
-	});
-	Function.prototype.bind || (Function.prototype.bind = function(oThis) {
-		var fSlice = Array.prototype.slice,
-			aArgs = fSlice.call(arguments, 1), 
-			fToBind = this, 
-			fNOP = function () {},
-			fBound = function () {
-				return fToBind.apply(this instanceof fNOP
-									 ? this
-									 : oThis || window,
-									 aArgs.concat(fSlice.call(arguments)));
-			};
-
-		fNOP.prototype = this.prototype;
-		fBound.prototype = new fNOP();
-
-		return fBound;
 	});
 
 	document.head = document.head || document.getElementsByTagName('head')[0];
@@ -155,7 +66,6 @@ var $$ = (function() {
 		baseUrl = location.href.replace(/\/[^/]*$/, '/');
 	/**
 	 * @public 设置script的url的映射关系，为版本自动化做准�?
-	 * @note url会类似xxx.8735.js形式，为版本控制发布工具产生，其中数字为版本号，将去除版本号的正确url对应到自身上
 	 * @param {url} �?��映射的url
 	 * @param {url} 映射的结�?
 	 * @param {boolean} 是否强制覆盖，可�?
@@ -309,16 +219,13 @@ var require,
 				dependencies = null;
 			}
 		}
-		dependencies = dependencies || [];
 		var module = {
 			id: id,
-			dependencies: dependencies,
+			dependencies: dependencies || [],
+			//另外�?��依赖写法，�?过factory.toString()方式匹配，智能获取依赖列�?
+			rdep: isFunction(factory) ? getDepedencies(factory.toString()) : [],
 			factory: factory
 		};
-		//另外�?��依赖写法，�?过factory.toString()方式匹配，智能获取依赖列�?
-		if(isFunction(factory)) {
-			module.rdep = getDepedencies(factory.toString());
-		}
 		//具名模块
 		if(id)
 			lib[id] = module;
@@ -403,6 +310,7 @@ var require,
 						deps = [require, mod.exports, mod];
 					mod.exports = isFunction(mod.factory) ? (mod.factory.apply(null, deps) || mod.exports) : (mod.factory || {});
 					delete mod.factory;
+					mod.dependencies = mod.dependencies.concat(mod.rdep);
 					delete mod.rdep;
 				}
 				mods.push(mod.exports);
@@ -421,11 +329,9 @@ var require,
 					d.forEach(function(id) {
 						deps.push(lib[id] ? id : getAbsUrl(id, mod.uri));
 					});
-					if(mod.rdep) {
-						mod.rdep.forEach(function(id) {
-							deps.push(lib[id] ? id : getAbsUrl(id, mod.uri));
-						});
-					}
+					mod.rdep.forEach(function(id) {
+						deps.push(lib[id] ? id : getAbsUrl(id, mod.uri));
+					});
 				}
 			});
 			//如果有依赖，先加载依赖，否则直接回调

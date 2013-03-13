@@ -2,20 +2,6 @@
 
 	//补充ECMAScript5里的方法
 	var arrayMethod = Array.prototype;
-	if(!arrayMethod.filter) {
-		arrayMethod.filter = function(fn, sc){
-			var r = [], val;
-			for(var i = 0, l = this.length >>> 0; i < l; i++) {
-				if(i in this) {
-					val = this[i];
-					if(fn.call(sc, val, i, this)) {
-						r.push(val);
-					}
-				}
-			}
-			return r;
-		};
-	}
 	if(!arrayMethod.forEach) {
 		arrayMethod.forEach = function(fn, sc){
 			for(var i = 0, l = this.length >>> 0; i < l; i++){
@@ -52,66 +38,8 @@
 			return -1;
 		};
 	}
-	if(!arrayMethod.every) {
-		arrayMethod.every = function(fn, context) {
-			for(var i = 0, len = this.length >>> 0; i < len; i++) {
-				if(i in this && !fn.call(context, this[i], i, this)) {
-					return false;
-				}
-			}
-			return true;
-		}
-	}
-	if(!arrayMethod.some) {
-		arrayMethod.some = function(fn, context) {
-			for(var i = 0, len = this.length >>> 0; i < len; i++) {
-				if(i in this && fn.call(context, this[i], i, this)) {
-					return true;
-				}
-			}
-			return false;
-		}
-	}
-	if(!arrayMethod.reduce) {
-		arrayMethod.reduce = function (fn /*, initial*/) {
-			var len = this.length >>> 0, i = 0, result;
-
-			if(arguments.length > 1) {
-				result = arguments[1];
-			}
-			else {
-				do {
-					if(i in this) {
-						result = this[i++];
-						break;
-					}
-					// if array contains no values, no initial value to return
-					if(++i >= len) {
-						throw new TypeError('reduce of empty array with on initial value');
-					}
-				}
-				while(true);
-			}
-
-			for(; i < len; i++) {
-				if (i in this) {
-					result = fn.call(null, result, this[i], i, this);
-				}
-			}
-
-			return result;
-		}
-	}
-	if(!String.prototype.trim) {
-		String.prototype.trim = function() {
-			return String(this).replace(/^\s+/, '').replace(/\s+$/, '');
-		};
-	}
 	Array.isArray || (Array.isArray = function(obj) {
 		return Object.prototype.toString.call(obj) === '[object Array]';
-	});
-	Date.now || (Date.now = function () {
-		return +new Date;
 	});
 	Object.keys || (Object.keys = function(o) {
 		var ret=[],p;
@@ -124,23 +52,6 @@
 		function F() {}
 		F.prototype = o;
 		return new F();
-	});
-	Function.prototype.bind || (Function.prototype.bind = function(oThis) {
-		var fSlice = Array.prototype.slice,
-			aArgs = fSlice.call(arguments, 1), 
-			fToBind = this, 
-			fNOP = function () {},
-			fBound = function () {
-				return fToBind.apply(this instanceof fNOP
-									 ? this
-									 : oThis || window,
-									 aArgs.concat(fSlice.call(arguments)));
-			};
-
-		fNOP.prototype = this.prototype;
-		fBound.prototype = new fNOP();
-
-		return fBound;
 	});
 
 	document.head = document.head || document.getElementsByTagName('head')[0];

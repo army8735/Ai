@@ -41,16 +41,13 @@ var require,
 				dependencies = null;
 			}
 		}
-		dependencies = dependencies || [];
 		var module = {
 			id: id,
-			dependencies: dependencies,
+			dependencies: dependencies || [],
+			//另外一种依赖写法，通过factory.toString()方式匹配，智能获取依赖列表
+			rdep: isFunction(factory) ? getDepedencies(factory.toString()) : [],
 			factory: factory
 		};
-		//另外一种依赖写法，通过factory.toString()方式匹配，智能获取依赖列表
-		if(isFunction(factory)) {
-			module.rdep = getDepedencies(factory.toString());
-		}
 		//具名模块
 		if(id)
 			lib[id] = module;
@@ -135,6 +132,7 @@ var require,
 						deps = [require, mod.exports, mod];
 					mod.exports = isFunction(mod.factory) ? (mod.factory.apply(null, deps) || mod.exports) : (mod.factory || {});
 					delete mod.factory;
+					mod.dependencies = mod.dependencies.concat(mod.rdep);
 					delete mod.rdep;
 				}
 				mods.push(mod.exports);
@@ -153,11 +151,9 @@ var require,
 					d.forEach(function(id) {
 						deps.push(lib[id] ? id : getAbsUrl(id, mod.uri));
 					});
-					if(mod.rdep) {
-						mod.rdep.forEach(function(id) {
-							deps.push(lib[id] ? id : getAbsUrl(id, mod.uri));
-						});
-					}
+					mod.rdep.forEach(function(id) {
+						deps.push(lib[id] ? id : getAbsUrl(id, mod.uri));
+					});
 				}
 			});
 			//如果有依赖，先加载依赖，否则直接回调

@@ -7,7 +7,6 @@ var $$ = (function() {
 		baseUrl = location.href.replace(/\/[^/]*$/, '/');
 	/**
 	 * @public 设置script的url的映射关系，为版本自动化做准备
-	 * @note url会类似xxx.8735.js形式，为版本控制发布工具产生，其中数字为版本号，将去除版本号的正确url对应到自身上
 	 * @param {url} 需要映射的url
 	 * @param {url} 映射的结果
 	 * @param {boolean} 是否强制覆盖，可选
