@@ -152,9 +152,10 @@ var $$ = (function() {
 		if(/^https?:\/\//.test(url))
 			return url;
 		depend = depend || baseUrl;
-		var temp = depend.slice(8).split('/');
+		var match = /(.+:\/\/)(.+)/.exec(depend);
+		var temp = match[2].split('/');
 		temp.pop();
-		temp[0] = depend.slice(0, 8) + temp[0];
+		temp[0] = match[1] + temp[0];
 		if(url.charAt(0) == '/')
 			return temp.join('/') + url;
 		else if(url.indexOf('../') == 0) {
