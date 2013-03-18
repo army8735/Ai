@@ -309,7 +309,7 @@ var require,
 					}
 					else
 						deps = [require, mod.exports, mod];
-					mod.exports = isFunction(mod.factory) ? (mod.factory.apply(null, deps) || mod.exports) : (mod.factory || {});
+					mod.exports = isFunction(mod.factory) ? mod.factory.apply(null, deps) : mod.factory;
 					delete mod.factory;
 					mod.dependencies = mod.dependencies.concat(mod.rdep);
 					delete mod.rdep;
