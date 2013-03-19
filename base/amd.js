@@ -130,7 +130,13 @@ var require,
 					}
 					else
 						deps = [require, mod.exports, mod];
-					mod.exports = isFunction(mod.factory) ? mod.factory.apply(null, deps) : mod.factory;
+					if(isFunction(mod.factory)) {
+						var ret = mod.factory.apply(null, deps);
+						mod.exports = ret === undefined ? mod.exports : ret;
+					}
+					else {
+						mod.exports = mod.factory;
+					}
 					delete mod.factory;
 					mod.dependencies = mod.dependencies.concat(mod.rdep);
 					delete mod.rdep;
@@ -146,7 +152,7 @@ var require,
 				var mod = getMod(url),
 					d = mod.dependencies;
 				//尚未初始化的模块检测循环依赖和统计依赖
-				if(!mod.exports) {
+				if(mod.exports === undefined) {
 					checkCyclic(mod, {}, []);
 					d.forEach(function(id) {
 						deps.push(lib[id] ? id : getAbsUrl(id, mod.uri));
