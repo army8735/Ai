@@ -127,6 +127,9 @@ var require,
 								deps.push(m.exports);
 							}
 						});
+						deps.push(require);
+						deps.push(mod.exports);
+						deps.push(mod);
 					}
 					else
 						deps = [require, mod.exports, mod];
