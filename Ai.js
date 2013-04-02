@@ -488,6 +488,9 @@ var require,
 		if(!Array.isArray(id)) {
 			id = [id];
 		}
+		id = id.map(function(id) {
+			return id.charAt(0) == '/' ? id.slice(1) : id;
+		});
 		function wrap() {
 			var first = true,
 				args = Array.prototype.slice.call(arguments, 0);
