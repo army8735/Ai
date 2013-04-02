@@ -504,7 +504,7 @@ var require,
 				cb.apply(null, args);
 				id.forEach(function(id) {
 					lock[id].shift();
-					if(lock[id].length) {
+					while(lock[id].length) {
 						var w = lock[id][0];
 						if(w.execed) {
 							lock[id].shift();
@@ -513,6 +513,9 @@ var require,
 							w.execed = true;
 							w.apply(null, w.args);
 							lock[id].shift();
+						}
+						else {
+							break;
 						}
 					}
 				});
