@@ -321,14 +321,19 @@ var require,
 				}
 			});
 			if(first) {
+				wrap.execed = true;
 				cb.apply(null, args);
 				id.forEach(function(id) {
 					lock[id].shift();
 					if(lock[id].length) {
 						var w = lock[id][0];
-						if(w.init && !w.execed) {
+						if(w.execed) {
+							lock[id].shift();
+						}
+						else if(w.init && !w.execed) {
 							w.execed = true;
 							w.apply(null, w.args);
+							lock[id].shift();
 						}
 					}
 				});
