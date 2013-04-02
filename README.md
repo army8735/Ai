@@ -24,11 +24,17 @@ CommonJS/AMD标准定义模块接口
 require(mod:String):Object
 CommonJS/AMD标准获取模块接口
 
-require(mod:String, callback:Function, charset:String = null):void
+require(mod:String/Array<String>, callback:Function, charset:String = null):void
 CommonJS/AMD标准使用模块接口，增加了第3个charset参数可选编码
 
 require():HashMap
 获取全部模块信息，扩展接口
+
+require.async(mod:String):Object
+仅对构建工具可见可见，不自动打包进来模块
+
+require.sync(mods:String/Array<String>, cb:Function):void
+同步使用模块，当mods有重合时，使用的回调cb必须等到上一个cb同步执行完成后
 
 define.url(url:String):void
 设定下一个模块的uri，扩展接口
