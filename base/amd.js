@@ -63,6 +63,10 @@ var require,
 			fetch(module, finishUrl);
 			return;
 		}
+		if(document.currentScript) {
+			fetch(module, document.currentScript.src || location.href.replace(/#.*/, ''));
+			return;
+		}
 		//ie下利用interactive特性降低并发情况下非一致性错误几率
 		if(interactive) {
 			var s = document.head.getElementsByTagName('script'),

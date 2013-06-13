@@ -242,6 +242,10 @@ var require,
 			fetch(module, finishUrl);
 			return;
 		}
+		if(document.currentScript) {
+			fetch(module, document.currentScript.src || location.href.replace(/#.*/, ''));
+			return;
+		}
 		//ie下利用interactive特�?降低并发情况下非�?��性错误几�?
 		if(interactive) {
 			var s = document.head.getElementsByTagName('script'),
