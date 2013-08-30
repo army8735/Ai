@@ -305,8 +305,8 @@ public class JsBuilder {
 	private String 获取模块URI(File f) {
 		String path = f.getAbsolutePath().substring(根路径.getAbsolutePath().length());
 		path = path.replace('\\', '/')
-				.replaceAll("\\w+/\\.\\./", "")
-				.replace("./", "");
+				.replaceAll("/\\./", "/")
+				.replaceAll("\\w+/\\.\\./", "");
 		if(path.endsWith(".js"))
 			path = path.substring(0, path.length() - 3);
 		if(path.endsWith("_src"))
