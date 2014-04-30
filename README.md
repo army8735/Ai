@@ -1,7 +1,8 @@
 A AMD Module Loader with a Builder by java & air
 ===
 
-Sorry for only chinese comments...
+已加入Seajs开发，建议使用Seajs。这里不再更新。
+<br/>https://github.com/seajs/seajs
 
 
 ## API
